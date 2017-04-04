@@ -1,0 +1,10 @@
+rm -f wave_glwice.o tick21.o iymd21.o dsec21.o mymd21.o  dsec21.lst  iymd21.lst  mymd21.lst  tick21.lst  wave_glwice.lst xref.db
+++ /opt/modules/3.2.6.7/bin/modulecmd bash list
+Currently Loaded Modulefiles:
++ eval
+ftn -O -list -auto -convert big_endian -assume byterecl  -c -o wave_glwice.o wave_glwice.f
+ftn -O -list -auto -convert big_endian -assume byterecl  -c -o tick21.o tick21.f
+ftn -O -list -auto -convert big_endian -assume byterecl  -c -o iymd21.o iymd21.f
+ftn -O -list -auto -convert big_endian -assume byterecl  -c -o dsec21.o dsec21.f
+ftn -O -list -auto -convert big_endian -assume byterecl  -c -o mymd21.o mymd21.f
+ftn -O -list -auto -o wave_glwice  wave_glwice.o tick21.o iymd21.o dsec21.o mymd21.o  

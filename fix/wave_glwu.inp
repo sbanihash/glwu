@@ -1,0 +1,36 @@
+$
+  'Great Lakes WAVEWATCH III Unstructured'
+$
+ 1.10 0.05 32 36 0.
+$
+   F T T T T T 
+$
+ 180. 60. 90. 10.                              
+$
+&UNST UGOBCAUTO = F, EXPFSN = T /
+&SIN4 BETAMAX = 1.70 /
+&SDS4 SDSCUM = 0. /
+&SDB1 BJGAM = 0.8, BJALFA = 0.50 /
+&SBT1 GAMMA = -0.034 /
+&SNL3 NQDEF =  3, MSC =  0.00,  NSC = -3.50 /
+&ANL3 QPARMS = 0.126, 0.000,  -1.0, 1.2000E+08, 0.0000E+00 ,
+                0.237, 0.000,  -1.0, 0.8000E+08, 0.0000E+00 ,
+                0.319, 0.000,  -1.0, 0.2500E+08, 0.0000E+00 /
+$
+END OF NAMELISTS
+$
+  'UNST' T 'NONE'
+$    
+   5.0 0.30  10  -1. 4 1 '(20f10.2)'  'NAME' 'mesh.glwu'
+$
+   7 3 1 '(....)' 'PART' 'mapsta.inp'
+$
+      0   0   F
+$
+      0   0   F
+$
+      0   0
+$     
+       0.    0.    0.    0.       0
+$
+

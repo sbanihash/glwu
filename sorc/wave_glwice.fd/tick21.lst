@@ -1,0 +1,285 @@
+Page 1           Source Listing                  TICK21
+2017-04-04 20:16                                 tick21.f
+
+      1 C/ ------------------------------------------------------------------- /
+      2       SUBROUTINE TICK21 ( TIME, DTIME )
+      3 C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+      4 C                .      .    .                                       .
+      5 C SUBPROGRAM:    TICK21      INCREMENT DATE AND TIME
+      6 C   PRGMMR: H.S. CHEN        ORG: W/NP21     DATE: 1998-10-29
+      7 C
+      8 C ABSTRACT: INCREMENT INTEGER TIME(2) IN YYYYMMDD HHMMSS FORMAT BY
+      9 C   A GIVEN NUMBER OF SECONDS.
+     10 C
+     11 C PROGRAM HISTORY LOG:
+     12 C   93-03-29  H.L. TOLMAN ORIGINATION
+     13 C   98-10-29  H.S. CHEN   ADDING DOCBLOCK
+     14 C             H.L. TOLMAN
+     15 C
+     16 C USAGE: SEE ORIGINAL DOCUMENTATION BELOW.
+     17 C
+     18 C REMARKS: SEE ORIGINAL DOCUMENTATION BELOW.
+     19 C
+     20 C ATTRIBUTES:
+     21 C   LANGUAGE: FORTRAN 77-90
+     22 C   MACHINE:  CRAY C90 / IBM RS6000 SP
+     23 C
+     24 C$$$
+     25 C/                  +-----------------------------------+
+     26 C/                  | WAVEWATCH-III           NOAA/NCEP |
+     27 C/                  |           H. L. Tolman            |
+     28 C/                  |                        FORTRAN 77 |
+     29 C/                  | Last update :         29-Mar-1993 |
+     30 C/                  +-----------------------------------+
+     31 C/                                Based on TICK of the GLA GCM.
+     32 C/
+     33 C  1. Purpose :
+     34 C
+     35 C     Updates time information, DTIME=0 converts to "legal" time.
+     36 C     Goes into the 21st century.
+     37 C
+     38 C  3. Parameters :
+     39 C
+     40 C     Parameter list
+     41 C     ----------------------------------------------------------------
+     42 C       TIME    I.A.  I/O  (1) Current date in YYYYMMDD format.
+     43 C                          (2) Current time in HHMMSS format.
+     44 C       DTIME   Real   I   Time step in seconds.
+     45 C     ----------------------------------------------------------------
+     46 C
+     47 C  4. Subroutines used :
+     48 C
+     49 C       IYMD21   Increment date in YYYYMMDD format.
+     50 C       STRACE   Service routine
+     51 C
+     52 C  5. Called by :
+     53 C
+     54 C     Any other routine.
+     55 C
+     56 C  8. Structure :
+     57 C
+
+Page 2           Source Listing                  TICK21
+2017-04-04 20:16                                 tick21.f
+
+     58 C     See source code.
+     59 C
+     60 C  9. Switches :
+     61 C
+     62 C     C/S  Enable subroutine tracing using STRACE.
+     63 C
+     64 C 10. Source code :
+     65 C/
+     66 C/ ------------------------------------------------------------------- /
+     67 C/ Parameter list
+     68 C/
+     69       INTEGER         TIME(2)
+     70       REAL            DTIME
+     71 C/
+     72 C/ ------------------------------------------------------------------- /
+     73 C/ Local parameters
+     74 C/
+     75       INTEGER         NYMD, NHMS, NSEC
+     76       INTEGER         IYMD21
+     77       EXTERNAL        IYMD21
+     78 C/
+     79 C/ ------------------------------------------------------------------- /
+     80 C/
+     81 *
+     82 * Zero increment: get "legal" data
+     83 *
+     84       NYMD   = TIME(1)
+     85       NHMS   = TIME(2)
+     86       IF (DTIME.EQ.0.) THEN
+     87           NYMD = IYMD21 (NYMD,-1)
+     88           NYMD = IYMD21 (NYMD, 1)
+     89         ENDIF
+     90 *
+     91 * Convert and increment time :
+     92 *
+     93       NSEC = NHMS/10000*3600 + MOD(NHMS,10000)/100* 60 +
+     94      &       MOD(NHMS,100) + NINT(DTIME)
+     95 *
+     96 * Check change of date :
+     97 *
+     98   100 CONTINUE
+     99       IF (NSEC.GE.86400)  THEN
+    100           NSEC = NSEC - 86400
+    101           NYMD = IYMD21 (NYMD,1)
+    102           GOTO 100
+    103         ENDIF
+    104 *
+    105   200 CONTINUE
+    106       IF (NSEC.LT.00000)  THEN
+    107           NSEC = 86400 + NSEC
+    108           NYMD = IYMD21 (NYMD,-1)
+    109           GOTO 200
+    110         ENDIF
+    111 *
+    112       NHMS = NSEC/3600*10000 + MOD(NSEC,3600)/60*100 + MOD(NSEC,60)
+    113 *
+    114       TIME(1) = NYMD
+
+Page 3           Source Listing                  TICK21
+2017-04-04 20:16                                 tick21.f
+
+    115       TIME(2) = NHMS
+    116 *
+    117       RETURN
+    118 C/
+    119 C/ End of TICK21 ----------------------------------------------------- /
+    120 C/
+    121       END
+
+
+ENTRY POINTS
+
+  Name               
+                     
+ tick21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 100                        Label  98                                                             102                               
+ 200                        Label  105                                                            109                               
+ DTIME                      Dummy  2        R(4)            4           scalar   ARG,INOUT        86,94                             
+ IYMD21                     Func   76       I(4)            4           scalar                    87,88,101,108                     
+ MOD                        Func   93                                   scalar                    93,94,112                         
+ NHMS                       Local  75       I(4)            4           scalar                    85,93,94,112,115                  
+ NINT                       Func   94                                   scalar                    94                                
+ NSEC                       Local  75       I(4)            4           scalar                    93,99,100,106,107,112             
+ NYMD                       Local  75       I(4)            4           scalar                    84,87,88,101,108,114              
+ TICK21                     Subr   2                                                                                                
+ TIME                       Dummy  2        I(4)            4     1     2        ARG,INOUT        84,85,114,115                     
+
+Page 4           Source Listing                  TICK21
+2017-04-04 20:16 Subprograms/Common Blocks       tick21.f
+
+
+
+SUBPROGRAMS/COMMON BLOCKS
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ TICK21                     Subr   2                                                                                                
+
+COMPILER OPTIONS BEING USED
+
+       -align noall                          -align nonone
+       -align nocommons                      -align nodcommons
+       -align noqcommons                     -align nozcommons
+       -align records                        -align nosequence
+       -align norec1byte                     -align norec2byte
+       -align norec4byte                     -align norec8byte
+       -align norec16byte                    -align norec32byte
+       -align norec64byte                    -align noarray8byte
+       -align noarray16byte                  -align noarray32byte
+       -align noarray64byte                  -align noarray128byte
+       -align noarray256byte                 -altparam
+       -assume accuracy_sensitive            -assume nobscc
+       -assume nobuffered_io                 -assume nobuffered_stdout
+       -assume byterecl                      -assume nocc_omp
+       -assume nocstring                     -assume nodummy_aliases
+       -assume nofpe_summary                 -assume noieee_fpe_flags
+       -assume nominus0                      -assume noold_boz
+       -assume old_complex_align             -assume old_unit_star
+       -assume old_ldout_format              -assume noold_logical_ldio
+       -assume old_maxminloc                 -assume old_xor
+       -assume protect_constants             -assume noprotect_parens
+       -assume split_common                  -assume source_include
+       -assume nostd_intent_in               -assume std_minus0_rounding
+       -assume nostd_mod_proc_name           -assume std_value
+       -assume norealloc_lhs                 -assume underscore
+       -assume no2underscores                -auto
+  no   -auto_scalar                     no   -bintext
+       -ccdefault default                    -check noargs
+       -check noarg_temp_created             -check noassume
+       -check nobounds                       -check noformat
+       -check nooutput_conversion            -check nooverflow
+       -check nopointers                     -check power
+       -check noshape                        -check nostack
+       -check nounderflow                    -check nouninitialized
+       -coarray-num-procs 0             no   -coarray-config-file
+       -convert big_endian                   -cross_reference
+       -D __INTEL_COMPILER=1500              -D __INTEL_COMPILER_UPDATE=3
+       -D __unix__                           -D __unix
+       -D __linux__                          -D __linux
+       -D __gnu_linux__                      -D unix
+       -D linux                              -D __ELF__
+       -D __x86_64                           -D __x86_64__
+       -D __amd64                            -D __amd64__
+       -D _MT                                -D __INTEL_COMPILER_BUILD_DATE=20150407
+       -D __INTEL_OFFLOAD                    -D __pentium4
+       -D __pentium4__                       -D __tune_pentium4__
+       -D __SSE2__                           -D __SSE2_MATH__
+
+Page 5           Source Listing                  TICK21
+2017-04-04 20:16                                 tick21.f
+
+       -D __SSE3__                           -D __SSSE3__
+       -D __SSE4_1__                         -D __SSE4_2__
+       -D __SSE__                            -D __SSE_MATH__
+       -D __MMX__                            -D __AVX__
+       -D __AVX_I__                          -D __AVX2__
+       -D __CRAYXC                           -D __CRAY_HASWELL
+       -D __CRAYXT_COMPUTE_LINUX_TARGET       -double_size 64
+  no   -d_lines                         no   -Qdyncom
+       -error_limit 30                  no   -f66
+  no   -f77rtl                          no   -fast
+       -fpscomp nofilesfromcmd               -fpscomp nogeneral
+       -fpscomp noioformat                   -fpscomp noldio_spacing
+       -fpscomp nologicals                   -fixed
+  no   -fpconstant                           -fpe3
+       -fprm nearest                    no   -ftz
+       -fp_model noprecise                   -fp_model fast
+       -fp_model nostrict                    -fp_model nosource
+       -fp_model nodouble                    -fp_model noextended
+       -fp_model novery_fast                 -fp_model noexcept
+       -fp_model nono_except                 -heap_arrays 0
+  no   -threadprivate_compat                 -g0
+       -iface nomixed_str_len_arg            -iface nono_mixed_str_len_arg
+       -init noarrays                        -init noinf
+       -init nonan                           -init nosnan
+       -init nozero                     no   -intconstant
+       -integer_size 32                 no   -mixed_str_len_arg
+  no   -module                               -names lowercase
+  no   -noinclude                            -offload-build=host
+       -O2                              no   -pad_source
+       -real_size 32                    no   -recursive
+       -reentrancy none                 no   -sharable_localsaves
+       -vec=simd                             -show noinclude
+       -show map                             -show options
+  no   -syntax_only                     no   -threadcom
+  no   -U                               no   -vms
+       -w noall                              -w nonone
+       -w alignments                         -w noargument_checking
+       -w nodeclarations                     -w general
+       -w noignore_bounds                    -w noignore_loc
+       -w nointerfaces                       -w notruncated_source
+       -w uncalled                           -w uninitialized
+       -w nounused                           -w usage
+  no   -wrap-margins
+
+       -includepath : /opt/cray/rca/1.0.0-2.0502.57212.2.56.ari/include/,/opt/cray/ugni/6.0-1.0502.10245.9.9.ari/include/,
+           /opt/intel/composer_xe_2015.3.187/ipp/include/,/usr/local/include/,.f90,./.f90,/opt/cray/iobuf/2.0.5/include/.f90,
+           /opt/cray/mpt/7.2.0/gni/mpich2-intel/140/include/.f90,/opt/cray/libsci/13.0.3/INTEL/140/x86_64/include/.f90,
+           /opt/cray/rca/1.0.0-2.0502.57212.2.56.ari/include/.f90,/opt/cray/alps/5.2.3-2.0502.9295.14.14.ari/include/.f90,
+           /opt/cray/xpmem/0.1-2.0502.57015.1.15.ari/include/.f90,/opt/cray/gni-headers/4.0-1.0502.10317.9.2.ari/include/.f90,
+           /opt/cray/pmi/5.0.6-1.0000.10439.140.2.ari/include/.f90,/opt/cray/ugni/6.0-1.0502.10245.9.9.ari/include/.f90,
+           /opt/cray/udreg/2.3.2-1.0502.9889.2.20.ari/include/.f90,/opt/cray/wlm_detect/1.0-1.0502.57063.1.1.ari/include/.f90,
+           /opt/cray/krca/1.0.0-2.0502.57202.2.45.ari/include/.f90,/opt/cray-hss-devel/7.2.0/include/.f90,/opt/intel/composer_xe_2015.3.187/ipp/include/.f90,
+           /opt/intel/composer_xe_2015.3.187/mkl/include/.f90,/opt/intel/composer_xe_2015.3.187/tbb/include/.f90,
+           /opt/intel/composer_xe_2015.3.187/compiler/include/intel64/.f90,/opt/intel/composer_xe_2015.3.187/compiler/include/.f90,
+           /usr/local/include/.f90,/usr/lib64/gcc/x86_64-suse-linux/4.3/include/.f90,/usr/lib64/gcc/x86_64-suse-linux/4.3/include-fixed/.f90,
+           /usr/include/.f90,/usr/include/.f90,/usr/include/.f90
+       -list filename : tick21.lst
+
+Page 6           Source Listing                  TICK21
+2017-04-04 20:16                                 tick21.f
+
+       -o    filename : none
+
+COMPILER: Intel(R) Fortran 15.0-1812

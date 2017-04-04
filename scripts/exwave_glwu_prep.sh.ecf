@@ -1,0 +1,901 @@
+#!/bin/bash
+###############################################################################
+#                                                                             #
+# This script is the preprocessor for the GRL multi-grid wave model that runs #
+# using the single grid of the stand alone NWW# suite. It sets some shell     #
+# script variables for export to child scripts and copies some generally used #
+# files to the work directory. After this the actual preprocessing is         #
+# performed by the following child scripts :                                  #
+#                                                                             #
+#   multiwavemod_def.sh   :  generate mod_def.ww3 files when needed           #
+#   waveice_glw.sh        :  preprocess ice fields                            #
+#   wavendfd_glwu.sh      :  find and copy ndfd wind files (GLWU)             #
+#                                                                             #
+# Also used is the utililty script                                            #
+#                                                                             #
+#  multiwavestart.sh   : get time of most recent restart file.                #
+#                                                                             #
+# Remarks :                                                                   #
+#                                                                             #
+# Origination:                                                   July, 2007   #
+# Environment Equivalence Compliance:                            June, 2012   #
+# Transition to WCOSS                                            Dec,  2012   #
+# Upgrades to new curvilinear grid, ice and NAM winds            Oct,  2014   #
+#                                                                             #
+###############################################################################
+# --------------------------------------------------------------------------- #
+# 0.  Preparations
+# 0.a Basic modes of operation
+
+  set -x
+  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
+  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
+  [[ "$LOUD" != YES ]] && set +x
+
+  cd $DATA
+
+  msg="HAS BEGUN on `hostname`"
+  postmsg "$jlogfile" "$msg"
+    msg="Starting GLWU PREPROCESSOR SCRIPT"
+  postmsg "$jlogfile" "$msg"
+
+  set +x
+  echo ' '
+  echo '                      ********************************'
+  echo '                      *** GLWU PREPROCESSOR SCRIPT ***'
+  echo '                      ********************************'
+  echo ' '
+  echo "Starting at : `date`"
+  [[ "$LOUD" = YES ]] && set -x
+
+  rm -f ice.warning
+
+  export lsth_ice=0 # Using only one ice data time slice
+  ttime13=36
+
+  wndTAG="ndfd_glwu"
+
+  export buoy='glwu'
+  export grids='glwu'
+  export igrids=
+
+# 0.b Date and time stuff
+#     The ending time of the run always is the $lsth hour forecast. The starting
+#     time depends on availablility of restart files, and is obtained with
+#     multiwavestart.sh
+#
+#     Make sure nback is set identically in the forecast script !!!
+#     nback is the number of cycles (12-hour cycles) to look back.
+  export date=$PDY
+  export YMDH=${PDY}${cyc}
+  export nback=0
+  $USHwave/wavestart_glwu.sh
+  ymdh_beg=`head wavestart.out | awk '{ print $1 }'`
+  rm -f wavestart.out
+  time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"    
+
+# Ice file generated for glw and glwu independently, needs ice timing variables set to NAM always
+  export YMDH_ICE="${YMDH}"
+  ymdh_beg_ice=$ymdh_beg
+  ymdh_newtres_ice=`$NDATE ${ttime13} $YMDH_ICE`  
+  time_beg_ice="`echo $ymdh_beg_ice | cut -c1-8` `echo $ymdh_beg_ice | cut -c9-10`0000"    
+
+# NDFD winds change from 1 to 3 hourly at this date stamp
+  ymdh_newtres_13=`$NDATE 36 ${PDY}00`
+# NDFD winds change from 3 to 6 hourly at this date stamp
+  ymdh_newtres_36=`$NDATE 72 ${PDY}00`
+# Determine which wind files are available
+
+  ymdh=$ymdh_beg
+  ndfd_ok='yes'
+
+  set +x
+  echo ' '
+  echo '+-----------------------------------------------+'
+  echo '|   Looking for relevant available NDFD files   |'
+  echo '+-----------------------------------------------+'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  inc=0
+  foundOK='no'
+  lookback=12 # hours to look back for NDFD files
+  while [ "$inc" -le "$lookback" ] && [ "$foundOK" = 'no' ]
+  do
+# Search for files sets a +- 20 min search ahead and behind a given hour
+
+# Find files that are ahead of the search hour (bottom of hour version: search around 30 past)
+    ymdht=`$NDATE -$inc $ymdh`
+    ymd=`echo $ymdht | cut -c1-8`
+    ext=`echo $ymdht | cut -c9-10`
+    ndfd_files=`find $DCOM/$ymd/wgrbbul/ndfd/glwind_2p5_${ext}[3-4]?.grib2`
+
+# Find files that are behind the search hour
+    ymdhb=`$NDATE -$inc $ymdh`
+    ymdb=`echo $ymdhb | cut -c1-8`
+    extb=`echo $ymdhb | cut -c9-10`
+    ndfd_files="${ndfd_files} "`find $DCOM/$ymdb/wgrbbul/ndfd/glwind_2p5_${extb}[1-2]?.grib2`
+    export ndfd_file="${DATA}/glwind_2p5_${ext}.grib2"
+    nndfd=`echo $ndfd_files | wc -w`
+
+    if [ ${nndfd} -eq 0 ]
+    then
+      set +x
+      echo " Could not find NDFD files for ${ndfd_file} (Looking further)"
+      [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo " Found NDFD files --> ${ndfd_files}"
+      [[ "$LOUD" = YES ]] && set -x
+
+      mkdir ./ndfd_tmp
+      cd ./ndfd_tmp
+
+      cp ${ndfd_files} ./.
+
+# Set WIND, WDIR and TMP tags
+      files=`ls`
+
+# Search for latest files and ensure only one file per variable is selected
+      windfile=;wdirfile=;tmpfile=
+      for file in $files
+      do
+        windOK=;wdirOK=;tmpOK=
+        file_vars="`$WGRIB2 -var $file | sed 's/:/ /g' | awk '{print $3}' | uniq`"
+        windOK=`echo $file_vars | grep WIND`
+        wdirOK=`echo $file_vars | grep WDIR`
+        tmpOK=`echo $file_vars | grep TMP`
+        echo $file_vars $windOK $wdirOK $tmpOK
+        if [ $windOK ]
+        then
+          windfile="$windfile $file"
+        fi
+        if [ $wdirOK ]
+        then
+          wdirfile="$wdirfile $file"
+        fi
+        if [ $tmpOK ]
+        then
+          tmpfile="$tmpfile $file"
+        fi
+      done
+
+# Choose latest file from bundles
+      windlatest=`ls -r $windfile | sed '1!d'`
+      wdirlatest=`ls -r $wdirfile | sed '1!d'`
+      tmplatest=`ls -r $tmpfile | sed '1!d'`
+
+# Make unified list of files and eliminate duplicate file names
+# (duplicates can occur if two variables are packed into one file)
+
+      filelist=`echo $windlatest $wdirlatest $tmplatest | uniq`
+      echo $filelist
+
+      cat ${filelist} > ${ndfd_file}
+
+      cd ${DATA}
+      rm -rf ./ndfd_tmp
+
+# Get first time slice of ndfd file
+      vtimei=`$WGRIB2 ${ndfd_file} -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+      if [ ${vtimei} -le ${ymdh_beg} ]
+      then
+# Get inventory of time stamps in ndfd file
+        vtimes_wind=`$WGRIB2 ${ndfd_file} -match WIND -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+        vtimes_wdir=`$WGRIB2 ${ndfd_file} -match WDIR -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+        nvt1=`echo $vtimes_wind | wc -w`  
+        nvt2=`echo $vtimes_wdir | wc -w`  
+        if [ $nvt1 -gt 36 ] && [ ${nvt1} -eq ${nvt2} ]
+        then
+          vtimes=$vtimes_wind
+          foundOK='yes'
+        else
+          echo " NDFD file has incongruent numbers of WIND and WDIR data (looking further)"
+        fi
+      else
+        echo " NDFD file does not extend back to starting time (Looking further)"
+        foundOK='no'
+      fi
+    fi
+    inc=`expr $inc + 1`
+  done
+
+  if [ "$foundOK" = 'no' ]
+  then
+    msg="FATAL ERROR: COULD NOT FIND RELEVANT NDFD FILES"
+    postmsg "$jlogfile" "$msg"
+    set +x
+    echo ' '
+    echo '*****************************************************'
+    echo '*** FATAL ERROR: DID NOT FIND RELEVANT NDFD FILES ***'
+    echo '*****************************************************'
+    echo ' '
+    echo $msg
+    [[ "$LOUD" = YES ]] && set -x
+    echo "$runID prep $date $cycle : $grdID.inp missing." >> $wavelog
+    err=1;export err;err_chk
+  else
+    export ndfd_file
+    echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
+    if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
+    then
+      lsth=147
+    else
+      lsth=48
+    fi
+    wndID='NDFD'
+  fi
+
+  ymdh_end=`$NDATE $lsth $YMDH`
+  time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
+
+
+  ymdh_end_ice=`$NDATE $lsth_ice $ymdh_beg_ice`
+  time_end_ice="`echo $ymdh_end_ice | cut -c1-8` `echo $ymdh_end_ice | cut -c9-10`0000"
+
+  set +x 
+  echo ' ' 
+  echo 'Times in wave model format :' 
+  echo '----------------------------' 
+  echo "   date / cycle  : $date $cycle"
+  echo "   starting time : $time_beg"
+  echo "   ending time   : $time_end"
+  echo ' '
+ 
+# 0.c Command file set-up
+#     The command file points to $nfile files named cmdfile.$ifile.
+#     The actual work is distributed over these files.
+
+  [[ "$LOUD" = YES ]] && set -x
+  nfile=`echo $LSB_HOSTS | wc -w | awk '{ print $1}'`
+
+  if [ "$nfile" -gt '1' ]
+  then
+    cmdtype="mpirun.lsf cfp"
+  else
+    cmdtype='sh'
+    nfile=1
+  fi
+
+  set +x
+  echo ' '
+  echo '   Making command file(s)'
+  echo "   Set up command file structure (type = $cmdtype)."
+  echo "      Number of command files  : $nfile"
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+# --------------------------------------------------------------------------- #
+# 1.  Get files that are used by most child scripts
+
+  set +x 
+  echo 'Preparing input files :'
+  echo '-----------------------'
+  [[ "$LOUD" = YES ]] && set -x
+
+# 1.a Model definition file
+
+  nmoddef=0
+
+  rm -f cmdfile
+  touch cmdfile
+  chmod 744 cmdfile
+
+  for grdID in $grids $igrids #$buoy
+  do
+    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${model_ver}" ]
+    then
+      set +x
+      echo " Mod def file for $grdID found in $FIXwave. copying ...."
+      [[ "$LOUD" = YES ]] && set -x
+      cp $FIXwave/wave_${modID}_${grdID}.moddef.${model_ver} mod_def.$grdID
+
+    else
+      set +x
+      echo " Mod def file for $grdID not found in $FIXwave. Setting up to generate ..."
+      [[ "$LOUD" = YES ]] && set -x
+      if [ -f $FIXwave/wave_$grdID.inp ] || [ -f $FIXwave/mesh.$grdID ]
+      then
+        cp $FIXwave/wave_$grdID.inp $grdID.inp
+        cp $FIXwave/mesh.$grdID mesh.$grdID
+      fi
+
+      if [ -f $grdID.inp ] && [ "$grdID" = 'points' ]
+      then
+        set +x
+        echo ' '
+        echo "   $grdID.inp copied ($FIXwave/wave_$grdID.inp)."
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+      elif [ -f $grdID.inp ] && [ -f mesh.$grdID ]
+      then
+        set +x
+        echo ' '
+        echo "   $grdID.inp copied ($FIXwave/wave_$grdID.inp)."
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+      else
+        msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
+        postmsg "$jlogfile" "$msg"
+        set +x
+        echo ' '
+        echo '*********************************************************** '
+        echo '*** FATAL ERROR : NO INP FILE FOR MODEL DEFINITION FILE *** '
+        echo '*********************************************************** '
+        echo "                                grdID = $grdID"
+        echo ' '
+        echo $msg
+        [[ "$LOUD" = YES ]] && set -x
+        echo "$runID prep $date $cycle : $grdID.inp missing." >> $wavelog
+        err=2;export err;err_chk
+      fi
+
+      echo "$USHwave/wavemod_def.sh $grdID > $grdID.out 2>&1" >> cmdfile
+
+      nmoddef=`expr $nmoddef + 1`
+
+    fi
+
+  done
+
+# 1.a.1 Execute $mpicmd (if needed)
+
+  if [ "$nmoddef" -gt '0' ]
+  then
+
+    set +x
+    echo ' '
+    echo " Generating $nmoddef mod def files"
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+
+    if [ "$nfile" -gt '1' ]
+    then
+      ${mpicmd}
+       aprun -N5 -n5 -j1 cfp cmdfile
+      exit=$?
+    else
+      ./cmdfile.1
+      ./cmdfile
+      exit=$?
+    fi
+
+  fi
+
+# 1.a.2 File check
+
+  for grdID in $grids $igrids $buoy
+  do
+    if [ -f mod_def.$grdID ]
+    then
+      set +x
+      echo ' '
+      echo " mod_def.$grdID succesfully created/copied "
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+    else
+      msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
+      postmsg "$jlogfile" "$msg"
+      set +x
+      echo ' '
+      echo '********************************************** '
+      echo '*** FATAL ERROR : NO MODEL DEFINITION FILE *** '
+      echo '********************************************** '
+      echo "                                grdID = $grdID"
+      echo ' '
+      echo $msg
+      [[ "$LOUD" = YES ]] && set -x
+      sed "s/^/$grdID.out : /g"  $grdID.out
+      echo "$runID prep $date $cycle : mod_def.$grdID missing." >> $wavelog
+      err=3;export err;err_chk
+    fi
+  done
+
+# Remove cmdfile after creating moddef (if the case)
+  if ls cmdfile* &> /dev/null; then
+    rm -f cmdfile*
+  fi
+
+# 1.b Wind preprocessor template file
+
+  if [ -f $FIXwave/multiwaveprnc.${wndTAG}.tmpl ]
+  then
+    cp $FIXwave/multiwaveprnc.${wndTAG}.tmpl .
+  fi
+
+  if [ -f multiwaveprnc.${wndTAG}.tmpl ]
+  then
+    echo "   multiwaveprnc."${wndTAG}".tmpl copied ($FIXwave/multiwaveprnc."${wndTAG}".tmpl)."
+  else
+    msg="ABNORMAL EXIT: NO FILE multiwaveprnc."${wndTAG}".tmpl"
+    postmsg "$jlogfile" "$msg"
+    set +x
+    echo ' '
+    echo '************************************** '
+    echo '*** FATAL ERROR : NO TEMPLATE FILE *** '
+    echo '************************************** '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    echo $msg
+    echo "$runID prep $date $cycle : template file missing." >> $wavelog       
+    err=4;export err;err_chk
+  fi
+
+# This section was exclusive to GLW, but will keep for both GLW and GLWU, in case
+# future late runs have other ice types etc, so will generate new ice at every glw
+# and glwu runs.
+
+# 1.c Ice preprocessor template file
+  if [ -f $FIXwave/multiwaveprep.ice_glw.tmpl ]
+  then
+    cp $FIXwave/multiwaveprep.ice_glw.tmpl ./multiwaveprep.ice.tmpl
+  fi
+
+  if [ -f multiwaveprep.ice.tmpl ]
+  then
+    echo "   multiwaveprep.ice.tmpl copied ($FIXwave/multiwaveprep.ice_glw.tmpl)."
+  else
+    msg="ABNORMAL EXIT: NO FILE multiwaveprep.ice.tmpl"
+    postmsg "$jlogfile" "$msg"
+    set +x
+    echo ' '
+    echo '************************************** '
+    echo '*** FATAL ERROR : NO TEMPLATE FILE *** '
+    echo '************************************** '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    echo $msg
+    echo "$runID prep $date $cycle : template file missing." >> $wavelog
+    err=5;export err;err_chk
+  fi
+
+# 1.d copy the wave model mask file
+
+# Ice data uses the regular 2km grid grlr
+  file=$FIXwave/wave_grlr.mask
+
+  if [ -f $file ]
+  then
+    cp $file mask.ww3
+  fi
+
+  if [ -f mask.ww3 ]
+  then
+    set +x
+    echo "   mask.ww3 copied ($file)."
+    [[ "$LOUD" = YES ]] && set -x
+  else
+    set +x
+    echo ' '
+    echo '*************************************** '
+    echo '*** ERROR : NO WAVE MODEL MASK FILE *** '
+    echo '*************************************** '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    postmsg "$jlogfile" "FATAL ERROR - NO WAVE MODEL MASK FILE"
+    err=6;export err;err_chk
+  fi
+
+# 1.e Copy the ice template files
+#
+# This is an approach using directly the T_OEBA88_C_KNWC NIC format
+#
+  for ftype in mask0 ll  
+  do
+ 
+    file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+
+    if [ -f $file ]
+    then
+      cp $file ./
+    fi
+
+    if [ -f ${file} ]
+    then
+      set +x 
+      echo "   T_OEBA88_C_KNWC.${ftype} copied."
+      [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo ' '
+      echo '************************************** '
+      echo "*** ERROR : NO ICE FIELD ${ftype} FILE *** "
+      echo '************************************** '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      postmsg "$jlogfile" "FATAL ERROR - NO ICE FIELD ${ftype} FILE"
+      err=7;export err;err_chk
+    fi
+
+  done
+
+# --------------------------------------------------------------------------- #
+# 2.  Make command file(s) (ice, SST, coefficient files)i and/or (NDFD winds)
+
+# 2.a Command file set-up
+#     The command file points to $nfile files named cmdfile.$ifile.            
+#     The actual work is distributed over these files.
+
+  set +x
+  echo '   Making command file(s)'
+  echo "   Set up command file structure (type = $cmdtype)."
+  echo "      Number of command files  : $nfile"
+  [[ "$LOUD" = YES ]] && set -x
+
+  touch cmdfile
+  chmod 744 cmdfile
+
+  ifile=1
+
+# 2.b Ice preprocessing 
+  echo "Ice preprocessing"
+  ymdh=$ymdh_beg_ice
+
+  while [ "$ymdh" -le "$ymdh_end_ice" ]
+  do
+  echo "$USHwave/waveice_glw.sh $ymdh > ice_$ymdh.err 2>&1"     >> cmdfile
+    tinc_ice=1
+    if [ $ymdh -ge $ymdh_newtres_ice -o $ymdh -lt $YMDH_ICE ]
+    then
+      tinc_ice=3
+    fi
+    ymdh=`$NDATE $tinc_ice $ymdh`
+  done
+
+# 2.c ndfd winds
+  ymdh=$ymdh_beg
+  hdr='T'
+
+  for ymdh in $vtimes
+  do
+    if [ "$ymdh" -le "$ymdh_end" ]
+    then
+      echo "$USHwave/wavendfd_glwu_inc.sh $ymdh 1 $hdr > ndfd_$ymdh.err 2>&1"     >> cmdfile
+# Remove header from subsequent binary WW3 wind files so they can be catted  
+      hdr='F'
+    else
+      break
+    fi
+  done
+# --------------------------------------------------------------------------- #
+# 3   Execute command file
+# 3.a Execution
+
+  set +x
+  echo "   Executing command file."
+  [[ "$LOUD" = YES ]] && set -x
+
+  if [ "$nfile" -gt '1' ]
+  then
+    aprun -n120 -N24 -j1 cfp cmdfile
+    exit=$?
+  else
+    ./cmdfile
+    exit=$?
+  fi
+
+# 3.b Error trap on ${mpicmd} or shell
+
+  if [ "$exit" != '0' ]
+  then
+    msg="ABNORMAL EXIT: ERROR IN $cmdtype"
+    postmsg "$jlogfile" "$msg"
+    set +x
+    echo ' '
+    echo '*********************************************** '
+    echo "*** FATAL ERROR : ERROR IN aprun OR sh *** "
+    echo '*********************************************** '
+    echo ' '
+    echo ' Probing for errors in cmdfile outputs '
+    [[ "$LOUD" = YES ]] && set -x
+    cmderr=`grep 'FATAL ERROR' *.err`
+    if [ -z "$cmderr" ]
+    then
+       echo ' '
+       echo ' CMDFILE WITH NO OUTPUT, UNKOWN ERROR HAS OCCURRED'
+    else
+       echo ' '
+       echo ' CMDFILE EXITED WITH FOLLOWING ERRORS: '
+       grep 'FATAL ERROR' *.err
+    fi
+    echo "$runID prep $date $cycle : error in $cmdtype." >> $wavelog          
+    echo $msg
+    err=8;export err;err_chk
+  fi
+
+# --------------------------------------------------------------------------- #
+# 4.  ICE fields: Check for errors and pack onto input file
+
+  set +x
+  echo ' '
+  echo '   Checking for errors.'
+  [[ "$LOUD" = YES ]] && set -x
+
+# 4.a Check for error in Ice field
+#     We will go on if the number of errors in files is less
+#     than err_max
+
+  err_max=1
+  set +x
+  echo '      Sources of NIC-ice files :'
+  [[ "$LOUD" = YES ]] && set -x
+
+  ymdh=$ymdh_beg_ice
+  nr_err=0
+
+  while [ "$ymdh" -le "$ymdh_end_ice" ]
+  do
+    if [ -d eice_${ymdh} ]
+    then
+      postmsg "$jlogfile" "    File for $ymdh : error in waveice_glw.sh"
+      set +x
+      echo "         File for $ymdh : error in waveice_glw.sh"
+      [[ "$LOUD" = YES ]] && set -x       
+      nr_err=`expr $nr_err + 1`
+      rm -f eice.$ymdh
+    else
+      nicfile=`grep 'File for' ice_${ymdh}.err`
+      if [ -z "$nicfile" ]
+      then
+        set +x
+        echo "         File for $ymdh : cannot identify source"
+        nr_err=`expr $nr_err + 1`
+        [[ "$LOUD" = YES ]] && set -x
+        rm -f eice.$ymdh
+      else
+        if [ ! -f T_OEBA88_C_KNWC.$ymdh ]
+        then
+        set +x
+          echo "         File for $ymdh : file not found"
+        [[ "$LOUD" = YES ]] && set -x
+          nr_err=`expr $nr_err + 1`
+        else
+        set +x
+          echo "      $nicfile"
+          mv -f ice_${ymdh}.err ice_${ymdh}.out
+        [[ "$LOUD" = YES ]] && set -x
+        fi
+      fi
+    fi
+    tinc=1
+    if [ $ymdh -ge $ymdh_newtres_ice -o $ymdh -lt $YMDH_ICE ]
+    then
+      tinc=3
+    fi
+     ymdh=`$NDATE $tinc $ymdh`
+  done
+
+  if ls ice_*.err  1> /dev/null 2>&1
+  then
+    set +x
+    echo ' '
+    echo '****************************************'
+    echo '*** ERROR OUTPUT waveice_glw.sh ***'
+    echo '****************************************'
+    echo '            Possibly in multiple calls'
+    echo "$runID prep $date $cycle : error in ice   files." >> $wavelog
+    [[ "$LOUD" = YES ]] && set -x
+    for file in ice_*.err
+    do
+      set +x
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      sed "s/^/$file : /g" $file
+    done
+     # rm -f ice_*.out
+    postmsg "$jlogfile" "NON-FATAL ERROR in waveice_glw.sh, possibly in multiple calls."
+  fi
+  if [ "$nr_err" -gt "$err_max" ]
+  then
+    msg="ABNORMAL EXIT: ERROR(S) IN NAM-ICE FILES"
+    postmsg "$jlogfile" "$msg"
+    set +x
+    echo ' '
+    echo '*********************************************** '
+    echo '*** FATAL ERROR : ERROR(S) IN NAM-ICE FILES *** '
+    echo '*********************************************** '
+    echo $nr_err
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    echo $msg
+    echo "$runID prep $date $cycle : fatal error in NIC   files." >> $wavelog
+    err=9;export err;err_chk
+  fi
+  rm -f cmdfile*
+
+# 4.b  Run waveprep for ice field
+  set +x
+  echo ' '
+  echo '   Running ice field through preprocessor.'
+  [[ "$LOUD" = YES ]] && set -x
+  sed "s/GRIDLAYOUT/$GRID/g" multiwaveprep.ice.tmpl > multiwaveprep.inp
+  rm -f multiwaveprep.ice.tmpl
+
+# Here using igrids (the regular grid for ice grlr)
+  for grdID in $grids
+  do
+
+    cp mod_def.$grdID mod_def.ww3
+    $EXECcode/multiwaveprep > multiwaveprep.out
+    err=$?
+
+    if [ "$err" != '0' ]
+    then
+      msg="ABNORMAL EXIT: ERROR IN multiwaveprep"
+      postmsg "$jlogfile" "$msg"
+      set +x
+      echo ' '
+      echo '******************************************** '
+      echo '*** FATAL ERROR : ERROR IN multiwaveprep *** '
+      echo '******************************************** '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      echo "$runID $grdID prep $date $cycle : error in multiwaveprep." >> $wavelog
+      err=12;export err;err_chk
+    fi
+
+    if [ ! -f ice.ww3 ]
+    then
+      msg="ABNORMAL EXIT: FILE ice.ww3 MISSING"
+      postmsg "$jlogfile" "$msg"
+      set +x
+      echo ' '
+      cat multiwaveprep.out
+      echo ' '
+      echo '****************************************'
+      echo '*** FATAL ERROR : ice.ww3 NOT FOUND ***'
+      echo '****************************************'
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      echo "$runID $grdID prep $date $cycle : ice.ww3 missing." >> $wavelog
+      err=13;export err;err_chk
+    else
+      set +x
+      echo "      Ice file succesfully created for $ymdh"
+      [[ "$LOUD" = YES ]] && set -x
+      cp ice.ww3 ice.$grdID
+    fi
+  done
+  rm -f eice.*
+  rm -f ice.new
+  rm -f multiwaveprep.inp
+# --------------------------------------------------------------------------- #
+# 5.  NDFD fields: Check for errors and pack onto input file
+
+# 5.a Error checking made at extraction level, check if files are there
+#     and move to final file name
+
+  ymdh=$ymdh_beg
+
+  first='y'
+
+  for ymdh in $vtimes
+  do
+    if [ "$ymdh" -le "$ymdh_end" ]
+    then
+      if [ -d ndfd_${ymdh} ]
+      then
+        set +x
+        echo "         Wind data could not be found for $ymdh"
+        echo "         Error output from wavendfd_glwu.sh:"
+        cat ndfd_$ymdh.err
+        ndfd_ok='no'
+        [[ "$LOUD" = YES ]] && set -x
+      else
+        set +x
+        echo "      Wind data succesfully extracted for $ymdh"
+        [[ "$LOUD" = YES ]] && set -x
+          if [ "$first" = 'y' ]
+          then
+            for grdID in $grids
+            do
+              mv wind.$grdID.$ymdh wind.$grdID
+            done
+            first='n'
+          else
+            for grdID in $grids
+            do
+              cat wind.$grdID.$ymdh >> wind.$grdID
+            done
+          fi
+        mv -f ndfd_$ymdh.err ndfd_$ymdh.out
+      fi
+    else
+      break
+    fi
+  done
+  
+# end of if loop from 5.a 
+
+# 5.b Error captcha
+
+  if [ "$ndfd_ok" = 'no' ]
+  then
+    msg="ERROR IN EXTRACTING DATA FROM NDFD GRIDS"
+    ./postmsg "$jlogfile" "$msg"
+    echo ' ' > warning
+    echo '***********************************************************' >> warning
+    echo '*** WARNING !! ERROR IN EXTRACTING DATA FROM NDFD GRIDS ***' >> warning
+    echo "***    Missing NDFD winds for GLWN run $PDY t${cyc}z    ***" >> warning
+    echo '***********************************************************' >> warning
+    echo ' ' >> warning
+    echo "$runID prep $date $cycle : Error converting winds." >> $wavelog
+    set +x
+    cat warning
+    [[ "$LOUD" = YES ]] && set -x
+    err=14;export err;./err_chk
+  fi
+
+# --------------------------------------------------------------------------- #
+# 6.  Output to /com
+
+  if [ "$SENDCOM" = 'YES' ]
+  then
+    for grdID in $grids $igrids
+    do
+     for input in wind ice
+     do
+      set +x
+      echo ' '
+      if [ -f ${input}.$grdID ]
+      then
+        echo "   Saving ${input}.$grdID as $COMOUT/$runID.$grdID.$cycle.${input}"        
+        [[ "$LOUD" = YES ]] && set -x
+        cp ${input}.$grdID $COMOUT/$runID.$grdID.$cycle.${input}
+        chmod 664 $COMOUT/$runID.$grdID.$cycle.${input}
+      fi
+     done
+    done
+
+    [[ "$LOUD" = YES ]] && set -x
+
+# Copy the ice file log to com
+    cp whatglwice  $COMOUT/whatglwice.$cycle
+    if [ -f ice.warning ] ; then echo "$runID prep $date $cycle : missing ice info" >> $wavelog ; fi
+
+    if [ -f ice.warning ] && [ "${runID}" == "glwu" ] ; then
+# prepare ice email	
+	if [ "$SENDECF" = 'YES' ]
+	then
+	    if [ -f email.wind ] ; then sleep 60 ; fi # wait until jwave_glwu_wind_warning starts
+	    echo "export subject='Missing GLWU/GLW ice info for $PDY t${cyc}z'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
+	    echo 'export cclist=Henrique.Alves@noaa.gov' >>$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
+	    echo "export maillist='ncep.list.spa-helpdesk@noaa.gov sdm@noaa.gov ncep.list.sos@lstsrv.ncep.noaa.gov'" >>$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
+	fi
+	echo ' ' > email.ice
+	echo '******************************************************' >> email.ice
+	echo '***   WARNING !! COULD NOT FIND GLWU/GLW ICE INFO     ' >> email.ice
+	echo '***        (SETTING ICE COVERAGE TO ZEROS)            ' >> email.ice
+	echo '******************************************************' >> email.ice
+	echo ' ' >> email.ice
+	echo "triggered by $ECF_NAME $PDY t${cyc}z" >> email.ice
+	echo "see $LSB_OUTPUTFILE for details" >> email.ice
+	if [ "$SENDECF" = 'YES' ]
+	then
+	    cp email.ice $COMOUT/${NET}_${RUN}.t${cyc}z.emailbody
+	    jobtorun=$( echo `dirname $ECF_NAME`/jwave_glwu_ice_warning )
+	    ecflow_client --run $jobtorun
+	fi
+    fi
+    
+
+      sort -b what_wave${runID}_used.$cycle > $COMOUT/what_wave${runID}_used.$cycle
+      $DBNROOT/bin/dbn_alert MODEL OMBWAVE${DBNtag} $job $COMOUT/what_wave${runID}_used.$cycle
+  fi
+
+
+# --------------------------------------------------------------------------- #
+# 7.  Ending output
+
+  set +x
+  echo ' '
+  echo "Ending at : `date`"
+  echo ' '
+  echo '                     *** End of GLWU preprocessor ***'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  msg="$job completed normally"
+  postmsg "$jlogfile" "$msg"
+
+# End of GLW preprocessor script -------- ----------------------------------- #

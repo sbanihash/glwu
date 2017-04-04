@@ -1,0 +1,35 @@
+#%Module######################################################################
+##                                                     Henrique.Alves@NOAA.gov
+##                                                     SRG @ NOAA/NWS/NCEP/EMC
+## GLWU v1.0.0
+##_____________________________________________________
+proc ModulesHelp { } {
+puts stderr "Set environment for the Great Lakes GLWU"
+puts stderr "This module initializes the environment "
+puts stderr "for the Cray X40 implementation of GLWU\n"
+}
+module-whatis " GLWU whatis description"
+
+set ver v1.0.0
+
+set sys [uname sysname]
+#set GLWU /gpfs/hps/nco/ops/nwpara/wave_glwu.v1.0.0/modulefiles/GLWU
+set GLWU /gpfs/hps/emc/marine/noscrub/emc.wavepa/ops/wave_glwu.v1.0.0/modulefiles/GLWU
+set lname GLWU
+
+#module use /gpfs/hps/nco/ops/nwprod/modulefiles
+
+# Known conflicts ???
+
+# Loading Intel Compiler Suite
+setenv INTEL_VERSION 5.2.56
+module load PrgEnv-intel
+module load iobuf
+# used for multiwavegrib2
+module load jasper-gnu-sandybridge
+module load png-intel-sandybridge
+module load zlib-intel-sandybridge
+module load g2-intel
+# used for multiwavegrib1 and grib2
+module load w3nco-intel
+module load bacio-intel

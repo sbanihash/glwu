@@ -1,0 +1,6 @@
+rm -f inpaint_nic_glwu.o  inpaint_nic_glwu.lst
+++ /opt/modules/3.2.6.7/bin/modulecmd bash list
+Currently Loaded Modulefiles:
++ eval
+ftn -c -O3 -list -auto  inpaint_nic_glwu.f90
+ftn -O3 -list -auto  -o inpaint_nic_glwu inpaint_nic_glwu.o

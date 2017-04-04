@@ -1,0 +1,4 @@
+export model_ver=v1.0.0
+export code_ver=v5.16.0
+export code_pkg=st4nc_nl3
+export envir=dev

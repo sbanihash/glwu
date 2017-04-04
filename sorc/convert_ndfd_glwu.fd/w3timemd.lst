@@ -1,0 +1,1029 @@
+Page 1           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+      1 !/ ------------------------------------------------------------------- /
+      2       MODULE W3TIMEMD
+      3 !/
+      4 !$$$  MODULE DOCUMENTATION BLOCK
+      5 !                .      .    .                                       .
+      6 ! MODULE: WWATCH3_TIME_MOD   Time management routines.
+      7 !   PRGMMR: H.L. Tolman      ORG: W/NP21      DATE: 2001-01-05
+      8 !
+      9 ! ABSTRACT: This module contains a set of subroutines to deal with
+     10 !   date and time, using a four digit year and a integer array of
+     11 !   size 2 with one element containing the data and the other the
+     12 !   time.
+     13 !
+     14 ! PROGRAM HISTORY LOG:
+     15 ! 2001-01-05  Tolman      Origination.
+     16 !
+     17 ! PUBLIC VARIABLES :      See documentation below.
+     18 ! PUBLIC TYPES :          See documentation below.
+     19 ! PUBLIC SUBPROGRAMS :    See documentation below.
+     20 !
+     21 ! REMARKS:                None.
+     22 !
+     23 ! ATTRIBUTES:
+     24 !   LANGUAGE: FORTRAN 90
+     25 !   MACHINE:  Portable code
+     26 !
+     27 !$$$
+     28 !/                  +-----------------------------------+
+     29 !/                  | WAVEWATCH-III           NOAA/NCEP |
+     30 !/                  |           H. L. Tolman            |
+     31 !/                  |                        FORTRAN 90 |
+     32 !/                  | Last update :         05-Jan-2001 |
+     33 !/                  +-----------------------------------+
+     34 !/
+     35 !  1. Purpose :
+     36 !
+     37 !     Routines for management of date and time.
+     38 !
+     39 !  2. Variables and types :
+     40 !
+     41 !     None.
+     42 !
+     43 !  3. Subroutines and functions :
+     44 !
+     45 !      Name      Type  Scope    Description
+     46 !     ----------------------------------------------------------------
+     47 !      TICK21    Subr. Public   Increment a date and time array with
+     48 !                               a given number of seconds.
+     49 !      IYMD21    I.F.  TICK21   Date increment function.
+     50 !      DSEC21    R.F.  Public   Calculate the difference in seconds
+     51 !                               between two data/time arrays.
+     52 !      MYMD21    I.F.  DSEC21   Julian date function.
+     53 !      STME21    Subr. Public   Converts integer time to string.
+     54 !     ----------------------------------------------------------------
+     55 !
+     56 !  4. Subroutines and functions used :
+     57 !
+
+Page 2           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+     58 !      Name      Type  Module   Description
+     59 !     ----------------------------------------------------------------
+     60 !      STRACE    Subr. W3SERVMD Subroutine tracing.
+     61 !     ----------------------------------------------------------------
+     62 !
+     63 !  5. Remarks :
+     64 !
+     65 !  6. Switches :
+     66 !
+     67 !  7. Source code :
+     68 !
+     69 !/ ------------------------------------------------------------------- /
+     70 !/
+     71 !
+     72       PUBLIC
+     73 !
+     74       CONTAINS
+     75 !/ ------------------------------------------------------------------- /
+     76       SUBROUTINE TICK21 ( TIME, DTIME )
+     77 !/
+     78 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
+     79 !                .      .    .                                       .
+     80 ! SUBPROGRAM:    TICK21      Increment date and time
+     81 !   PRGMMR: H.L. Tolman      ORG: W/NP21     DATE: 1999-11-29
+     82 !
+     83 ! ABSTRACT: Increment integer TIME(2) in yyyymmdd hhmmss format by
+     84 !   a given number of seconds.
+     85 !
+     86 ! PROGRAM HISTORY LOG:
+     87 ! 1993-03-29  Tolman      Origination.
+     88 ! 1998-10-29  Chen/Tolman Adding docblock.
+     89 ! 1999-11-29  Tolman      FORTRAN 90 version.
+     90 !
+     91 ! USAGE: See dodumentation below.
+     92 !
+     93 ! REMARKS: See dodumentation below.
+     94 !
+     95 ! ATTRIBUTES:
+     96 !   LANGUAGE: FORTRAN 90
+     97 !   MACHINE:  Portable code.
+     98 !
+     99 !$$$
+    100 !/                  +-----------------------------------+
+    101 !/                  | WAVEWATCH-III           NOAA/NCEP |
+    102 !/                  |           H. L. Tolman            |
+    103 !/                  |                        FORTRAN 90 |
+    104 !/                  | Last update :         29-Nov-1999 |
+    105 !/                  +-----------------------------------+
+    106 !/                                Based on TICK of the GLA GCM.
+    107 !/
+    108 !/    23-Mar-1993 : Final FORTRAN 77                    ( version 1.18 )
+    109 !/    29-Nov-1999 : Upgrade to FORTRAN 90               ( version 2.00 )
+    110 !/
+    111 !  1. Purpose :
+    112 !
+    113 !     Updates time information, DTIME=0 converts to "legal" time.
+    114 !     Goes into the 21st century.
+
+Page 3           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    115 !
+    116 !  3. Parameters :
+    117 !
+    118 !     Parameter list
+    119 !     ----------------------------------------------------------------
+    120 !       TIME    I.A.  I/O  (1) Current date in YYYYMMDD format.
+    121 !                          (2) Current time in HHMMSS format.
+    122 !       DTIME   Real   I   Time step in seconds.
+    123 !     ----------------------------------------------------------------
+    124 !
+    125 !  4. Subroutines used :
+    126 !
+    127 !      Name      Type  Module   Description
+    128 !     ----------------------------------------------------------------
+    129 !      STRACE    Subr. W3SERVMD Subroutine tracing.
+    130 !      IYMD21    Func. Internal Increment date in YYYYMMDD format.
+    131 !     ----------------------------------------------------------------
+    132 !
+    133 !  5. Called by :
+    134 !
+    135 !     Any other routine.
+    136 !
+    137 !  8. Structure :
+    138 !
+    139 !     See source code.
+    140 !
+    141 !  9. Switches :
+    142 !
+    143 !     !/S  Enable subroutine tracing using STRACE.
+    144 !
+    145 ! 10. Source code :
+    146 !
+    147 !/ ------------------------------------------------------------------- /
+    148 !/
+    149       IMPLICIT NONE
+    150 !/
+    151 !/ ------------------------------------------------------------------- /
+    152 !/ Parameter list
+    153 !/
+    154       INTEGER, INTENT(INOUT)  :: TIME(2)
+    155       REAL, INTENT(IN)        :: DTIME
+    156 !/
+    157 !/ ------------------------------------------------------------------- /
+    158 !/ Local parameters
+    159 !/
+    160       INTEGER                 :: NYMD, NHMS, NSEC
+    161 !/
+    162 !/ ------------------------------------------------------------------- /
+    163 !/
+    164 !
+    165 ! Zero increment: get "legal" date
+    166 !
+    167       NYMD   = TIME(1)
+    168       NHMS   = TIME(2)
+    169       IF (DTIME.EQ.0.) THEN
+    170           NYMD = IYMD21 (NYMD,-1)
+    171           NYMD = IYMD21 (NYMD, 1)
+
+Page 4           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    172         END IF
+    173 !
+    174 ! Convert and increment time :
+    175 !
+    176       NSEC = NHMS/10000*3600 + MOD(NHMS,10000)/100* 60 +        &
+    177              MOD(NHMS,100) + NINT(DTIME)
+    178 !
+    179 ! Check change of date :
+    180 !
+    181   100 CONTINUE
+    182       IF (NSEC.GE.86400)  THEN
+    183           NSEC = NSEC - 86400
+    184           NYMD = IYMD21 (NYMD,1)
+    185           GOTO 100
+    186         END IF
+    187 !
+    188   200 CONTINUE
+    189       IF (NSEC.LT.00000)  THEN
+    190           NSEC = 86400 + NSEC
+    191           NYMD = IYMD21 (NYMD,-1)
+    192           GOTO 200
+    193         END IF
+    194 !
+    195       NHMS = NSEC/3600*10000 + MOD(NSEC,3600)/60*100 + MOD(NSEC,60)
+    196 !
+    197       TIME(1) = NYMD
+    198       TIME(2) = NHMS
+    199 !
+    200       RETURN
+    201 !/
+    202 !/ Internal function IYMD21 ------------------------------------------ /
+    203 !/
+    204       CONTAINS
+    205 !/ ------------------------------------------------------------------- /
+    206       INTEGER FUNCTION IYMD21 ( NYMD ,M )
+    207 !/
+    208 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
+    209 !                .      .    .                                       .
+    210 ! SUBPROGRAM:    IYMD21      Increment date by +- 1
+    211 !   PRGMMR: H.L. Tolman      ORG: W/NP21     DATE: 1999-11-29
+    212 !
+    213 ! ABSTRACT: Increment date by +/- 1
+    214 !
+    215 ! PROGRAM HISTORY LOG:
+    216 ! 1998-10-18  Tolman      Origination.
+    217 ! 1998-10-29  Chen/Tolman Adding docblock.
+    218 ! 1999-11-29  Tolman      Conversion to FORTRAN 90.
+    219 !
+    220 ! USAGE: See documentation below.
+    221 !
+    222 ! REMARKS: See documentation below.
+    223 !
+    224 ! ATTRIBUTES:
+    225 !   LANGUAGE: FORTRAN 90
+    226 !   MACHINE:  Portable code
+    227 !
+    228 !$$$
+
+Page 5           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    229 !/                  +-----------------------------------+
+    230 !/                  | WAVEWATCH-III           NOAA/NCEP |
+    231 !/                  |           H. L. Tolman            |
+    232 !/                  |                        FORTRAN 90 |
+    233 !/                  | Last update :         29-Oct-1998 |
+    234 !/                  +-----------------------------------+
+    235 !/                                Based on INCYMD of the GLA GCM.
+    236 !/
+    237 !/    18-Oct-1998 : Final FORTRAN 77                    ( version 1.18 )
+    238 !/    29-Nov-1999 : Upgrade to FORTRAN 90               ( version 2.00 )
+    239 !/
+    240 !  1. Purpose :
+    241 !
+    242 !     Increment date in YYYYMMDD format by +/- 1 day.
+    243 !
+    244 !  3. Parameters :
+    245 !
+    246 !     Parameter list
+    247 !     ----------------------------------------------------------------
+    248 !       NYMD    Int.   I   Old date in YYMMDD format.
+    249 !       M       Int.   I   +/- 1 (Day adjustment)
+    250 !     ----------------------------------------------------------------
+    251 !
+    252 !  4. Subroutines used :
+    253 !
+    254 !      Name      Type  Module   Description
+    255 !     ----------------------------------------------------------------
+    256 !      STRACE    Subr. W3SERVMD Subroutine tracing.
+    257 !     ----------------------------------------------------------------
+    258 !
+    259 !  5. Called by :
+    260 !
+    261 !     Any subroutine.
+    262 !
+    263 !  8. Structure :
+    264 !
+    265 !     See source code.
+    266 !
+    267 !  9. Switches :
+    268 !
+    269 !     !/S  Enable subroutine tracing using STRACE.
+    270 !
+    271 ! 10. Source code :
+    272 !
+    273 !/ ------------------------------------------------------------------- /
+    274 !/
+    275       IMPLICIT NONE
+    276 !/
+    277 !/ ------------------------------------------------------------------- /
+    278 !/ Parameter list
+    279 !/
+    280       INTEGER, INTENT(IN)     :: NYMD, M
+    281 !/
+    282 !/ ------------------------------------------------------------------- /
+    283 !/ Local parameters
+    284 !/
+    285       INTEGER                 :: NY, NM, ND
+
+Page 6           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    286       INTEGER, SAVE           :: NDPM(12)
+    287       DATA     NDPM / 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 /
+    288       LOGICAL                 :: LEAP
+    289 !/
+    290 !/ ------------------------------------------------------------------- /
+    291 !/
+    292 !
+    293 ! "Unpack" and increment date :
+    294 !
+    295       NY   = NYMD / 10000
+    296       NM   = MOD(NYMD,10000) / 100
+    297       NM   = MIN ( 12 , MAX(1,NM) )
+    298       ND   = MOD(NYMD,100) + M
+    299       LEAP = MOD(NY,400).EQ.0 .OR.                              &
+    300               ( MOD(NY,4).EQ.0 .AND. MOD(NY,100).NE.0 )
+    301 !
+    302 ! M = -1, change month if necessary :
+    303 !
+    304       IF (ND.EQ.0) THEN
+    305           NM   = NM - 1
+    306           IF (NM.EQ.0) THEN
+    307               NM   = 12
+    308               NY   = NY - 1
+    309             ENDIF
+    310           ND   = NDPM(NM)
+    311           IF (NM.EQ.2 .AND. LEAP)  ND = 29
+    312         END IF
+    313 !
+    314 ! M = 1, leap year
+    315 !
+    316       IF (ND.EQ.29 .AND. NM.EQ.2 .AND. LEAP)  GO TO 20
+    317 !
+    318 !        next month
+    319 !
+    320       IF (ND.GT.NDPM(NM)) THEN
+    321           ND = 1
+    322           NM = NM + 1
+    323           IF (NM.GT.12) THEN
+    324               NM = 1
+    325               NY = NY + 1
+    326           ENDIF
+    327         END IF
+    328 !
+    329    20 CONTINUE
+    330       IYMD21 = NY*10000 + NM*100 + ND
+    331 !
+    332       RETURN
+    333 !/
+    334 !/ End of IYMD21 ----------------------------------------------------- /
+    335 !/
+    336       END FUNCTION IYMD21
+
+Page 7           Source Listing                  IYMD21
+2017-04-04 20:16 Entry Points                    w3timemd.f90
+
+
+
+ENTRY POINTS
+
+  Name                                 
+                                       
+ w3timemdtick21_mp_iymd21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 20                         Label  329                                                            316                               
+ IYMD21                     Func   206      I(4)            4           scalar                    170,171,184,191,330               
+ LEAP                       Local  288      L(4)            4           scalar                    299,311,316                       
+ M                          Dummy  206      I(4)            4           scalar   ARG,IN           298                               
+ MAX                        Func   297                                  scalar                    297                               
+ MIN                        Func   297                                  scalar                    297                               
+ MOD                        Func   296                                  scalar                    176,177,195,296,298,299,300       
+ ND                         Local  285      I(4)            4           scalar                    298,304,310,311,316,320,321,330   
+ NDPM                       Local  286      I(4)            4     1     12                        287,310,320                       
+ NM                         Local  285      I(4)            4           scalar                    296,297,305,306,307,310,311,316,32
+                                                                                                  0,322,323,324,330                 
+ NY                         Local  285      I(4)            4           scalar                    295,299,300,308,325,330           
+ NYMD                       Dummy  206      I(4)            4           scalar   ARG,IN           295,296,298                       
+
+Page 8           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    337 !/
+    338 !/ End of TICK21 ----------------------------------------------------- /
+    339 !/
+    340       END SUBROUTINE TICK21
+
+
+ENTRY POINTS
+
+  Name                           
+                                 
+ w3timemd_mp_tick21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 100                        Label  181                                                            185                               
+ 200                        Label  188                                                            192                               
+ DTIME                      Dummy  76       R(4)            4           scalar   ARG,IN           169,177                           
+ IYMD21@0                   Local  206      I(4)            4           scalar                                                      
+ NHMS                       Local  160      I(4)            4           scalar                    168,176,177,195,198               
+ NINT                       Func   177                                  scalar                    177                               
+ NSEC                       Local  160      I(4)            4           scalar                    176,182,183,189,190,195           
+ NYMD                       Local  160      I(4)            4           scalar                    167,170,171,184,191,197           
+ TICK21                     Subr   76                                                                                               
+ TIME                       Dummy  76       I(4)            4     1     2        ARG,INOUT        167,168,197,198                   
+
+Page 9           Source Listing                  IYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    341 !/ ------------------------------------------------------------------- /
+    342       REAL FUNCTION DSEC21 ( TIME1, TIME2 )
+    343 !/
+    344 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
+    345 !                .      .    .                                       .
+    346 ! SUBPROGRAM:    DSEC21      Time difference in seconds
+    347 !   PRGMMR: H.L. Tolman      ORG: W/NP21     DATE: 2001-01-05
+    348 !
+    349 ! ABSTRACT: Calculate time difference in seconds between two times
+    350 !   in yyyymmdd hhmmss format.
+    351 !
+    352 ! PROGRAM HISTORY LOG:
+    353 ! 1993-03-29  Tolman      Origination.
+    354 ! 1998-10-29  Chen/Tolman Adding docblock.
+    355 ! 1999-11-29  Tolman      FORTRAN 90 version.
+    356 ! 2001-01-05  Tolman      Y2K leap year fix ported from operational.
+    357 !
+    358 ! USAGE: See documentation below.
+    359 !
+    360 ! REMARKS: See documentation below.
+    361 !
+    362 ! ATTRIBUTES:
+    363 !   LANGUAGE: FORTRAN 90
+    364 !   MACHINE:  Portable code.
+    365 !
+    366 !$$$
+    367 !/                  +-----------------------------------+
+    368 !/                  | WAVEWATCH-III           NOAA/NCEP |
+    369 !/                  |           H. L. Tolman            |
+    370 !/                  |                        FORTRAN 90 |
+    371 !/                  | Last update :         05-Jan-2001 |
+    372 !/                  +-----------------------------------+
+    373 !/
+    374 !/    23-Mar-1993 : Final FORTRAN 77                    ( version 1.18 )
+    375 !/    29-Nov-1999 : Upgrade to FORTRAN 90               ( version 2.00 )
+    376 !/    05-Jan-2001 : Y2K leap year error correction.     ( version 2.05 )
+    377 !/
+    378 !/
+    379 !  1. Purpose :
+    380 !
+    381 !     Calculate the time difference in seconds between two times in
+    382 !     YYMMD HHMMMSS formats.
+    383 !
+    384 !  3. Parameters :
+    385 !
+    386 !     Parameter list
+    387 !     ----------------------------------------------------------------
+    388 !       TIMEn   I.A.   I   Times, TIMEn(1) is date in YYYYMMDD format,
+    389 !                          TIMEn(2) is time in HHMMSS format.
+    390 !     ----------------------------------------------------------------
+    391 !
+    392 !  4. Subroutines used :
+    393 !
+    394 !      Name      Type  Module   Description
+    395 !     ----------------------------------------------------------------
+    396 !      STRACE    Subr. W3SERVMD Subroutine tracing.
+    397 !      MYMD21    Func. Internal Calculate Julian date.
+
+Page 10          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    398 !     ----------------------------------------------------------------
+    399 !
+    400 !  5. Called by :
+    401 !
+    402 !     Any routine.
+    403 !
+    404 !  7. Remarks :
+    405 !
+    406 !  8. Structure :
+    407 !
+    408 !     See source code.
+    409 !
+    410 !  9. Switches :
+    411 !
+    412 !     !/S  Enable subroutine tracing using STRACE.
+    413 !
+    414 ! 10. Source code :
+    415 !
+    416 !/ ------------------------------------------------------------------- /
+    417 !/
+    418       IMPLICIT NONE
+    419 !/
+    420 !/ ------------------------------------------------------------------- /
+    421 !/ Parameter list
+    422 !/
+    423       INTEGER, INTENT(IN)     :: TIME1(2), TIME2(2)
+    424 !/
+    425 !/ ------------------------------------------------------------------- /
+    426 !/ Local parameters
+    427 !/
+    428       INTEGER                 :: NY1, ND1, NY2, ND2, NS1, NS2, NS,   &
+    429                                  ND, NST
+    430 !/
+    431 !/ ------------------------------------------------------------------- /
+    432 !/
+    433 !
+    434 ! Convert dates and times :
+    435 !
+    436       NY1    = TIME1(1) / 10000
+    437       ND1    = MYMD21 ( TIME1(1) )
+    438       NS1    = TIME1(2)/10000*3600 + MOD(TIME1(2),10000)/100*60 + &
+    439                MOD(TIME1(2),100)
+    440 !
+    441       NY2    = TIME2(1) / 10000
+    442       ND2    = MYMD21 ( TIME2(1) )
+    443       NS2    = TIME2(2)/10000*3600 + MOD(TIME2(2),10000)/100*60 + &
+    444                MOD(TIME2(2),100)
+    445 !
+    446 ! Number of days and seconds in difference :
+    447 !
+    448       ND     = ND2 - ND1
+    449 !
+    450       IF ( NY1 .NE. NY2 ) THEN
+    451           NST    = SIGN ( 1 , NY2-NY1 )
+    452   100     CONTINUE
+    453           IF (NY1.EQ.NY2) GOTO 200
+    454           IF (NST.GT.0) THEN
+
+Page 11          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    455               NY2    = NY2 - 1
+    456               ND     = ND  + MYMD21 ( NY2*10000 + 1231 )
+    457             ELSE
+    458               ND     = ND  - MYMD21 ( NY2*10000 + 1231 )
+    459               NY2    = NY2 + 1
+    460             ENDIF
+    461           GOTO 100
+    462   200     CONTINUE
+    463         END IF
+    464 !
+    465       NS     = NS2 - NS1
+    466 !
+    467 ! Output of time difference :
+    468 !
+    469       DSEC21 = REAL(NS) + 86400.*REAL(ND)
+    470 !
+    471       RETURN
+    472 !/
+    473 !/ Internal function MYMD21 ------------------------------------------ /
+    474 !/
+    475       CONTAINS
+    476 !/ ------------------------------------------------------------------- /
+    477       INTEGER FUNCTION MYMD21 ( NYMD )
+    478 !/
+    479 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
+    480 !                .      .    .                                       .
+    481 ! SUBPROGRAM:    MYMD21      Calculate Julian date
+    482 !   PRGMMR: H.L. Tolman      ORG: W/NP21     DATE: 1999-11-29
+    483 !
+    484 ! ABSTRACT: Calculate Julian date from date in yyyymmdd format.
+    485 !
+    486 ! PROGRAM HISTORY LOG:
+    487 ! 1998-10-19  Tolman      Origination.
+    488 ! 1998-10-29  Chen/Tolman Adding docblock.
+    489 ! 1999-11-29  Tolman      Conversion to FORTRAN 90.
+    490 !
+    491 ! USAGE: See documentation below.
+    492 !
+    493 ! REMARKS: See documentation below.
+    494 !
+    495 ! ATTRIBUTES:
+    496 !   LANGUAGE: FORTRAN 90
+    497 !   MACHINE:  Portable code
+    498 !
+    499 !$$$
+    500 !/                  +-----------------------------------+
+    501 !/                  | WAVEWATCH-III           NOAA/NCEP |
+    502 !/                  |           H. L. Tolman            |
+    503 !/                  |                        FORTRAN 90 |
+    504 !/                  | Last update :         29-Oct-1998 |
+    505 !/                  +-----------------------------------+
+    506 !/                                Based on MODYMD of the GLA GCM.
+    507 !/
+    508 !/    19-Oct-1998 : Final FORTRAN 77                    ( version 1.18 )
+    509 !/    29-Nov-1999 : Upgrade to FORTRAN 90               ( version 2.00 )
+    510 !/
+    511 !  1. Purpose :
+
+Page 12          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    512 !
+    513 !     Convert date in YYMMDD format to julian date.
+    514 !
+    515 !  3. Parameters :
+    516 !
+    517 !     Parameter list
+    518 !     ----------------------------------------------------------------
+    519 !       NYMD    Int.   I   Date in YYMMDD format.
+    520 !     ----------------------------------------------------------------
+    521 !
+    522 !  4. Subroutines used :
+    523 !
+    524 !      Name      Type  Module   Description
+    525 !     ----------------------------------------------------------------
+    526 !      STRACE    Subr. W3SERVMD Subroutine tracing.
+    527 !     ----------------------------------------------------------------
+    528 !
+    529 !  5. Called by :
+    530 !
+    531 !     Any subroutine.
+    532 !
+    533 !  8. Structure :
+    534 !
+    535 !     See source code.
+    536 !
+    537 !  9. Switches :
+    538 !
+    539 !     !/S  Enable subroutine tracing using STRACE.
+    540 !
+    541 ! 10. Source code :
+    542 !
+    543 !/ ------------------------------------------------------------------- /
+    544 !/
+    545       IMPLICIT NONE
+    546 !/
+    547 !/ ------------------------------------------------------------------- /
+    548 !/ Parameter list
+    549 !/
+    550       INTEGER, INTENT(IN)     :: NYMD
+    551 !/
+    552 !/ ------------------------------------------------------------------- /
+    553 !/ Local parameters
+    554 !/
+    555       INTEGER                 :: NY, NM, ND
+    556       INTEGER, SAVE           :: NDPM(12)
+    557       DATA    NDPM / 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 /
+    558       LOGICAL                 :: LEAP
+    559 !/
+    560 !/ ------------------------------------------------------------------- /
+    561 !/
+    562 !
+    563 ! "Unpack" and increment date :
+    564 !
+    565       NY   = NYMD / 10000
+    566       NM   = MOD(NYMD,10000) / 100
+    567       ND   = MOD(NYMD,100)
+    568       LEAP = MOD(NY,400).EQ.0 .OR.                              &
+
+Page 13          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    569               ( MOD(NY,4).EQ.0 .AND. MOD(NY,100).NE.0 )
+    570 !
+    571 ! Loop over months :
+    572 !
+    573       IF (NM.GT.2 .AND. LEAP)  ND = ND + 1
+    574 !
+    575    40 CONTINUE
+    576       IF (NM.LE.1)  GO TO 60
+    577       NM = NM - 1
+    578       ND = ND + NDPM(NM)
+    579       GO TO 40
+    580 !
+    581    60 CONTINUE
+    582       MYMD21 = ND
+    583 !
+    584       RETURN
+    585 !/
+    586 !/ End of MYMD21 ----------------------------------------------------- /
+    587 !/
+    588       END FUNCTION MYMD21
+
+
+ENTRY POINTS
+
+  Name                                 
+                                       
+ w3timemddsec21_mp_mymd21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 40                         Label  575                                                            579                               
+ 60                         Label  581                                                            576                               
+ LEAP                       Local  558      L(4)            4           scalar                    568,573                           
+ MOD                        Func   566                                  scalar                    438,439,443,444,566,567,568,569   
+ MYMD21                     Func   477      I(4)            4           scalar                    437,442,456,458,582               
+ ND                         Local  555      I(4)            4           scalar                    567,573,578,582                   
+ NDPM                       Local  556      I(4)            4     1     12                        557,578                           
+ NM                         Local  555      I(4)            4           scalar                    566,573,576,577,578               
+ NY                         Local  555      I(4)            4           scalar                    565,568,569                       
+ NYMD                       Dummy  477      I(4)            4           scalar   ARG,IN           565,566,567                       
+
+Page 14          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    589 !/
+    590 !/ End of DSEC21 ----------------------------------------------------- /
+    591 !/
+    592       END FUNCTION DSEC21
+
+
+ENTRY POINTS
+
+  Name                           
+                                 
+ w3timemd_mp_dsec21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 100                        Label  452                                                            461                               
+ 200                        Label  462                                                            453                               
+ DSEC21                     Func   342      R(4)            4           scalar                    469                               
+ MYMD21@0                   Local  477      I(4)            4           scalar                                                      
+ ND                         Local  429      I(4)            4           scalar                    448,456,458,469                   
+ ND1                        Local  428      I(4)            4           scalar                    437,448                           
+ ND2                        Local  428      I(4)            4           scalar                    442,448                           
+ NS                         Local  428      I(4)            4           scalar                    465,469                           
+ NS1                        Local  428      I(4)            4           scalar                    438,465                           
+ NS2                        Local  428      I(4)            4           scalar                    443,465                           
+ NST                        Local  429      I(4)            4           scalar                    451,454                           
+ NY1                        Local  428      I(4)            4           scalar                    436,450,451,453                   
+ NY2                        Local  428      I(4)            4           scalar                    441,450,451,453,455,456,458,459   
+ REAL                       Func   469                                  scalar                    469                               
+ SIGN                       Func   451                                  scalar                    451                               
+ TIME1                      Dummy  342      I(4)            4     1     2        ARG,IN           436,437,438,439                   
+ TIME2                      Dummy  342      I(4)            4     1     2        ARG,IN           441,442,443,444                   
+
+Page 15          Source Listing                  MYMD21
+2017-04-04 20:16                                 w3timemd.f90
+
+    593 !/ ------------------------------------------------------------------- /
+    594       SUBROUTINE STME21 ( TIME , DTME21 )
+    595 !/
+    596 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
+    597 !                .      .    .                                       .
+    598 ! SUBPROGRAM:    STME21      Generates date/time string.
+    599 !   PRGMMR: H.L. Tolman      ORG: W/NP21     DATE: 1999-11-23
+    600 !
+    601 ! ABSTRACT: Generates a character date/time string form integer data.
+    602 !
+    603 ! PROGRAM HISTORY LOG:
+    604 ! 1993-06-21  Tolman      Origination.
+    605 ! 1998-10-29  Chen/Tolman Adding docblock.
+    606 ! 1999=11=23  Tolman      FORTRAN 90 conversion.
+    607 !
+    608 ! USAGE: See documentation blow.
+    609 !
+    610 ! REMARKS: See documentation blow.
+    611 !
+    612 ! ATTRIBUTES:
+    613 !   LANGUAGE: FORTRAN 90
+    614 !   MACHINE:  Portable code
+    615 !
+    616 !$$$
+    617 !/                  +-----------------------------------+
+    618 !/                  | WAVEWATCH-III           NOAA/NCEP |
+    619 !/                  |           H. L. Tolman            |
+    620 !/                  |                        FORTRAN 90 |
+    621 !/                  | Last update :         23-Nov-1999 |
+    622 !/                  +-----------------------------------+
+    623 !/
+    624 !/    21-Jun-1993 : Final FORTRAN 77                    ( version 1.18 )
+    625 !/    23-Nov-1999 : Upgrade to FORTRAN 90               ( version 2.00 )
+    626 !/
+    627 !  1. Purpose :
+    628 !
+    629 !     Converts time to more readable string.
+    630 !
+    631 !  3. Parameters :
+    632 !
+    633 !     Parameter list
+    634 !     ----------------------------------------------------------------
+    635 !       TIME    I.A.  I   Time in YYYYMMDD HHMMSS format.
+    636 !                         TIME(1) < 0 indicates that time is not set.
+    637 !     ----------------------------------------------------------------
+    638 !
+    639 !  4. Subroutines used :
+    640 !
+    641 !       None.
+    642 !
+    643 !  5. Called by :
+    644 !
+    645 !       Any subroutine/program.
+    646 !
+    647 ! 10. Source code :
+    648 !
+    649 !/ ------------------------------------------------------------------- /
+
+Page 16          Source Listing                  STME21
+2017-04-04 20:16                                 w3timemd.f90
+
+    650 !/
+    651       IMPLICIT NONE
+    652 !/
+    653 !/ ------------------------------------------------------------------- /
+    654 !/ Parameter list
+    655 !/
+    656       INTEGER, INTENT(IN)     :: TIME(2)
+    657       CHARACTER, INTENT(OUT)  :: DTME21*23
+    658 !/
+    659 !/ ------------------------------------------------------------------- /
+    660 !/ Local parameters
+    661 !/
+    662       INTEGER                 :: IY, IMO, ID, IH, IMI, IS
+    663 !/
+    664 !/ ------------------------------------------------------------------- /
+    665 !/
+    666       IF ( TIME(1) .LT. 0 ) THEN
+    667           DTME21 = ' date and time not set.'
+    668         ELSE
+    669           IY     = TIME(1) / 10000
+    670           IMO    = MOD(TIME(1),10000) / 100
+    671           ID     = MOD(TIME(1),100)
+    672           IH     = TIME(2) / 10000
+    673           IMI    = MOD(TIME(2),10000) / 100
+    674           IS     = MOD(TIME(2),100)
+    675           WRITE (DTME21,900) IY, IMO, ID, IH, IMI, IS
+    676         ENDIF
+    677 !
+    678       RETURN
+    679 !
+    680 ! Formats
+    681 !
+    682   900 FORMAT (I4.4,'/',I2.2,'/',I2.2,' ',I2.2,':',I2.2,':',I2.2,' UTC')
+    683 !/
+    684 !/ End of STME21 ----------------------------------------------------- /
+    685 !/
+    686       END SUBROUTINE STME21
+
+Page 17          Source Listing                  STME21
+2017-04-04 20:16 Entry Points                    w3timemd.f90
+
+
+
+ENTRY POINTS
+
+  Name                           
+                                 
+ w3timemd_mp_stme21_             
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ 900                        Label  682                                                            675                               
+ DTME21                     Dummy  594      CHAR            23          scalar   ARG,OUT          667,675                           
+ ID                         Local  662      I(4)            4           scalar                    671,675                           
+ IH                         Local  662      I(4)            4           scalar                    672,675                           
+ IMI                        Local  662      I(4)            4           scalar                    673,675                           
+ IMO                        Local  662      I(4)            4           scalar                    670,675                           
+ IS                         Local  662      I(4)            4           scalar                    674,675                           
+ IY                         Local  662      I(4)            4           scalar                    669,675                           
+ MOD                        Func   670                                  scalar                    670,671,673,674                   
+ STME21                     Subr   594                                                                                              
+ TIME                       Dummy  594      I(4)            4     1     2        ARG,IN           666,669,670,671,672,673,674       
+
+Page 18          Source Listing                  STME21
+2017-04-04 20:16                                 w3timemd.f90
+
+    687 !/
+    688 !/ End of module W3TIMEMD -------------------------------------------- /
+    689 !/
+    690       END MODULE W3TIMEMD
+
+
+SYMBOL CROSS REFERENCE
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ DSEC21@0                   Local  342      R(4)            4           scalar                                                      
+ W3TIMEMD                   Module 2                                                                                                
+
+Page 19          Source Listing                  STME21
+2017-04-04 20:16 Subprograms/Common Blocks       w3timemd.f90
+
+
+
+SUBPROGRAMS/COMMON BLOCKS
+
+ Name                       Object Declared Type            Bytes Dimen Elements Attributes       References                        
+                                                                                                                                    
+ DSEC21                     Func   342      R(4)            4           scalar                    469                               
+ IYMD21                     Func   206      I(4)            4           scalar                    170,171,184,191,330               
+ MYMD21                     Func   477      I(4)            4           scalar                    437,442,456,458,582               
+ STME21                     Subr   594                                                                                              
+ TICK21                     Subr   76                                                                                               
+ W3TIMEMD                   Module 2                                                                                                
+
+COMPILER OPTIONS BEING USED
+
+       -align noall                          -align nonone
+       -align nocommons                      -align nodcommons
+       -align noqcommons                     -align nozcommons
+       -align records                        -align nosequence
+       -align norec1byte                     -align norec2byte
+       -align norec4byte                     -align norec8byte
+       -align norec16byte                    -align norec32byte
+       -align norec64byte                    -align noarray8byte
+       -align noarray16byte                  -align noarray32byte
+       -align noarray64byte                  -align noarray128byte
+       -align noarray256byte                 -altparam
+       -assume accuracy_sensitive            -assume nobscc
+       -assume nobuffered_io                 -assume nobuffered_stdout
+       -assume nobyterecl                    -assume nocc_omp
+       -assume nocstring                     -assume nodummy_aliases
+       -assume nofpe_summary                 -assume noieee_fpe_flags
+       -assume nominus0                      -assume noold_boz
+       -assume old_complex_align             -assume old_unit_star
+       -assume old_ldout_format              -assume noold_logical_ldio
+       -assume old_maxminloc                 -assume old_xor
+       -assume protect_constants             -assume noprotect_parens
+       -assume split_common                  -assume source_include
+       -assume nostd_intent_in               -assume std_minus0_rounding
+       -assume nostd_mod_proc_name           -assume std_value
+       -assume norealloc_lhs                 -assume underscore
+       -assume no2underscores                -auto
+  no   -auto_scalar                     no   -bintext
+       -ccdefault default                    -check noargs
+       -check noarg_temp_created             -check noassume
+       -check nobounds                       -check noformat
+       -check nooutput_conversion            -check nooverflow
+       -check nopointers                     -check power
+       -check noshape                        -check nostack
+       -check nounderflow                    -check nouninitialized
+       -coarray-num-procs 0             no   -coarray-config-file
+       -convert big_endian                   -cross_reference
+       -D __INTEL_COMPILER=1500              -D __INTEL_COMPILER_UPDATE=3
+       -D __unix__                           -D __unix
+       -D __linux__                          -D __linux
+       -D __gnu_linux__                      -D unix
+       -D linux                              -D __ELF__
+       -D __x86_64                           -D __x86_64__
+
+Page 20          Source Listing                  STME21
+2017-04-04 20:16                                 w3timemd.f90
+
+       -D __amd64                            -D __amd64__
+       -D _MT                                -D __INTEL_COMPILER_BUILD_DATE=20150407
+       -D __INTEL_OFFLOAD                    -D __pentium4
+       -D __pentium4__                       -D __tune_pentium4__
+       -D __SSE2__                           -D __SSE2_MATH__
+       -D __SSE3__                           -D __SSSE3__
+       -D __SSE4_1__                         -D __SSE4_2__
+       -D __SSE__                            -D __SSE_MATH__
+       -D __MMX__                            -D __AVX__
+       -D __AVX_I__                          -D __AVX2__
+       -D __CRAYXC                           -D __CRAY_HASWELL
+       -D __CRAYXT_COMPUTE_LINUX_TARGET       -double_size 64
+  no   -d_lines                         no   -Qdyncom
+       -error_limit 30                  no   -f66
+  no   -f77rtl                          no   -fast
+       -fpscomp nofilesfromcmd               -fpscomp nogeneral
+       -fpscomp noioformat                   -fpscomp noldio_spacing
+       -fpscomp nologicals              no   -fpconstant
+       -fpe3                                 -fprm nearest
+  no   -ftz                                  -fp_model noprecise
+       -fp_model fast                        -fp_model nostrict
+       -fp_model nosource                    -fp_model nodouble
+       -fp_model noextended                  -fp_model novery_fast
+       -fp_model noexcept                    -fp_model nono_except
+       -heap_arrays 0                   no   -threadprivate_compat
+       -free                                 -g0
+       -iface nomixed_str_len_arg            -iface nono_mixed_str_len_arg
+       -init noarrays                        -init noinf
+       -init nonan                           -init nosnan
+       -init nozero                     no   -intconstant
+       -integer_size 32                 no   -mixed_str_len_arg
+  no   -module                               -names lowercase
+  no   -noinclude                            -offload-build=host
+       -O3                              no   -pad_source
+       -real_size 32                    no   -recursive
+       -reentrancy none                 no   -sharable_localsaves
+       -vec=simd                             -show noinclude
+       -show map                             -show options
+  no   -syntax_only                     no   -threadcom
+  no   -U                               no   -vms
+       -w noall                              -w nonone
+       -w alignments                         -w noargument_checking
+       -w nodeclarations                     -w general
+       -w noignore_bounds                    -w noignore_loc
+       -w nointerfaces                       -w notruncated_source
+       -w uncalled                           -w uninitialized
+       -w nounused                           -w usage
+  no   -wrap-margins
+
+       -includepath : /opt/cray/rca/1.0.0-2.0502.57212.2.56.ari/include/,/opt/cray/ugni/6.0-1.0502.10245.9.9.ari/include/,
+           /opt/intel/composer_xe_2015.3.187/ipp/include/,/usr/local/include/,.f90,./.f90,/opt/cray/iobuf/2.0.5/include/.f90,
+           /opt/cray/mpt/7.2.0/gni/mpich2-intel/140/include/.f90,/opt/cray/libsci/13.0.3/INTEL/140/x86_64/include/.f90,
+           /opt/cray/rca/1.0.0-2.0502.57212.2.56.ari/include/.f90,/opt/cray/alps/5.2.3-2.0502.9295.14.14.ari/include/.f90,
+           /opt/cray/xpmem/0.1-2.0502.57015.1.15.ari/include/.f90,/opt/cray/gni-headers/4.0-1.0502.10317.9.2.ari/include/.f90,
+           /opt/cray/pmi/5.0.6-1.0000.10439.140.2.ari/include/.f90,/opt/cray/ugni/6.0-1.0502.10245.9.9.ari/include/.f90,
+           /opt/cray/udreg/2.3.2-1.0502.9889.2.20.ari/include/.f90,/opt/cray/wlm_detect/1.0-1.0502.57063.1.1.ari/include/.f90,
+           /opt/cray/krca/1.0.0-2.0502.57202.2.45.ari/include/.f90,/opt/cray-hss-devel/7.2.0/include/.f90,/opt/intel/composer_xe_2015.3.187/ipp/include/.f90,
+
+Page 21          Source Listing                  STME21
+2017-04-04 20:16                                 w3timemd.f90
+
+           /opt/intel/composer_xe_2015.3.187/mkl/include/.f90,/opt/intel/composer_xe_2015.3.187/tbb/include/.f90,
+           /opt/intel/composer_xe_2015.3.187/compiler/include/intel64/.f90,/opt/intel/composer_xe_2015.3.187/compiler/include/.f90,
+           /usr/local/include/.f90,/usr/lib64/gcc/x86_64-suse-linux/4.3/include/.f90,/usr/lib64/gcc/x86_64-suse-linux/4.3/include-fixed/.f90,
+           /usr/include/.f90,/usr/include/.f90,/usr/include/.f90
+       -list filename : w3timemd.lst
+       -o    filename : none
+
+COMPILER: Intel(R) Fortran 15.0-1812

@@ -1,0 +1,176 @@
+$
+$ Output point file for Great Lakes wave model
+$
+$ Key to data in file:
+$
+$   LON      Longitude, east positive
+$   LAT      Latitude
+$   NAME     Output point name C*10, no blanks in name allowed
+$   AH       Anemometer height, dummy value for none-data points
+$   TYPE     Buoy type indicator, used for plotting and postprocessing
+$             DAT      Data point
+$             XDT      Former data point
+$             BPT      Boundary data for external models.
+$             VBY      'Virtual buoy'
+$   SOURCE   Source of data point
+$             ENCAN    Environment Canada
+$             GOMOOS   Gulf of Maine OOS
+$             IDT      Irish Department of Transportation
+$             METFR    Meteo France
+$             NCEP     Boundary and other data points
+$             NDBC     National Data Buoy Center
+$             PRIV     Private and incidental data sources
+$             SCRIPPS  Scripps
+$             UKMO     UK Met Office
+$   SCALE    Scale indicator for plotting of locations on map
+$            Point will only be plotted if SCALE =< DX in our
+$            GrADS scripts, DX is width of plot in logitude
+$
+$ Notes:
+$
+$  - The '$' at the first position identifies comments for WAVEWATCH III
+$    input.
+$  - The first three data columns are used by the forecats code, the other
+$    are used by postprocessing scripts.
+$
+$ Lake Superior buoy locations
+$
+$   LON     LAT     NAME          AH   TYPE  SOURCE  SCALE
+$ ---------------------------------------------------------
+   272.2070  48.061   '45001     '  5.0   DAT   NDBC   25
+   273.4150  47.585   '45004     '  5.0   DAT   NDBC   25
+   270.2070  47.335   '45006     '  5.0   DAT   NDBC   25
+   271.3930  47.270   '45023     '  3.0   DAT   NDBC   25
+   271.6020  46.969   '45025     '  3.0   DAT   NDBC   25
+   268.0700  46.860   '45027     '  3.0   DAT   NDBC   25
+   268.1600  46.810   '45028     '  3.0   DAT   NDBC   25
+   273.0470  48.535   '45136     '  5.0   DAT   ENCAN  25
+   272.5890  46.724   '45171     '  1.0   DAT   NDBC   25
+   274.0240  46.741   '45172     '  1.0   DAT   NDBC   25
+   273.4280  46.573   '45173     '  2.0   DAT   NDBC   25
+   269.2700  47.080   'DISW3     ' 25.0   DAT   NDBC   25
+   271.6300  48.220   'PILM4     ' 16.0   DAT   NDBC   25
+   270.6900  47.870   'ROAM4     ' 47.0   DAT   NDBC   25
+   272.7800  47.180   'STDM4     ' 35.0   DAT   NDBC   25
+$
+$  Lake Michigan buoy locations
+$
+$   LON     LAT     NAME          AH   TYPE  SOURCE  SCALE
+$ ---------------------------------------------------------
+   272.240   44.800   '45014     '  2.0   DAT   NDBC   25
+   273.589   45.344   '45002     '  4.0   DAT   NDBC   25
+   272.974   42.674   '45007     '  4.0   DAT   NDBC   25
+   274.912   45.403   '45022     '  3.0   DAT   NDBC   25
+   273.441   43.977   '45024     '  3.0   DAT   NDBC   25
+   273.383   41.983   '45026     '  3.0   DAT   NDBC   25
+   273.728   42.900   '45029     '  3.0   DAT   NDBC   25
+   273.644   43.180   '45161     '  2.0   DAT   NDBC   25
+   273.669   42.397   '45168     '  3.0   DAT   NDBC   25
+   273.032   41.755   '45170     '  3.0   DAT   ENCAN  25
+   272.345   42.135   '45174     '  3.0   DAT   NDBC   25
+   272.437   44.146   'C58W3     ' 10.0   DAT   NDBC   25
+   272.687   44.794   '0Y2W3     ' 10.0   DAT   NDBC   25
+   273.412   43.649   'LITTLESABL' 999.   VBY   NCEP   25
+   272.984   45.528   'N_GREENBAY' 999.   VBY   NCEP   25
+   273.915   45.869   'N_MICHIGAN' 999.   VBY   NCEP   25
+   272.500   44.980   'S_GREENBAY' 999.   VBY   NCEP   25
+   272.310   43.750   'SGNW3     ' 19.0   DAT   NDBC   25
+$
+$ Beach Hazards Product Sites
+$
+   272.9344  41.6696  'IndDunesSP' 999.   VBY   NCEP   25
+   272.7889  41.6326  'IndDunesNP' 999.   VBY   NCEP   25
+   272.5025  41.7643  'WhihalaBch' 999.   VBY   NCEP   25
+   273.4910  42.1112  'Silver_Bch' 999.   VBY   NCEP   25
+$
+$ Beach Hazard Sites transects for Rip model
+$
+$ Indiana Dunes State Park
+$
+   272.9281   41.6631 'IDSPRip001' 999.   BPT   NCEP   25
+   272.9299   41.6638 'IDSPRip002' 999.   BPT   NCEP   25
+   272.9319   41.6645 'IDSPRip003' 999.   BPT   NCEP   25
+   272.9338   41.6652 'IDSPRip004' 999.   BPT   NCEP   25
+   272.9358   41.6660 'IDSPRip005' 999.   BPT   NCEP   25
+   272.9377   41.6667 'IDSPRip006' 999.   BPT   NCEP   25
+$
+$ Indiana Dunes National Park
+$
+  272.7808    41.6273 'IDNPRip001' 999.   BPT   NCEP   25
+  272.7847    41.6281 'IDNPRip002' 999.   BPT   NCEP   25
+  272.7889    41.6287 'IDNPRip003' 999.   BPT   NCEP   25
+  272.7937    41.6296 'IDNPRip004' 999.   BPT   NCEP   25
+  272.7967    41.6303 'IDNPRip005' 999.   BPT   NCEP   25
+  272.8007    41.6309 'IDNPRip006' 999.   BPT   NCEP   25
+$
+$ Silver Beach
+$
+   273.5060   42.1135 'SILBRip001' 999.   BPT   NCEP   25
+   273.5052   42.1109 'SILBRip002' 999.   BPT   NCEP   25
+   273.5034   42.1087 'SILBRip003' 999.   BPT   NCEP   25
+   273.5016   42.1067 'SILBRip004' 999.   BPT   NCEP   25
+   273.4999   42.1048 'SILBRip005' 999.   BPT   NCEP   25
+   273.4989   42.1031 'SILBRip006' 999.   BPT   NCEP   25
+$
+$ Whihala Beach
+$
+   272.5024   41.6958 'WHIBRip001' 999.   BPT   NCEP   25
+   272.5054   41.6939 'WHIBRip002' 999.   BPT   NCEP   25
+   272.5097   41.6929 'WHIBRip003' 999.   BPT   NCEP   25
+   272.5144   41.6929 'WHIBRip004' 999.   BPT   NCEP   25
+   272.5188   41.6920 'WHIBRip005' 999.   BPT   NCEP   25
+   272.5226   41.6898 'WHIBRip006' 999.   BPT   NCEP   25
+$
+$ Lake Huron buoy locations
+$
+$   LON     LAT     NAME          AH   TYPE  SOURCE  SCALE
+$ ---------------------------------------------------------
+   277.1600  45.351   '45003     '  5.0   DAT   NDBC   25
+   277.5840  44.283   '45008     '  5.0   DAT   NDBC   25
+   278.9850  45.545   '45137     '  5.0   DAT   ENCAN  25
+   279.3730  44.945   '45143     '  5.0   DAT   ENCAN  25
+   277.9250  43.542   '45149     '  5.0   DAT   ENCAN  25
+   277.3630  46.050   '45154     '  5.0   DAT   ENCAN  25
+   276.4070  43.985   '45163     '  2.0   DAT   NDBC   25
+   276.4630  44.018   'GSLM4     ' 25.0   DAT   NDBC   25
+   276.2800  43.810   'SBLM4     ' 13.0   DAT   NDBC   25
+$
+$ Lake Ontario buoy locations
+$
+$   LON     LAT     NAME          AH   TYPE  SOURCE  SCALE
+$ ---------------------------------------------------------
+   282.5950  43.619   '45012     '  5.0   DAT   NDBC   25
+   283.1320  43.785   '45135     '  5.0   DAT   ENCAN  25
+   280.4650  43.252   '45139     '  5.0   DAT   ENCAN  25
+   281.0170  43.767   '45159     '  5.0   XDT   ENCAN  25
+   280.3670  43.417   '45160     '  5.0   XDT   ENCAN  25
+   283.6100  44.100   'CAPEVINCEN' 999.   VBY   NCEP   25
+   282.0100  43.590   'N_HAMLIN  ' 999.   VBY   NCEP   25
+   281.2100  43.570   'N_OLCOTT  ' 999.   VBY   NCEP   25
+   281.2810  43.341   'OLCN6     ' 10.0   DAT   NDBC   25
+   283.4890  43.464   'OSGN6     ' 15.0   DAT   NDBC   25
+   282.4020  43.263   'RPRN6     ' 10.0   DAT   NDBC   25
+   283.0300  43.290   'SODUSBAY  ' 999.   VBY   NCEP   25
+   280.9360  43.262   'YGNN6     ' 10.0   DAT   NDBC   25
+$
+$ Lake Erie buoy locations
+$
+$   LON     LAT     NAME          AH   TYPE  SOURCE  SCALE
+$ ---------------------------------------------------------
+   277.6020  41.677   '45005     '  5.0   DAT   NDBC   25
+   278.7850  42.463   '45132     '  5.0   DAT   ENCAN  25
+   280.7100  42.737   '45142     '  5.0   DAT   ENCAN  25
+   277.3170  42.430   '45147     '  5.0   DAT   ENCAN  25
+   276.7390  41.702   '45165     '  2.0   DAT   ENCAN  25
+   279.8630  42.186   '45167     '  2.0   DAT   NDBC   25
+   278.2080  41.592   '45169     '  3.0   DAT   NDBC   25
+   280.4050  42.345   'BARN6     ' 10.0   DAT   NDBC   25
+   280.2100  42.530   'ELONGPOINT' 999.   VBY   NCEP   25
+   277.2450  42.465   'LSCM4     ' 15.0   DAT   NDBC   25
+   277.1600  41.630   'SBIO1     ' 21.0   DAT   NDBC   25
+   280.9600  42.700   'STURGEONPT' 999.   VBY   NCEP   25
+$
+$ End of list
+$
+   0.0   0.0  'STOPSTRING'
+$

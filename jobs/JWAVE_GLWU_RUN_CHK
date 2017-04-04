@@ -1,0 +1,156 @@
+#!/bin/bash
+
+set -xa
+# #### 05/04/99 #####################
+# SET WAVE SHELL PROCESSING VARIABLES
+# ###################################
+export PS4='$SECONDS + '
+date
+ 
+# 
+# obtain unique process id (pid) and make temp directory
+#
+
+export pid=$$
+
+# PATH for working directory
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
+mkdir -p $DATA
+cd $DATA
+
+export cycle=t${cyc}z 
+ 
+####################################
+# File To Log Msgs
+####################################
+
+if [ ${envir} = "prod" ]
+then
+  export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+else
+  export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+  export SENDDBN=${SENDDBN:-NO}
+  export DBNLOG=${DBNLOG:-YES}
+  export DBNtag=${DBNtag:="_PARA"}  # '=' used instead of '-' to ensure to use the non-prod alert type for non-prod jobs
+  [ ${envir} = "test" ] && export SENDDBN=NO
+fi
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LSF${job}"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+export MP_PULSE=0
+
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export DBNtag=${DBNtag:-""}
+
+export modID=glwu
+export sigMODE=prep
+
+export NET=wave
+export RUN=glw
+
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+####################################
+# Path to HOME Directory
+####################################
+export HOMEwave=${HOMEwave:-/nw${envir}/${NET}_${modID}.${model_ver}}
+export CODEwave=${CODEwave:-/nw${envir}/${NET}_code.${code_ver}/${code_pkg}}
+
+export EXECwave=${EXECwave:-${HOMEwave}/exec}
+export FIXwave=${FIXwave:-${HOMEwave}/fix}
+export PARMwave=${PARMwave:-${HOMEwave}/parm}
+export USHwave=${USHwave:-${HOMEwave}/ush}
+export EXECcode=${EXECcode:-${CODEwave}/exec}
+
+###################################
+# Set up the UTILITIES
+###################################
+export utilscript=${utilscript:-/nwprod/util/ush}
+export utilexec=${utilexec:-/nwprod/util/exec}
+
+# Run setup to initialize working directory and utility scripts
+sh ${utilscript}/setup.sh
+#export PDY=20130310
+
+# Set PDY
+sh ${utilscript}/setpdy.sh
+. PDY
+
+###################################
+# Set COM Paths and GETGES environment
+###################################
+
+export GETGES_envr=${GETGES_env:-prod}
+
+# Location of NDFD input files
+export DCOMROOT=${DCOMROOT:-/dcom}
+export DCOM=${DCOM:-${DCOMROOT}/us007003}
+export COMNDFD=${COMNDFD:-${DCOMROOT}/us007003}
+
+export com=${com:-/com/${NET}/${envir}}
+export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
+export COMINOUT=${COMINOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
+
+mkdir -p $COMOUT
+export wavelog=${com}/wave.log
+
+##################################
+# Set the mpi run command appropriate for the job card
+##################################
+export mpicmd="mpirun.lsf ${utilexec}/mpiserial"
+ 
+env
+
+####################################################
+# Checking Daylight Savings  
+# per the requirements from TIN 08-62:
+#
+# THERE WILL BE FOUR DISTRIBUTIONS A DAY CORRESPONDING TO THE 
+# 0200...0800...1400...2000 UTC MODEL RUNS EXCEPT DURING DAYLIGHT 
+# SAVINGS TIME /0100...0700...1300...1900 UTC/. NOAAPORT DELIVERY  
+# WILL BE APPROXIMATELY 30 MINUTES AFTER THE MODEL RUN.
+# 
+#  CYC    03Z      09Z      15Z      21Z
+#  EST    02:05Z   08:05Z   14:05Z   20:05Z
+#  DST    01:05Z   07:05Z   13:05Z   19:05Z
+#  local  21:05PM  03:05AM  09:05AM  03:05PM
+####################################################
+export DST_check=${DST_check:-/nw${envir}/util/ush/DST_check.pl}
+export DST=`perl $DST_check`;
+current_cyc=`$utilexec/ndate | cut -c 9-10`;
+delta=`expr $cyc - $current_cyc`;
+ 
+echo "The Daylight Savings status is " $DST " cyc=" $cyc "current_cyc=" $current_cyc "delta=" $delta;
+
+if [ $DST == 'EST' ] || [ $DST == 'DST' ]; then 
+  if [ $DST == 'EST' ] && [ $delta -gt 1 ]; then    # Daylight Savings is not activated (OFF)  
+    echo "The wave_glwn job run too early ...";
+    echo " Wait for next cycle, exiting .... ";
+  elif [ $DST == 'DST' ] && [ $delta -gt 2 ]; then  # Daylight Savings is activated (ON)
+    echo "The wave_glwn job run too early ...";
+    echo " Wait for next cycle, exiting .... ";
+  else
+    echo "It's time to run wave_glwn jobs ..."
+    ecflow_client --event $DST
+    sleep 30
+  fi
+else
+  echo "The Daylight Savings status is wrong ", $DST, " , Please check !!!! ";
+  export err=2; err_chk;
+fi
+
+###################################
+# Remove temp directories
+###################################
+
+cd ${TMPhome}
+    [ -z $keepwrkdir ] &&  rm -rf ${DATA}
+
+date

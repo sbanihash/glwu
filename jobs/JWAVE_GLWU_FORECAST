@@ -1,0 +1,71 @@
+#!/bin/bash
+
+date
+
+set -xa
+
+export PS4='$SECONDS + '
+ 
+# PATH for working directory
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
+mkdir -p $DATA
+cd $DATA
+
+# Set cycle parameters
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. PDY
+
+# NCO alerts and outputs 
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export DBNtag=${DBNtag:-""}
+
+# Set runID (Until modID becomes glwn and glw is dumped) 
+export runID=glwu
+export modID=glwu
+
+export NET=wave
+export RUN=glwu
+
+# Path to HOME Directory
+export HOMEwave=${HOMEwave:-/nw${envir}/${NET}_${modID}.${model_ver}}
+export CODEwave=${CODEwave:-/nw${envir}/${NET}_code.${code_ver}/${code_pkg}}
+
+export EXECwave=${EXECwave:-${HOMEwave}/exec}
+export FIXwave=${FIXwave:-${HOMEwave}/fix}
+export PARMwave=${PARMwave:-${HOMEwave}/parm}
+export USHwave=${USHwave:-${HOMEwave}/ush}
+export EXECcode=${EXECcode:-${CODEwave}/exec}
+
+# Set COM Paths
+export com=${com:-/com/${NET}/${envir}}
+export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
+export COMINOUT=${COMINOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
+
+if [ "$SENDCOM" = YES ]; then
+  mkdir -p $COMOUT $PCOM $GESOUT
+fi
+
+export wavelog=${com}/wave.log
+
+env
+
+# Execute the Script  
+${HOMEwave}/scripts/exwave_${modID}_forecast.sh.ecf
+export err=$?; err_chk
+
+msg="JOB $job HAS COMPLETED NORMALLY."
+postmsg $jlogfile "$msg"
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
+ 
+if [ "$KEEPDATA" != YES ]; then
+  rm -rf $DATA
+fi
+
+date
