@@ -59,7 +59,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    ../postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -114,7 +114,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavenc"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavenc"
     exit 3
   fi
 

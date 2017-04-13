@@ -20,7 +20,6 @@ setpdy.sh
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export SENDCOM=${SENDCOM:-YES}
-export DBNtag=${DBNtag:-""}
 
 # Set runID (Until modID becomes glwn and glw is dumped) 
 export runID=glwu
@@ -30,8 +29,8 @@ export NET=wave
 export RUN=glwu
 
 # Path to HOME Directory
-export HOMEwave=${HOMEwave:-/nw${envir}/${NET}_${modID}.${model_ver}}
-export CODEwave=${CODEwave:-/nw${envir}/${NET}_code.${code_ver}/${code_pkg}}
+export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
+export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
 
 export EXECwave=${EXECwave:-${HOMEwave}/exec}
 export FIXwave=${FIXwave:-${HOMEwave}/fix}
@@ -40,21 +39,17 @@ export USHwave=${USHwave:-${HOMEwave}/ush}
 export EXECcode=${EXECcode:-${CODEwave}/exec}
 
 # Set COM Paths
-export INCOM=${INCOM:-/com/nam/prod}   
-export COMNAM=${COMNAM:-${INCOM}/nam.${PDY}}
-export COMICE=${COMICE:-${INCOM}/nam.${PDY}}
-export com=${com:-/com/${NET}/${envir}}
-export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUT=${COMOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export COMINOUT=${COMINOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export DCOMROOT=${DCOMROOT:-/dcom}
-export DCOM=${DCOM:-${DCOMROOT}/us007003}
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
+export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 
 if [ "$SENDCOM" = YES ]; then
-  mkdir -p $COMOUT $PCOM $GESOUT
+  mkdir -p $COMOUT $PCOM
 fi
 
-export wavelog=${com}/wave.log
+export wavelog=${COMOUTwave}/wave.log
 
 env
 

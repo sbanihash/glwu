@@ -108,13 +108,13 @@
     ymdht=`$NDATE -$inc $ymdh`
     ymd=`echo $ymdht | cut -c1-8`
     ext=`echo $ymdht | cut -c9-10`
-    ndfd_files=`find $DCOM/$ymd/wgrbbul/ndfd/glwind_2p5_${ext}[3-4]?.grib2`
+    ndfd_files=`find $DCOMIN/$ymd/wgrbbul/ndfd/glwind_2p5_${ext}[3-4]?.grib2`
 
 # Find files that are behind the search hour
     ymdhb=`$NDATE -$inc $ymdh`
     ymdb=`echo $ymdhb | cut -c1-8`
     extb=`echo $ymdhb | cut -c9-10`
-    ndfd_files="${ndfd_files} "`find $DCOM/$ymdb/wgrbbul/ndfd/glwind_2p5_${extb}[1-2]?.grib2`
+    ndfd_files="${ndfd_files} "`find $DCOMIN/$ymdb/wgrbbul/ndfd/glwind_2p5_${extb}[1-2]?.grib2`
     export ndfd_file="${DATA}/glwind_2p5_${ext}.grib2"
     nndfd=`echo $ndfd_files | wc -w`
 
@@ -251,7 +251,7 @@
 
   if [ "$nfile" -gt '1' ]
   then
-    cmdtype="mpirun.lsf cfp"
+    cmdtype="aprun"
   else
     cmdtype='sh'
     nfile=1
@@ -283,12 +283,12 @@
 
   for grdID in $grids $igrids #$buoy
   do
-    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${model_ver}" ]
+    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}" ]
     then
       set +x
       echo " Mod def file for $grdID found in $FIXwave. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $FIXwave/wave_${modID}_${grdID}.moddef.${model_ver} mod_def.$grdID
+      cp $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver} mod_def.$grdID
 
     else
       set +x
@@ -351,8 +351,7 @@
 
     if [ "$nfile" -gt '1' ]
     then
-      ${mpicmd}
-       aprun -N5 -n5 -j1 cfp cmdfile
+      aprun -N5 -n5 -j1 cfp cmdfile
       exit=$?
     else
       ./cmdfile.1
@@ -812,7 +811,7 @@
   if [ "$ndfd_ok" = 'no' ]
   then
     msg="ERROR IN EXTRACTING DATA FROM NDFD GRIDS"
-    ./postmsg "$jlogfile" "$msg"
+    postmsg "$jlogfile" "$msg"
     echo ' ' > warning
     echo '***********************************************************' >> warning
     echo '*** WARNING !! ERROR IN EXTRACTING DATA FROM NDFD GRIDS ***' >> warning

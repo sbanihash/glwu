@@ -56,7 +56,7 @@
     echo '************************************************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp (Could not create temp directory)"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp (Could not create temp directory)"
     exit 1
   fi
 
@@ -85,7 +85,7 @@
     echo ' '
     echo "$YMDH $cycle $EXECcode $COMOUT $runID $SENDCOM $SENDDBN $grids"
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
   fi
 
@@ -149,21 +149,14 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp"
     exit 3
   fi
-
-## If there is a precomputed weigths file, store in FIX
-#  if [ -f precomp_weights.bin ] && [ ! -f $FIXwave/precomp_weights.bin.$grdID ]
-#  then
-#    cp -f precomp_weights.bin $FIXwave/precomp_weights.bin.$gddID
-#  fi
 
 # 1.b Clean up
 
 #  rm -f grid_interp.inp
 #  rm -f mod_def.*
-  cp out_grd.$grdID ../out_grd.$grdID
 
 # 1.c Save in /com
 

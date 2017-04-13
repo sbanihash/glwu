@@ -48,7 +48,7 @@
     echo '*******************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ./postmsg "$jlogfile" " TIME IN waveice_glw.sh NOT SET"
+    postmsg "$jlogfile" " TIME IN waveice_glw.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -60,7 +60,7 @@
 
 # 0.c The tested variables should be exported by the calling script.
 
-  if [ -z "$DCOM" ]
+  if [ -z "$DCOMIN" ]
   then
     set +x
     echo ' '
@@ -68,7 +68,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    ./postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
     exit 2
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -82,7 +82,7 @@
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file
-  nicice=${DCOM}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+  nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -121,7 +121,7 @@
 
         set +x
         echo " "
-        echo " NIC ice file found in ${DCOM}: ${nicice}" 
+        echo " NIC ice file found in ${DCOMIN}: ${nicice}" 
         echo " "
         [[ "$LOUD" = YES ]] && set -x
 
@@ -143,7 +143,7 @@
           echo '*** ERROR RUNNNING inpaint_nic_glwu ***'
           echo '***************************************'
           echo ' '
-          ./postmsg "$jlogfile" " INPAINT FAILED."
+          postmsg "$jlogfile" " INPAINT FAILED."
           exit 3
         fi 
 
@@ -166,7 +166,7 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${DCOM}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+        nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
 
       fi
 
@@ -210,7 +210,7 @@ EOF
     echo '*** FATAL ERROR IN ICE CONCENTRATION FILE **'
     echo '********************************************'
     echo ' '
-    ./postmsg "$jlogfile" "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
+    postmsg "$jlogfile" "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     exit 4
   else

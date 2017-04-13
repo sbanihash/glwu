@@ -118,8 +118,8 @@
     
     if [ ! -f mod_def.$grdID ]        
     then      
-      echo "   Copy mod_def.$grdID from $FIXwave/wave_${modID}_$grdID.moddef.${model_ver}"      
-      cp $FIXwave/wave_${modID}_$grdID.moddef.${model_ver} mod_def.$grdID        
+      echo "   Copy mod_def.$grdID from $FIXwave/wave_${modID}_$grdID.moddef.${wave_glwu_ver}"      
+      cp $FIXwave/wave_${modID}_$grdID.moddef.${wave_glwu_ver} mod_def.$grdID        
     fi
     
     if [ -f mod_def.$grdID ]  
@@ -225,7 +225,7 @@
   rdate=`echo $ymdh | cut -c 1-8`     
   rcycle=t`echo $ymdh | cut -c 9-10`z   
 
-  dir=$com/${RUN}.${rdate}  
+  COMINrst=${COMINwave}/${RUN}.${rdate}  
    
   echo "Attempting to copy restart file from $dir"
 
@@ -233,11 +233,11 @@
   do
     
     file=$runID.$grdID.${rcycle}.restart
-    if [ -d $dir ]        
+    if [ -d $COMINrst ]        
     then      
-      if [ -f $dir/$file ]  
+      if [ -f $COMINrst/$file ]  
       then    
-        cp  $dir/$file restart.$grdID   
+        cp  $COMINrst/$file restart.$grdID   
       fi      
     fi        
     
@@ -407,13 +407,6 @@ pwd
         cp               out_grd.$grdID     $COMOUT/$runID.$grdID.$cycle.outgrd
       fi      
       
-#      if [ "${runID}" = "glw" ]
-#      then        
-#        if [ -f restart001.$grdID ] ; then    
-#         echo "   Copying restart001.$grdID to $COMRST/$runID.$grdID.$ncycle.restart"     
-#         cp               restart001.$grdID    $COMRST/$runID.$grdID.$ncycle.restart     
-#        fi
-#      fi
     done
 
       irst=1
@@ -424,7 +417,7 @@ pwd
         ymdh=`$NDATE $stp_hour $ymdh`
         ndate=`echo $ymdh | cut -c 1-8`
         ncycle=t`echo $ymdh | cut -c 9-10`z
-        COMRST=${com}/${RUN}.${ndate}
+        COMRST=${COMINrst}/${RUN}.${ndate}
         if [ ! -d $COMRST ]; then
           mkdir -p $COMRST
         fi

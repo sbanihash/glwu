@@ -1,66 +1,36 @@
 #!/bin/bash
 
-set -xa
-# #### 05/04/99 #####################
-# SET WAVE SHELL PROCESSING VARIABLES
-# ###################################
-export PS4='$SECONDS + '
 date
+
+set -xa
+
+export PS4='$SECONDS + '
  
-# 
-# obtain unique process id (pid) and make temp directory
-#
-
-export pid=$$
-
 # PATH for working directory
 export DATA=${DATA:-${DATAROOT:?}/$jobid}
 mkdir -p $DATA
 cd $DATA
 
-export cycle=t${cyc}z 
+# Set cycle parameters
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh   #prod_util module needs to be loaded upstream of this
+. PDY
  
-####################################
-# File To Log Msgs
-####################################
-
-if [ ${envir} = "prod" ]
-then
-  export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-else
-  export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
-  export SENDDBN=${SENDDBN:-NO}
-  export DBNLOG=${DBNLOG:-YES}
-  export DBNtag=${DBNtag:="_PARA"}  # '=' used instead of '-' to ensure to use the non-prod alert type for non-prod jobs
-  [ ${envir} = "test" ] && export SENDDBN=NO
-fi
-
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LSF${job}"
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
-
-export MP_PULSE=0
-
+# NCO alerts and outputs 
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export SENDCOM=${SENDCOM:-YES}
-export DBNtag=${DBNtag:-""}
 
+# Set runID 
+export runID=glwu
 export modID=glwu
-export sigMODE=prep
 
 export NET=wave
-export RUN=glw
+export RUN=glwu
 
-export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-####################################
 # Path to HOME Directory
-####################################
-export HOMEwave=${HOMEwave:-/nw${envir}/${NET}_${modID}.${model_ver}}
-export CODEwave=${CODEwave:-/nw${envir}/${NET}_code.${code_ver}/${code_pkg}}
+export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
+export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
 
 export EXECwave=${EXECwave:-${HOMEwave}/exec}
 export FIXwave=${FIXwave:-${HOMEwave}/fix}
@@ -68,44 +38,19 @@ export PARMwave=${PARMwave:-${HOMEwave}/parm}
 export USHwave=${USHwave:-${HOMEwave}/ush}
 export EXECcode=${EXECcode:-${CODEwave}/exec}
 
-###################################
-# Set up the UTILITIES
-###################################
-export utilscript=${utilscript:-/nwprod/util/ush}
-export utilexec=${utilexec:-/nwprod/util/exec}
+# Set COM Paths
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
+export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 
-# Run setup to initialize working directory and utility scripts
-sh ${utilscript}/setup.sh
-#export PDY=20130310
+if [ "$SENDCOM" = YES ]; then
+  mkdir -p $COMOUT
+fi
 
-# Set PDY
-sh ${utilscript}/setpdy.sh
-. PDY
+export wavelog=${COMOUTwave}/wave.log
 
-###################################
-# Set COM Paths and GETGES environment
-###################################
-
-export GETGES_envr=${GETGES_env:-prod}
-
-# Location of NDFD input files
-export DCOMROOT=${DCOMROOT:-/dcom}
-export DCOM=${DCOM:-${DCOMROOT}/us007003}
-export COMNDFD=${COMNDFD:-${DCOMROOT}/us007003}
-
-export com=${com:-/com/${NET}/${envir}}
-export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUT=${COMOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export COMINOUT=${COMINOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
-
-mkdir -p $COMOUT
-export wavelog=${com}/wave.log
-
-##################################
-# Set the mpi run command appropriate for the job card
-##################################
-export mpicmd="mpirun.lsf ${utilexec}/mpiserial"
- 
 env
 
 ####################################################
@@ -150,7 +95,8 @@ fi
 # Remove temp directories
 ###################################
 
-cd ${TMPhome}
-    [ -z $keepwrkdir ] &&  rm -rf ${DATA}
+if [ "$KEEPDATA" != YES ]; then
+  rm -rf $DATA
+fi
 
 date

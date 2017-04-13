@@ -31,7 +31,7 @@
   [[ "$LOUD" != YES ]] && set +x
 
   cd $DATA
-  ./postmsg "$jlogfile" "Generating mod_def file"
+  postmsg "$jlogfile" "Generating mod_def file"
 
   mkdir -p moddef_${1}
   cd moddef_${1}
@@ -58,7 +58,7 @@
     echo '**************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ./postmsg "$jlogfile" "GRID IN wavemod_def.sh NOT SET"
+    postmsg "$jlogfile" "GRID IN wavemod_def.sh NOT SET"
     exit 1
   else
     grdID=$1
@@ -67,7 +67,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECcode" ] || [ -z "$model_ver" ]
+  if [ -z "$grdID" ] || [ -z "$EXECcode" ] || [ -z "$wave_glwu_ver" ]
   then
     set +x
     echo ' '
@@ -76,7 +76,7 @@
     echo '*********************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ./postmsg "$jlogfile" "EXPORTED VARIABLES IN wavemod_def.sh NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN wavemod_def.sh NOT SET"
     exit 2
   fi
 
@@ -109,13 +109,13 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ./postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid"
     exit 3
   fi
  
   if [ -f mod_def.ww3 ]
   then
-    cp mod_def.ww3 $FIXwave/wave_${modID}_${grdID}.moddef.${model_ver}
+    cp mod_def.ww3 $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}
     mv mod_def.ww3 ../mod_def.$grdID
   else
     set +x
@@ -125,7 +125,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ./postmsg "$jlogfile" "FATAL ERROR : Mod def File creation FAILED"
+    postmsg "$jlogfile" "FATAL ERROR : Mod def File creation FAILED"
     exit 4
   fi
 
