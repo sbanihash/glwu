@@ -417,16 +417,16 @@ pwd
         ymdh=`$NDATE $stp_hour $ymdh`
         ndate=`echo $ymdh | cut -c 1-8`
         ncycle=t`echo $ymdh | cut -c 9-10`z
-        COMRST=${COMINrst}/${RUN}.${ndate}
-        if [ ! -d $COMRST ]; then
-          mkdir -p $COMRST
+        COMOUTrst=${COMINwave}/${RUN}.${ndate}
+        if [ ! -d $COMOUTrst ]; then
+          mkdir -p $COMOUTrst
         fi
         srst="00${irst}"
         for grdID in $grids
         do
           if [ -f restart${srst}.$grdID ] ; then
-            echo "   Copying restart${srst}.$grdID to $COMRST/$runID.$grdID.$ncycle.restart"
-            cp               restart${srst}.$grdID    $COMRST/$runID.$grdID.$ncycle.restart
+            echo "   Copying restart${srst}.$grdID to $COMOUTrst/$runID.$grdID.$ncycle.restart"
+            cp               restart${srst}.$grdID    $COMOUTrst/$runID.$grdID.$ncycle.restart
           fi
         done
 
