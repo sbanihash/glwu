@@ -198,6 +198,9 @@ EOF
 
      cat T_OEBA88_C_KNWC.zeros >> ../T_OEBA88_C_KNWC.${ymdh}
      cp ../T_OEBA88_C_KNWC.${ymdh} ../T_OEBA88_C_KNWC.newice
+
+     echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
+
    fi
 
 #---------------------------------------------------------------------#

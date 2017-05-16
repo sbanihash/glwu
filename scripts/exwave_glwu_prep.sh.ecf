@@ -161,6 +161,7 @@
         if [ ${vtimei} -le ${ymdh_beg} ]
         then
           cp ndfd_${tlatest}.grb2 ${ndfd_file}
+          echo "NDFD file used: ndfd_${tlatest}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
         fi
       fi
 # If latest files failed try the second file if present
@@ -172,6 +173,7 @@
         if [ ${vtimei} -le ${ymdh_beg} ]
         then
           cp ndfd_${tsecond}.grb2 ${ndfd_file}
+          echo "NDFD file used: ndfd_${tsecond}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
         fi
       fi
 
@@ -223,7 +225,6 @@
     err=1;export err;err_chk
   else
     export ndfd_file
-    echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
     if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
     then
       lsth=147
