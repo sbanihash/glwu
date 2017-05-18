@@ -193,7 +193,7 @@ EOF
 
 # Create final ice file for intake in ww3_prep
 cat > ../T_OEBA88_C_KNWC.${ymdh} << EOF
-${PDYtag}${CYCtag} ${fcsth}
+${PDYtag} ${CYCtag}0000
 EOF
 
      cat T_OEBA88_C_KNWC.zeros >> ../T_OEBA88_C_KNWC.${ymdh}
