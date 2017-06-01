@@ -33,8 +33,8 @@
   fi
 
   off_hour=0
-  stp_hour=1 # Hourly GLWU runs
 
+  stp_hour=1 # Hourly GLWU runs
 # --------------------------------------------------------------------------- #
 # 1.  Loop to find file
 

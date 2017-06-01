@@ -107,6 +107,7 @@
       echo "  Date outside ice window, setting ice fields to zero"
       echo " "
       [[ "$LOUD" = YES ]] && set -x
+      break
     else
 
 # Start searching for NIC file
