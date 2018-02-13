@@ -44,5 +44,9 @@ D) IMPLEMENTATION INSTRUCTIONS
  7) Runtime modules for operational steps
   - All steps: "prod_envir prod_util PrgEnv-intel iobuf"
   - PREP and POST steps: above modules and also "cfp-intel-sandybridge"
-
+ 8) PGEN step need review. J-job and ex-script have been tested in dev but need perl
+    scripts to be tweaked as follows:
+    - formbul.pl and formbul_config in util_shared/1.0.5 need to have internal paths
+    in formbul.pl to formbul_config need to be hardwired or properly added in formbul.pl
+    in formbul_config, paths to PCOM, deckpath and jlog_file need to be properly set
 

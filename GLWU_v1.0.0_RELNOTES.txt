@@ -14,21 +14,51 @@ SUMMARY:
 CHANGE REQUEST CLASS:
 Major system upgrade
 
-DESCRIPTION OF CHANGE:
+STRUCTURE AND RESOURCE DESCRIPTION
+Four major steps PREP, FORECAST, POST and PGEN
+- PREP
+ - No changes in node count relative to P1 (5 nodes, but now 120 procs)
+ - Runs about 5 times faster (~ 1 min)
+- FORECAST
+ - Requires now 32 nodes (768 cpus), from 24 nodes (384 cpus)
+ - Runs about 3 times slower due to higher res grid (~ 20-25 min)
+ - Runs 20 new short range cycles in about ~10 min
+- POST
+  - Requires 13 nodes (312 cpus), from 2 nodes (32 cpus)
+  - Added new output types and files as per description below
+  - I recommend test alternative node count in NCO prod envir if need
+    to reduce footprint
+- PGEN
+  - Serial job, no changes relative to P1
+- All steps are run at hourly cycles [00,01,02,...,21,22,23]Z
+ - Cycles 02, 08, 14 and 20Z are long-range (147h forecast range)
+ - All other cycles are short-range (48h) 
 
+CHANGES TO SCRIPTS AND CODES:
 0) All scripts
 - Removal of switch between glwn and glwn late runs (all is now glwu)
 - PGEN step has not been tested. Scripts were modified to comply with new output
   file names, but not tested yet. This is usually perfomed by NCO after code 
   delivery.
-
+- modules have now been specified with versions for both runtime and compilation
+- model_ver and code_ver were replaced by specific wave_glwu_ver and 
+  wave_code_ver tags
 1) J-Jobs
+- Root-level variables were added to all j-jobs to define NCO paths (need
+  verification at NCO's end)
+- Input and output COM are now clearly labeled
+- COMINwave and COMOUTwave are used to assign base directories without a date, as
+  these are used to specify input or output locations for dates different than
+  current run,
 - Modified to comply with current NCO standards (eg, removal of variables now set 
 in prod_util and prod_envir),
 - Removal of all dev blocks,
 - JWAVE_GLWU_RUN_CHK needs to be modified to work on Cray (DST_check.pl needs to
-  be added to Cray utility scripts etc)
-
+  be added to Cray utility scripts etc). ATTENTION: this script may be removed
+  altogether in case we can run the GLWU system without EST/EDT dependency
+- JWAVE_GLWU_PGEN has been tweaked and runs on the dev end: requires adding 
+  module use /gpfs/hps/nco/ops/nwpara/modulefiles and 
+  module load util_shared/$util_shared_ver to ecflow script
 2) Execution scripts
 - exwave_glwu_prep.sh.ecf
  - Uses bottom of the hour files: search for NDFD files now looks at files 
@@ -40,10 +70,8 @@ in prod_util and prod_envir),
  - Reduction of look back ice files to a single daily analysis
    loop "while [ "$ymdh" -le "$ymdh_end_ice" ]" effectively now processes a single
    time slice.
-
 - exwave_glwu_forecast.sh.ecf
- - Minimal cleanup, no significant changes
- - Requires now 32 nodes (768 cpus)
+  - Minimal cleanup, no significant changes
 
 - exwave_glwu_post.sh.ecf
  - Addition of procedures for generating native unstructured grid netcdf gridded
@@ -61,6 +89,9 @@ in prod_util and prod_envir),
 - exwave_gwlu_pgen.sh.ecf
  - Removed publishing of grl grib2 files (5km regular grid) from the product list,
  - Added short-range glrc_2p5km_sr files for all 24 daily cycles.
+ - Needs tweaking of perl scripts formbul.pl and formbul_config in util_shared/1.0.5
+   paths to formbul_config need to be hardwired or properly added in formbul.pl
+   in formbul_config, paths to PCOM, deckpath and jlog_file need to be properly set 
 
 3) utility scripts
 - Eliminated ice climatology scripts and programs (eg, imsice_gl.sh)
@@ -73,8 +104,9 @@ in prod_util and prod_envir),
   application
 
 4) Executables
-- Eliminated convert_ice2asc.fd and imsice_gl.Cd,  
-- convert_ndfd.fd becomes convert_ndfd_glwu.fd, 
+- Eliminated convert_ice2asc.fd and imsice_gl.Cd, 
+- Removed steepness files from output: eliminated dependency on multiwavesteepgrb2
+- Change: convert_ndfd.fd becomes convert_ndfd_glwu.fd, 
 - Added inpaint_nic_glwu.fd.
 
 5) Output files
@@ -114,6 +146,17 @@ in prod_util and prod_envir),
   glwn.wstp.grlc_2p5km.tCYCz.grib2.idx
   glwn.grl.tCYCz.grib2 
   glwn.grl.tCYCz.grib2.idx
+- Removed point DBLN6 from output list as it falls outside new unstructured grid
+
+DISSEMINATION INFO
+1) All output files should be sent to FTPPRD and NOMADS
+- New files need to be added to dataflow as per list above
+- Changed and removed files also need to be updated in DATAFLOW
+2) New AWIPS product glwu.grlc_2p5km_sr.tCYCz.grib2 needs to be
+   added to AWIPS work flow 
+3) Both glwu.grlc_2p5km_sr.tCYCz.grib2 (all 24 daily cycles)
+   and glwu.grlc_2p5km.tCYCz.grib2 (four longer-range cycles)
+   need to be disseminated through NOAAPORT
 
 BUGFIXES
 - Error output from child-scripts called by exwave_glwu_prep.sh.ecf (eg, 

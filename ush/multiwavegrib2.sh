@@ -72,7 +72,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    ../postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -136,7 +136,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrib2"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrib2"
     exit 3
   fi
 
@@ -163,9 +163,10 @@
     set +x
     echo "   Alerting GRIB file as $COMOUT/$runID.$grdID.$cycle.grib2"
     echo "   Alerting GRIB index file as $COMOUT/$runID.$grdID.$cycle.grib2.idx"
+    set -x
     [[ "$LOUD" = YES ]] && set -x
-    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2${DBNtag} $job $COMOUT/$runID.$grdID.$cycle.grib2
-    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX${DBNtag} $job $COMOUT/$runID.$grdID.$cycle.grib2.idx
+    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/$runID.$grdID.$cycle.grib2
+    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX $job $COMOUT/$runID.$grdID.$cycle.grib2.idx
   fi
  
 # --------------------------------------------------------------------------- #

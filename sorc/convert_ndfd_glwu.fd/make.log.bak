@@ -1,8 +1,0 @@
-rm -f convert_ndfd_glwu.o w3timemd.o constants.o convert_ndfd_glwu.mod w3timemd.mod constants.mod convert_ndfd_glwu.lst w3timemd.lst constants.lst xref.db
-++ /opt/modules/3.2.6.7/bin/modulecmd bash list
-Currently Loaded Modulefiles:
-+ eval
-ftn -c -O3 -list -auto -convert big_endian  w3timemd.f90
-ftn -c -O3 -list -auto -convert big_endian  constants.f90
-ftn -c -O3 -list -auto -convert big_endian  convert_ndfd_glwu.f90
-ftn -O3 -list -auto -convert big_endian  -o convert_ndfd_glwu convert_ndfd_glwu.o w3timemd.o constants.o
