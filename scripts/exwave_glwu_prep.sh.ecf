@@ -102,19 +102,19 @@
   lookback=12 # hours to look back for NDFD files
   while [ "$inc" -le "$lookback" ] && [ "$foundOK" = 'no' ]
   do
-# Search for files sets a +- 20 min search ahead and behind a given hour
+# Search for files sets a +- 30 min search ahead and behind a given bottom of hour
 
 # Find files that are ahead of the search hour (bottom of hour version: search around 30 past)
     ymdht=`$NDATE -$inc $ymdh`
     ymd=`echo $ymdht | cut -c1-8`
     ext=`echo $ymdht | cut -c9-10`
-    ndfd_files=`find $DCOM/$ymd/wgrbbul/ndfd/glwind_2p5_${ext}[3-4]?.grib2`
+    ndfd_files=`find $DCOMIN/$ymd/wgrbbul/ndfd/glwind_2p5_${ext}[3-5]?.grib2`
 
 # Find files that are behind the search hour
     ymdhb=`$NDATE -$inc $ymdh`
     ymdb=`echo $ymdhb | cut -c1-8`
     extb=`echo $ymdhb | cut -c9-10`
-    ndfd_files="${ndfd_files} "`find $DCOM/$ymdb/wgrbbul/ndfd/glwind_2p5_${extb}[1-2]?.grib2`
+    ndfd_files="${ndfd_files} "`find $DCOMIN/$ymdb/wgrbbul/ndfd/glwind_2p5_${extb}[0-2]?.grib2`
     export ndfd_file="${DATA}/glwind_2p5_${ext}.grib2"
     nndfd=`echo $ndfd_files | wc -w`
 
@@ -134,67 +134,76 @@
       cp ${ndfd_files} ./.
 
 # Set WIND, WDIR and TMP tags
-      files=`ls`
+      files=`ls glwind_2p5_????.grib2`
 
 # Search for latest files and ensure only one file per variable is selected
-      windfile=;wdirfile=;tmpfile=
+      ntimes=
       for file in $files
       do
-        windOK=;wdirOK=;tmpOK=
         file_vars="`$WGRIB2 -var $file | sed 's/:/ /g' | awk '{print $3}' | uniq`"
-        windOK=`echo $file_vars | grep WIND`
-        wdirOK=`echo $file_vars | grep WDIR`
-        tmpOK=`echo $file_vars | grep TMP`
-        echo $file_vars $windOK $wdirOK $tmpOK
-        if [ $windOK ]
-        then
-          windfile="$windfile $file"
-        fi
-        if [ $wdirOK ]
-        then
-          wdirfile="$wdirfile $file"
-        fi
-        if [ $tmpOK ]
-        then
-          tmpfile="$tmpfile $file"
-        fi
+        time_tag="`$WGRIB2 -vt $file | sed -e 's/:/ /g' -e 's/vt=/ /g' | awk '{print $3}' | head -1`"
+        ntimes="$ntimes $time_tag"
+        for nvar in $file_vars
+        do
+          $WGRIB2 -match $nvar $file -grib ndfd_${nvar}_${time_tag}.grb2 > gen_file.out 2>&1
+        done
       done
 
-# Choose latest file from bundles
-      windlatest=`ls -r $windfile | sed '1!d'`
-      wdirlatest=`ls -r $wdirfile | sed '1!d'`
-      tmplatest=`ls -r $tmpfile | sed '1!d'`
+# Get latest time, second time (if present) and check if there are anough files
+      tlatest=`echo $ntimes | xargs -n1 | sort -ur | xargs | awk '{print $1}'`
+      tsecond=`echo $ntimes | xargs -n1 | sort -ur | xargs | awk '{print $2}'`
+      if [ -f ndfd_WIND_${tlatest}.grb2 ] && [ -f ndfd_WDIR_${tlatest}.grb2 ]
+      then
+# If latest file has all needed variables, move ahead
+        echo " Reading latest ndfd files in selected time range: $tsecond "
+        cat ndfd_WIND_${tlatest}.grb2 ndfd_WDIR_${tlatest}.grb2 > ndfd_${tlatest}.grb2
+        vtimei=`$WGRIB2 ndfd_${tlatest}.grb2 -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+        if [ ${vtimei} -le ${ymdh_beg} ]
+        then
+          cp ndfd_${tlatest}.grb2 ${ndfd_file}
+          echo "NDFD file used: ndfd_${tlatest}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
+        fi
+      fi
+# If latest files failed try the second file if present
+      if [ ! -f ${ndfd_file} ] && [ -f ndfd_WIND_${tsecond}.grb2 ] && [ -f ndfd_WDIR_${tsecond}.grb2 ]
+      then
+        echo " Trying second ndfd files in selected time range: $tsecond "
+        cat ndfd_WIND_${tsecond}.grb2 ndfd_WDIR_${tsecond}.grb2 > ndfd_${tsecond}.grb2
+        vtimei=`$WGRIB2 ndfd_${tsecond}.grb2 -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+        if [ ${vtimei} -le ${ymdh_beg} ]
+        then
+          cp ndfd_${tsecond}.grb2 ${ndfd_file}
+          echo "NDFD file used: ndfd_${tsecond}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
+        fi
+      fi
 
-# Make unified list of files and eliminate duplicate file names
-# (duplicates can occur if two variables are packed into one file)
+# Create final NDFD file with found consistent WIND and WDIR data
+      if [ -f ${ndfd_file} ]
+      then
 
-      filelist=`echo $windlatest $wdirlatest $tmplatest | uniq`
-      echo $filelist
-
-      cat ${filelist} > ${ndfd_file}
-
-      cd ${DATA}
-      rm -rf ./ndfd_tmp
+        cd ${DATA}
+        rm -rf ./ndfd_tmp
 
 # Get first time slice of ndfd file
-      vtimei=`$WGRIB2 ${ndfd_file} -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
-      if [ ${vtimei} -le ${ymdh_beg} ]
-      then
-# Get inventory of time stamps in ndfd file
-        vtimes_wind=`$WGRIB2 ${ndfd_file} -match WIND -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
-        vtimes_wdir=`$WGRIB2 ${ndfd_file} -match WDIR -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
-        nvt1=`echo $vtimes_wind | wc -w`  
-        nvt2=`echo $vtimes_wdir | wc -w`  
-        if [ $nvt1 -gt 36 ] && [ ${nvt1} -eq ${nvt2} ]
+        vtimei=`$WGRIB2 ${ndfd_file} -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+        if [ ${vtimei} -le ${ymdh_beg} ]
         then
-          vtimes=$vtimes_wind
-          foundOK='yes'
+# Get inventory of time stamps in ndfd file
+          vtimes_wind=`$WGRIB2 ${ndfd_file} -match WIND -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+          vtimes_wdir=`$WGRIB2 ${ndfd_file} -match WDIR -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+          nvt1=`echo $vtimes_wind | wc -w`  
+          nvt2=`echo $vtimes_wdir | wc -w`  
+          if [ $nvt1 -gt 36 ] && [ ${nvt1} -eq ${nvt2} ]
+          then
+            vtimes=$vtimes_wind
+            foundOK='yes'
+          else
+            echo " NDFD file has incongruent numbers of WIND and WDIR data (looking further)"
+          fi
         else
-          echo " NDFD file has incongruent numbers of WIND and WDIR data (looking further)"
+          echo " NDFD file does not extend back to starting time (Looking further)"
+          foundOK='no'
         fi
-      else
-        echo " NDFD file does not extend back to starting time (Looking further)"
-        foundOK='no'
       fi
     fi
     inc=`expr $inc + 1`
@@ -216,7 +225,6 @@
     err=1;export err;err_chk
   else
     export ndfd_file
-    echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
     if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
     then
       lsth=147
@@ -251,7 +259,7 @@
 
   if [ "$nfile" -gt '1' ]
   then
-    cmdtype="mpirun.lsf cfp"
+    cmdtype="aprun"
   else
     cmdtype='sh'
     nfile=1
@@ -283,12 +291,12 @@
 
   for grdID in $grids $igrids #$buoy
   do
-    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${model_ver}" ]
+    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}" ]
     then
       set +x
       echo " Mod def file for $grdID found in $FIXwave. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $FIXwave/wave_${modID}_${grdID}.moddef.${model_ver} mod_def.$grdID
+      cp $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver} mod_def.$grdID
 
     else
       set +x
@@ -351,8 +359,7 @@
 
     if [ "$nfile" -gt '1' ]
     then
-      ${mpicmd}
-       aprun -N5 -n5 -j1 cfp cmdfile
+      aprun -N5 -n5 -j1 cfp cmdfile
       exit=$?
     else
       ./cmdfile.1
@@ -812,7 +819,7 @@
   if [ "$ndfd_ok" = 'no' ]
   then
     msg="ERROR IN EXTRACTING DATA FROM NDFD GRIDS"
-    ./postmsg "$jlogfile" "$msg"
+    postmsg "$jlogfile" "$msg"
     echo ' ' > warning
     echo '***********************************************************' >> warning
     echo '*** WARNING !! ERROR IN EXTRACTING DATA FROM NDFD GRIDS ***' >> warning

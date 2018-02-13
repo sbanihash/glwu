@@ -1,44 +1,36 @@
-#!/bin/sh
+#!/bin/bash
 
-set -xa
-# ###################################
-# SET WAVE SHELL PROCESSING VARIABLES
-# ###################################
-#
-# obtain unique process id (pid) and make temp directory
-#
-export PS4='$SECONDS + '
 date
 
-export pid=$$
+set -xa
 
-if [ "${envir}" = 'prod' ];
-then
-   export DATA=/tmpnwprd1/$job.${pid}
-else
-   export DATA=/tmpnwprd2/$job.${pid}
-fi
-
+export PS4='$SECONDS + '
+ 
+# PATH for working directory
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
 mkdir -p $DATA
 cd $DATA
 
-export cycle=t${cyc}z
+# Set cycle parameters
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. PDY
+
+# NCO alerts and outputs 
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDCOM=${SENDCOM:-YES}
+
+# Set runID (Until modID becomes glwn and glw is dumped) 
+export runID=glwu
+export modID=glwu
+
 export NET=wave
 export RUN=glwu
 
-####################################
-# File To Log Msgs
-####################################
-export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-export DBNLOG=${DBNLOG:-YES}
-export DBNtag=${DBNtag:="_PARA"}  # '=' used instead of '-' to ensure to use the non-prod alert type for non-prod jobs
-export PCOM=${PCOM:-/pcom/${envir}/${NET}}
-
-####################################
 # Path to HOME Directory
-####################################
-export HOMEwave=${HOMEwave:-/nw${envir}/${NET}_${modID}.${model_ver}}
-export CODEwave=${CODEwave:-/nw${envir}/${NET}_code.${code_ver}/${code_pkg}}
+export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
+export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
 
 export EXECwave=${EXECwave:-${HOMEwave}/exec}
 export FIXwave=${FIXwave:-${HOMEwave}/fix}
@@ -46,58 +38,28 @@ export PARMwave=${PARMwave:-${HOMEwave}/parm}
 export USHwave=${USHwave:-${HOMEwave}/ush}
 export EXECcode=${EXECcode:-${CODEwave}/exec}
 
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL$job"
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
-
-#export MP_PULSE=0
-#export MP_TIMEOUT=9000
- 
-export SENDECF=${SENDECF:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}
-export GET_IOPROFILE=${GET_IOPROFILE:-NO}
-export DBNtag=${DBNtag:-""}
-
-export modID=glwu               # model ID for file names
-
-# Run setpdy and initialize PDY variables
-sh $UTILROOT/setpdy.sh
-. PDY
-
-export com=${com:-/com/${NET}/${envir}}
-export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUT=${COMOUT:-/com/${NET}/${envir}/${RUN}.${PDY}}
+# Set COM Paths
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
+export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export PCOM=${PCOM:-/pcom/${NET}}
 
-mkdir -p $COMOUT
-mkdir -p $PCOM
-export wavelog=${com}/wave.log
+if [ "$SENDCOM" = YES ]; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+export wavelog=${COMOUTwave}/wave.log
  
 env
 
-########################################################
 # Execute the script.
-if [ $GET_IOPROFILE = YES ]; then
-   /usrx/local/mio/tools/bin/miostats -X0 \
-   ${HOMEwave}/scripts/exwave_glwu_pgen.sh.ecf
-else
-   ${HOMEwave}/scripts/exwave_glwu_pgen.sh.ecf
-fi
-########################################################
+${HOMEwave}/scripts/exwave_glwu_pgen.sh.ecf
 
-##################################################
-# save the profiling data captured from miostats
-##################################################
-if [ $GET_IOPROFILE = YES ]; then
-    . /com/miostats/.set_IOprofile
+if [ "$KEEPDATA" != YES ]; then
+  rm -rf $DATA
 fi
-
-cd /tmpnwprd1
-    [ -z $keepwrkdir ] &&  rm -rf ${DATA}
 
 date
+

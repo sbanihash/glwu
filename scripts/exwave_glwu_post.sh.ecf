@@ -39,10 +39,10 @@
 
   cd $DATA
 
-  ./postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
   msg="Starting GLW POSTPROCESSOR SCRIPT for $runID"
-  ./postmsg "$jlogfile" "$msg"
+  postmsg "$jlogfile" "$msg"
 
   set +x
   echo ' '
@@ -216,7 +216,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $grdID $date $cycle : field output missing." >> $wavelog
-      ./postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE"
+      postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE"
       exit_code=1
       field_OK='no'
       grib_OK='no'
@@ -232,13 +232,13 @@ export grint_OK='yes'
 
   for grdID in $grids $itgrids $isgrids $ggrids $ngrids $addggrids
   do
-    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${model_ver}" ]
+    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}" ]
     then
       set +x
       echo " Mod def file for $grdID found in $FIXwave. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp $FIXwave/wave_${modID}_${grdID}.moddef.${model_ver} mod_def.$grdID
+      cp $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver} mod_def.$grdID
 
     else
       set +x
@@ -257,7 +257,7 @@ export grint_OK='yes'
         [[ "$LOUD" = YES ]] && set -x
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-        ./postmsg "$jlogfile" "$msg"
+        postmsg "$jlogfile" "$msg"
         set +x
         echo ' '
         echo '*********************************************************** '
@@ -287,7 +287,7 @@ export grint_OK='yes'
       $FSYNC mod_def.$grdID
     else
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      ./postmsg "$jlogfile" "$msg"
+      postmsg "$jlogfile" "$msg"
       set +x
       echo ' '
       echo '********************************************** '
@@ -307,12 +307,12 @@ export grint_OK='yes'
 
 # 1.c Raw point data file and moddef file
 
-  if [ -f "$FIXwave/wave_${modID}_${pntgrd}.moddef.${model_ver}" ]
+  if [ -f "$FIXwave/wave_${modID}_${pntgrd}.moddef.${wave_glwu_ver}" ]
   then
     set +x
     echo " Mod def file for $pntgrd found in $FIXwave. copying ...."
     [[ "$LOUD" = YES ]] && set -x
-    cp $FIXwave/wave_${modID}_${pntgrd}.moddef.${model_ver} mod_def.$pntgrd
+    cp $FIXwave/wave_${modID}_${pntgrd}.moddef.${wave_glwu_ver} mod_def.$pntgrd
   else
     set +x
     echo " Mod def file for $pntgrd not found in $FIXwave. Setting up to generate ..."
@@ -329,7 +329,7 @@ export grint_OK='yes'
       [[ "$LOUD" = YES ]] && set -x
     else
       msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-      ./postmsg "$jlogfile" "$msg"
+      postmsg "$jlogfile" "$msg"
       set +x
       echo ' '
       echo '*********************************************************** '
@@ -359,7 +359,7 @@ export grint_OK='yes'
     $FSYNC mod_def.$pntgrd
   else
     msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-    ./postmsg "$jlogfile" "$msg"
+    postmsg "$jlogfile" "$msg"
     set +x
     echo ' '
     echo '********************************************** '
@@ -403,7 +403,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : point output missing." >> $wavelog
-    ./postmsg "$jlogfile" "NON-FATAL ERROR NO RAW POINT OUTPUT FILE"
+    postmsg "$jlogfile" "NON-FATAL ERROR NO RAW POINT OUTPUT FILE"
     exit_code=12
     point_OK='no'
     spec_OK='no'
@@ -435,7 +435,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : buoy location file missing." >> $wavelog
-    ./postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOCATION FILE"
+    postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOCATION FILE"
     exit_code=13
     point_OK='no'
     spec_OK='no'
@@ -466,7 +466,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : GRIB2 template file missing." >> $wavelog
-      ./postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
+      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
       exit_code=16
       grib_OK='no'
     fi
@@ -489,14 +489,14 @@ export grint_OK='yes'
       set +x
       echo ' '
       echo '*********************************************** '
-      echo '*** ERROR : NO TEMPLATE FOR GRIB INPUT FILE *** '
+      echo '*** ERROR : NO TEMPLATE FOR NCDF INPUT FILE *** '
       echo '*********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$runID post $date $cycle : GRIB2 template file missing." >> $wavelog
-      ./postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
-      exit_code=16
-      grib_OK='no'
+      echo "$runID post $date $cycle : NCDF template file missing." >> $wavelog
+      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR NCDF INPUT FILE"
+      exit_code=17
+      ncdf_OK='no'
     fi
   fi
 
@@ -520,7 +520,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : specra template file missing." >> $wavelog
-    ./postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
+    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=18
     spec_OK='no'
     bull_OK='no'
@@ -548,7 +548,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : time series template file missing." >> $wavelog
-    ./postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR TIME SERIES INPUT FILE"
+    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR TIME SERIES INPUT FILE"
     exit_code=18
     ts_OK='no'
     ripin_OK='no'
@@ -574,7 +574,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : bulletin template file missing." >> $wavelog
-    ./postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
+    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=19
     bull_OK='no'
     Obull_OK='no'
@@ -602,7 +602,7 @@ export grint_OK='yes'
     then
       pgm=wave_post
       msg="ABNORMAL EXIT: ERROR IN multiwavespec"
-      ./postmsg "$jlogfile" "$msg"
+      postmsg "$jlogfile" "$msg"
       set +x
       echo ' '
       echo '******************************************** '
@@ -641,7 +641,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : buoy log file missing." >> $wavelog
-      ./postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+      postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       exit_code=19
       spec_OK='no'
       bull_OK='no'
@@ -720,7 +720,7 @@ export grint_OK='yes'
         set +x
         echo "      Error in grid interpolation for $igrdID."
         [[ "$LOUD" = YES ]] && set -x
-        ./postmsg "$jlogfile" "FATAL ERROR in GRID interpolation for $igrdID."
+        postmsg "$jlogfile" "FATAL ERROR in GRID interpolation for $igrdID."
         err=1 ; export err ; err_chk
         mv -f grint_$igrdID.out grint_$igrdID.err
       else
@@ -1397,7 +1397,6 @@ export grint_OK='yes'
       fi
 
       cp ${file_name} $COMOUT/.
-
       exit=$?
 
       if  [ "$exit" != '0' ]
