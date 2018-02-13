@@ -489,14 +489,14 @@ export grint_OK='yes'
       set +x
       echo ' '
       echo '*********************************************** '
-      echo '*** ERROR : NO TEMPLATE FOR NCDF INPUT FILE *** '
+      echo '*** ERROR : NO TEMPLATE FOR GRIB INPUT FILE *** '
       echo '*********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$runID post $date $cycle : NCDF template file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR NCDF INPUT FILE"
-      exit_code=17
-      ncdf_OK='no'
+      echo "$runID post $date $cycle : GRIB2 template file missing." >> $wavelog
+      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
+      exit_code=16
+      grib_OK='no'
     fi
   fi
 
@@ -779,13 +779,13 @@ export grint_OK='yes'
   then
     for grdID in $ggrids
     do
-      if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
+      if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
       then
         case $grdID in
-          grl) GRIDNR=176  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=0 ;;
-          grlr) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=0 ;;
-          grlr_500m) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=0 ;;
-          grlc_2p5km) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=30 ;;
+          grl) GRIDNR=176  ; MODNR=131  ; dtgrib=3600. ; ngrib=150 ; GTMPLN=0 ;;
+          grlr) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=150 ; GTMPLN=0 ;;
+          grlr_500m) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=150 ; GTMPLN=0 ;;
+          grlc_2p5km) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=150 ; GTMPLN=30 ;;
           grlc_2p5km_sr) GRIDNR=255  ; MODNR=133  ; dtgrib=3600. ; ngrib=49 ; GTMPLN=30 ;;
           grlc_1p0km) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=49 ; GTMPLN=30 ;;
         esac
@@ -807,7 +807,7 @@ export grint_OK='yes'
       if [ "$grdID" = "grlc_2p5km" ]
       then
         grib2_GO='no'
-        if [ "${cyc}" = "03" ] || [ "${cyc}" = "09" ]  || [ "${cyc}" = "15" ] || [ "${cyc}" = "21" ]
+        if [ "${cyc}" = "01" ] || [ "${cyc}" = "07" ]  || [ "${cyc}" = "13" ] || [ "${cyc}" = "19" ]
         then
           grib2_GO='yes'
         fi
@@ -1370,6 +1370,9 @@ export grint_OK='yes'
       grdID=glwu
       cp -f $runID.$grdID.$cycle.nc $COMOUT/$runID.$grdID.$cycle.nc
 
+      if [ $SENDDBN = YES ]; then
+        $DBNROOT/bin/dbn_alert MODEL WAVE_NC $job $COMOUT/$runID.$grdID.$cycle.nc 
+      fi
 # Save 4km regular outgrd for web plotting
       grdID=grlr
       cp -f out_grd.$grdID $COMOUT/$runID.$grdID.$cycle.outgrd
@@ -1420,16 +1423,12 @@ export grint_OK='yes'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         # add optional tag to dbn_alert subtyp (to distinguish from standard prod alerts)
-        if [ "$envir" = 'prod' ]; then
-          DBNtag=${DBNtag:-""}
-        else
-          DBNtag=${DBNtag:="_PARA"}  # '=' used instead of '-' to ensure to use the non-prod alert type for non-prod jobs
-        fi
-        $DBNROOT/bin/dbn_alert MODEL OMBWAVE${DBNtag} $job $COMOUT/${file_name}
+        $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/${file_name}
       fi
     done
   fi
 
+  ecflow_client --event release_pgen
 # --------------------------------------------------------------------------- #
 # 11. Additional grib2 files
   if [ "$grib_OK" = 'yes' ]

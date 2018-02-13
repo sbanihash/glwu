@@ -44,7 +44,7 @@ export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
 export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export PCOM=${PCOM:-/pcom/${NET}}
+export PCOM=${PCOM:-$PCOMROOT/${NET}}
 
 if [ "$SENDCOM" = YES ]; then
   mkdir -p $COMOUT $PCOM

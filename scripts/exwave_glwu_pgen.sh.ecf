@@ -2,14 +2,14 @@
 ###############################################################################
 #                                                                             #
 # This script is the product generator ("graphics job")  for the multi-grid   #
-# GLWN wave model.                                                            #
+# GLWU wave model.                                                            #
 #                                                                             #
 # Remarks :                                                                   #
 # - Supplemental error output is witten to the wave.log file.                 #
 #                                                                             #
 #                                                                             #
 # Origination  : 07/01/2008                                                   #
-# Last update  : 07/01/2008                                                   # 
+# Last update  : 04/13/2017                                                   # 
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -25,10 +25,10 @@
   set $seton
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
-  msg="Starting GLWN PRODUCTS SCRIPT"
+  msg="Starting GLWU PRODUCTS SCRIPT"
   postmsg "$jlogfile" "$msg"
 
-  if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
+  if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
   then
     grids='grlc_2p5km grlc_2p5km_sr'
   else
@@ -36,7 +36,6 @@
   fi
   awipsgrib='yes'
   awipsbull='yes'
-  windID=`head -n 1 $COMIN/what_wave${modID}_used.t${cyc}z`
 
 # 0.b Date and time stuff
 
@@ -46,7 +45,7 @@
   set $setoff
   echo ' '
   echo '                         ****************************'
-  echo '                         *** GLWN PRODUCTS SCRIPT ***'
+  echo '                         *** GLWU PRODUCTS SCRIPT ***'
   echo '                         ****************************'
   echo "                                       $date $cycle"
   echo ' '
@@ -55,7 +54,6 @@
   echo "   AWIPS grib fields : $awipsgrib"
   echo "   AWIPS bulletins   : $awipsbull"
   echo "   Wave  Grids       : $grids"
-  echo "   Wind used         : $windID"
   echo ' '
   set $seton
 
@@ -176,7 +174,7 @@
      echo '*** ERROR : WIND INFORMATION NOT RECOGNIZED *** '
      echo '*********************************************** ' 
      echo ' ' 
-     echo "$modID pgen $date $cycle : Wind info (${windID}) not known " >> $wavelog 
+     echo "$modID pgen $date $cycle : Extension $ext not known " >> $wavelog 
      echo $msg 
      set $seton  
      err=7;export err;err_chk 
@@ -281,7 +279,7 @@
       set $seton
 
 
-      $utilexec/grb2index gribfile.$grdID gribindex.$grdID
+      $GRB2INDEX gribfile.$grdID gribindex.$grdID
       OK=$?
 
       if [ "$OK" != '0' ]
@@ -314,7 +312,7 @@
       export FORT31="gribindex.$grdID"
       export FORT51="$AWIPSGRB.$grdID"
 
-      $utilexec/tocgrib2 < awipsgrb.$grdID parm='KWBJ' > tocgrib2.out 2>&1
+      $TOCGRIB2 < awipsgrb.$grdID parm='KWBJ' > tocgrib2.out 2>&1
       OK=$?
 
       if [ "$OK" != '0' ]
@@ -347,7 +345,7 @@
         cp $AWIPSGRB.$grdID $PCOM/grib2.$cycle.awipsww3_${grdID}
       fi
 
-      if [ "$SENDDBN" = 'YES' ]
+      if [ "$SENDDBN_NTC" = 'YES' ]
       then
         echo "      Sending $AWIPSGRB.$grdID to DBNET."
         $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/grib2.$cycle.awipsww3_${grdID}
@@ -421,7 +419,7 @@
 #          -p $PCOM -s NO -o $oname > formbul.out 2>&1
 
 # operational version
-      $utilities/formbul.pl -d $headr -f $fname -j $job -m $modID \
+      formbul.pl -d $headr -f $fname -j $job -m $modID \
            -p $PCOM -s NO -o $oname > formbul.out 2>&1
 
       OK=$?
@@ -443,14 +441,17 @@
         err=23;export err;err_chk
       fi
         
-      cat $oname >> awipsbull.$job
+      #XXW cat $oname >> awipsbull.$job
+      cat $oname >> glwu.t${cyc}z.awipsbull
       rm -f formbul.out $oname
     done
 
   if [ $SENDCOM = "YES" ] ; then
-    cp  awipsbull.$job $PCOM/awipsbull.$job
+    #XXW cp  awipsbull.$job $PCOM/awipsbull.$job
+    cp  glwu.t${cyc}z.awipsbull $PCOM/.
     if [ $SENDDBN = "YES" ] ; then
-       $utilities/make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/awipsbull.$job $PCOM/awipsbull.$job
+       #XXW make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/awipsbull.$job $PCOM/awipsbull.$job
+       make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/glwu.t${cyc}z.awipsbull $PCOM/glwu.t${cyc}z.awipsbull
     fi
   fi
 
@@ -470,10 +471,10 @@
   echo ' '
   echo "Ending at : `date`"
   echo ' '
-  echo '                *** End of GLWN product generation ***'
+  echo '                *** End of GLWU product generation ***'
   echo ' '
 
   msg="$job completed normally"
   postmsg "$jlogfile" "$msg"
 
-# End of GLWN product generation script -------------------------------------- #
+# End of GLWU product generation script -------------------------------------- #

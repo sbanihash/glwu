@@ -225,9 +225,10 @@
     err=1;export err;err_chk
   else
     export ndfd_file
-    if [ ${cyc} -eq 3 ] || [ ${cyc} -eq 9 ] || [ ${cyc} -eq 15 ] || [ ${cyc} -eq 21 ]
+    #echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
+    if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
     then
-      lsth=147
+      lsth=149
     else
       lsth=48
     fi
@@ -862,32 +863,17 @@
 
     if [ -f ice.warning ] && [ "${runID}" == "glwu" ] ; then
 # prepare ice email	
-	if [ "$SENDECF" = 'YES' ]
-	then
-	    if [ -f email.wind ] ; then sleep 60 ; fi # wait until jwave_glwu_wind_warning starts
-	    echo "export subject='Missing GLWU/GLW ice info for $PDY t${cyc}z'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
-	    echo 'export cclist=Henrique.Alves@noaa.gov' >>$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
-	    echo "export maillist='ncep.list.spa-helpdesk@noaa.gov sdm@noaa.gov ncep.list.sos@lstsrv.ncep.noaa.gov'" >>$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
-	fi
 	echo ' ' > email.ice
 	echo '******************************************************' >> email.ice
 	echo '***   WARNING !! COULD NOT FIND GLWU/GLW ICE INFO     ' >> email.ice
 	echo '***        (SETTING ICE COVERAGE TO ZEROS)            ' >> email.ice
 	echo '******************************************************' >> email.ice
 	echo ' ' >> email.ice
-	echo "triggered by $ECF_NAME $PDY t${cyc}z" >> email.ice
-	echo "see $LSB_OUTPUTFILE for details" >> email.ice
-	if [ "$SENDECF" = 'YES' ]
-	then
-	    cp email.ice $COMOUT/${NET}_${RUN}.t${cyc}z.emailbody
-	    jobtorun=$( echo `dirname $ECF_NAME`/jwave_glwu_ice_warning )
-	    ecflow_client --run $jobtorun
-	fi
+   
+        mail.py -s "Missing GLWU/GLW ice info for $PDY t${cyc}z" Xiaoxue.Wang@noaa.gov email.ice
     fi
-    
-
       sort -b what_wave${runID}_used.$cycle > $COMOUT/what_wave${runID}_used.$cycle
-      $DBNROOT/bin/dbn_alert MODEL OMBWAVE${DBNtag} $job $COMOUT/what_wave${runID}_used.$cycle
+      $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_wave${runID}_used.$cycle
   fi
 
 
