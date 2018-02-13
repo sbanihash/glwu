@@ -60,7 +60,7 @@
     echo '***************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" " TIME IN wavendfd_glwu.sh NOT SET"
+    postmsg "$jlogfile" " TIME IN wavendfd_glwu.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -72,7 +72,7 @@
 
 # 0.c The tested variables should be exported by the calling script.
 
-  if [ -z "$DCOM" ] || [ -z "$EXECwave" ]
+  if [ -z "$DCOMIN" ] || [ -z "$EXECwave" ]
   then
     set +x
     echo ' '
@@ -80,7 +80,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    ../postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -96,14 +96,8 @@
 # Convert NDFD file scan order to make sense to wgrib2 #
   $WGRIB2 ${ndfd_file} -match "(WIND|WDIR)" -rpn alt_x_scan -set table_3.4 64 -grib_out glwnd.grb2
 
-# Interpolate to regular grid (NDFD grid at 2.5km, using about half that to avoid resolution cramp)
-  $WGRIB2 glwnd.grb2 -new_grid_winds earth -new_grid_vectors UGRD:VGRD -new_grid latlon 267.28:1376:0.0125 41.1675:910:.009 glwnd.grib2 > grib_interp.out 2>&1
-
-# Sort by time and regroup variables
-  $WGRIB2 glwnd.grib2 | sort -t: -k3,3 -k6n,6 -k5,5 -k4,4 | $WGRIB2 -i glwnd.grib2 -grib glwnds.grib2 > grib_sort.out 2>&1
-
 # Convert to UGRD/VGRD
-  $WGRIB2 glwnds.grib2 -match "(WIND|WDIR)" \
+  $WGRIB2 glwnd.grb2 -match "(WIND|WDIR)" \
      -if "WIND" -rpn "sto_1" -fi \
      -if "WDIR" -rpn "sto_2" -fi \
      -if_reg 1:2 \
@@ -111,7 +105,7 @@
        -set_var UGRD \
        -grib_out ugrd.grib2 > ugrib.out 2>&1
 
-  $WGRIB2 glwnds.grib2 -match "(WIND|WDIR)" \
+  $WGRIB2 glwnd.grb2 -match "(WIND|WDIR)" \
      -if "WIND" -rpn "sto_1" -fi \
      -if "WDIR" -rpn "sto_2" -fi \
      -if_reg 1:2 \
@@ -120,7 +114,10 @@
        -grib_out vgrd.grib2 > vgrib.out 2>&1
 
 # Unify UGRD/VGRD files
-  cat ugrd.grib2 vgrd.grib2 > gluv.grib2
+  cat ugrd.grib2 vgrd.grib2 > gluv.grb2
+
+# Interpolate to regular grid and higher reslution to avoid resolution cramp
+  $WGRIB2 gluv.grb2 -new_grid_winds earth -new_grid_vectors UGRD:VGRD -new_grid latlon 267.28:1376:0.0125 41.1675:910:.009 gluv.grib2 > grib_interp.out 2>&1
 
 # Final store on NetCDF file
   $WGRIB2 gluv.grib2 -netcdf gluv.nc > grib2nc.out 2>&1
@@ -159,7 +156,7 @@
         echo '*** FATAL ERROR IN EXECUTING WAVEPREP ***'
         echo '*****************************************'
         echo ' '
-        ../postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+        postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
         [[ "$LOUD" = YES ]] && set -x
         ndfdOK='no'
       else
@@ -171,7 +168,7 @@
           echo '*** FATAL ERROR : wind.ww3 NOT FOUND ***'
           echo '****************************************'
           echo ' '
-          ../postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+          postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
           [[ "$LOUD" = YES ]] && set -x
           ndfd_ok='no'
         else
@@ -195,7 +192,7 @@
     echo '*** FATAL ERROR : COULD NOT GENERATE wind file ***'
     echo '**************************************************'
     echo ' '
-    ../postmsg "$jlogfile" "COULD NOT EXTRACT WIND FOR $ymdh."
+    postmsg "$jlogfile" "COULD NOT EXTRACT WIND FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     ndfdOK='no'
   fi

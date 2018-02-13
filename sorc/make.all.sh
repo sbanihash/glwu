@@ -1,8 +1,7 @@
 #!/bin/bash
 set -x
-
+module purge
 module use ../modulefiles
-
 module load build_glwu.module
 
 dirs=`ls -d *.fd`
@@ -16,6 +15,7 @@ do
         module list >> make.log 2>&1
 	make >> make.log 2>&1
         mv $i ../../exec
+        make clean
         cd ../
 done
 

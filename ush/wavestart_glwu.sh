@@ -20,7 +20,7 @@
 # 0.  Preparations
 #     Check necessary export variables.
 
-  if [ -z "$YMDH" ] || [ -z "$com" ] || [ -z "$modID" ] ||\
+  if [ -z "$YMDH" ] || [ -z "${COMINwave}" ] || [ -z "$modID" ] ||\
      [ -z "$nback" ] || [ -z "$RUN" ]
   then
     echo ' '
@@ -28,13 +28,13 @@
     echo '*** EXPORTED VARIABLES IN wavestart.sh NOT SET ***'
     echo '*******************************************************'
     echo ' '
-    ./postmsg "$jlogfile" "EXPORTED VARIABLES IN wavestart.sh NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN wavestart.sh NOT SET"
     exit 1
   fi
 
   off_hour=0
-  stp_hour=1 # Hourly GLWU runs
 
+  stp_hour=1 # Hourly GLWU runs
 # --------------------------------------------------------------------------- #
 # 1.  Loop to find file
 
@@ -47,7 +47,7 @@
     date=`echo $ymdh | cut -c 1-8`
     cycle=t`echo $ymdh | cut -c 9-10`z
 
-    dir=${com}/${RUN}.${date}
+    dir=${COMINwave}/${RUN}.${date}
 
     if [ -d "$dir" ]
     then
