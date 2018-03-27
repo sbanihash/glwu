@@ -14,6 +14,8 @@ D) INPUT FILE CHANGES
 
 D) IMPLEMENTATION INSTRUCTIONS
  1) Check out wave_glwu.v1.0.1 from the git server
+    >> git clone gerrit:EMC_wave_glwu
+
  2) Build exec codes n the sorce directory using make.all.sh (invokes build_glwu.module)
  3) Make sure that no  wave_glwu*.moddef.* files are present in the fix directory,
     these should be generated when the system is run for the first time.
