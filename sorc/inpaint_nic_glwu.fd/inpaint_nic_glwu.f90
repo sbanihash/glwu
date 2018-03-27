@@ -23,12 +23,6 @@ DO ILON=1,NLON
      CICE(ILON,ILAT)=-1.
   ELSE 
      CICE(ILON,ILAT)=1E-1*CICE(ILON,ILAT)
-! Unstructured grid does not yet use transparencies for ico
-! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
-! Anything > 30% is totally blocked.
-     IF ((CICE(ILON,ILAT).GT.0.).AND.(CICE(ILON,ILAT).LE.0.4)) THEN
-       CICE(ILON,ILAT)=-1.
-     ENDIF
   ENDIF
 ENDDO
 ENDDO
@@ -37,9 +31,15 @@ CALL INPAINT(NLON,NLAT,CICE)
 
 DO ILAT=1,NLAT
 DO ILON=1,NLON
-!  WRITE(FMT,'("(",I0,"F10.4)")') NLON
-!  WRITE(FMT2,'("(",I0,"F6.0)")') NLON
   WRITE(FMT2,'("(",I0,"F6.2)")') 1
+! Unstructured grid does not yet use transparencies for ico
+! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
+! Anything > 25% is totally blocked.
+  IF(CICE(ILON,ILAT).LT.0.25)THEN
+    CICE(ILON,ILAT)=0.
+  ELSE
+    CICE(ILON,ILAT)=0.95
+  ENDIF 
   WRITE(52,FMT2)MAX(0.,CICE(ILON,ILAT))
 ENDDO
 ENDDO
