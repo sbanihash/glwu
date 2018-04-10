@@ -35,7 +35,7 @@ DO ILON=1,NLON
 ! Unstructured grid does not yet use transparencies for ico
 ! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
 ! Anything > 25% is totally blocked.
-  IF(CICE(ILON,ILAT).LT.0.25)THEN
+  IF(CICE(ILON,ILAT).LT.0.70)THEN
     CICE(ILON,ILAT)=0.
   ELSE
     CICE(ILON,ILAT)=0.95
@@ -43,7 +43,6 @@ DO ILON=1,NLON
   WRITE(52,FMT2)MAX(0.,CICE(ILON,ILAT))
 ENDDO
 ENDDO
-
 
 END
 
