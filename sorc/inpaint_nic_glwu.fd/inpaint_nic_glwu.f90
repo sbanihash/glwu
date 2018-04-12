@@ -6,6 +6,7 @@ INTEGER :: NLON,NLAT
 INTEGER :: ILON, ILAT
 CHARACTER(LEN=20) :: FMT, FMT2
 REAL,ALLOCATABLE :: MASK(:,:),CICE(:,:)
+REAL SCALEFAC
 
 OPEN(12,FILE='T_OEBA88_C_KNWC.mask')
 OPEN(13,FILE='T_OEBA88_C_KNWC.ice')
@@ -15,14 +16,28 @@ READ (13,*)NLON,NLAT
 
 ALLOCATE(CICE(NLON,NLAT),MASK(NLON,NLAT))
 
+!->New liines fro High Res Ice fields
+IF (NLON .GT. 2500) THEN
+  SCALEFAC=1E-3
+ELSE
+  SCALEFAC=1E-1
+ENDIF
+!<-end
+
+
 DO ILAT=1,NLAT
 DO ILON=1,NLON
   READ(12,*)MASK(ILON,ILAT)
   READ(13,*)CICE(ILON,ILAT)
+!   divide by 1000 for the High Resolution Ice conc.
+
   IF ((CICE(ILON,ILAT).EQ.9.999e+20).OR.(MASK(ILON,ILAT).EQ.-1)) THEN
      CICE(ILON,ILAT)=-1.
   ELSE 
-     CICE(ILON,ILAT)=1E-1*CICE(ILON,ILAT)
+!    CICE(ILON,ILAT)=1E-1*CICE(ILON,ILAT)
+!    ->New line for High Res Ice. Replace the line above
+     CICE(ILON,ILAT)=SCALEFAC*CICE(ILON,ILAT)
+
 ! Unstructured grid does not yet use transparencies for ico
 ! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
 ! Anything > 30% is totally blocked.

@@ -82,7 +82,17 @@
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file
-  nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+  if [ "${IceResol}" = "LOW" ]
+  then
+     nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+  elif [ "${IceResol}" = "HIGH" ]
+  then
+     #START NEW LINES
+     NOSCRUB=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/NICNewIce/${PDYCE}/wgrbbul
+     Prefix=T_OEBA88_C_KNWC
+     cp ${NOSCRUB}/NIC_LKS_2018_Jan_05.zip ${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
+     nicice=${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
+  fi
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -127,14 +137,70 @@
         [[ "$LOUD" = YES ]] && set -x
 
         foundOK='yes'
-        cp ${nicice} ./nicice.gr1
-# Convert grib1 to grib2
-        $CNVGRIB -g12 nicice.gr1 T_OEBA88_C_KNWC.grb2
-# Extract to text
-        $WGRIB2 T_OEBA88_C_KNWC.grb2 -text T_OEBA88_C_KNWC.ice
-# Use inpaint to extend ice concentrations over ice-file land mask
-# (Conservative approach: no averaging to fill model-data sea gaps)
-        cp ${FIXwave}/T_OEBA88_C_KNWC.mask ./
+
+        # START XXX RPH CHANGES ====================================
+        echo "ICE RESOLUTION : ${IceResol}"
+        if [ "${IceResol}" = "LOW" ]
+        then
+           cp ${nicice} ./nicice.gr1
+           #Convert grib1 to grib2
+           $CNVGRIB -g12 nicice.gr1 T_OEBA88_C_KNWC.grb2
+           # Extract to text
+           $WGRIB2 T_OEBA88_C_KNWC.grb2 -text T_OEBA88_C_KNWC.ice
+           # Use inpaint to extend ice concentrations over ice-file land mask
+           # (Conservative approach: no averaging to fill model-data sea gaps)
+           cp ${FIXwave}/T_OEBA88_C_KNWC.mask ./
+        elif [ "${IceResol}" = "HIGH" ]
+        then
+           #NWE LINES FROM HERE
+           cp ${nicice} ./nicice.zip
+           # unzip the ice file
+           unzip nicice.zip
+           # Extract the third column (we have: lon, lat, iceconc, lakeNumber 
+           #$WGRIB2 T_OEBA88_C_KNWC.grb2 -text T_OEBA88_C_KNWC.ice
+           icefile=$(find NIC*.txt)
+           #Removing the header
+           sed -i '1,7d' $icefile
+           #deleting a file if exist
+           if [ -f T_OEBA88_C_KNWC.ice ]
+           then
+             rm T_OEBA88_C_KNWC.ice
+           fi
+           #Making the new file
+           echo '2554 1823' > T_OEBA88_C_KNWC.ice
+           #Extracting only the third column, the ice concentartion, and send this to ice_conc.new
+           sed 's/[\t ][\t ]*/ /g' < $icefile | cut -d',' -f3 >> T_OEBA88_C_KNWC.ice
+           #The ice concentration is givin in thousends 
+           # Then "dividing" by 1000 this way is faster compared to doing an actual division
+           #sed -i -e 's/-1/0/g' T_OEBA88_C_KNWC.ice
+           #sed -i -e 's/ -1/0/g
+           #s/ 9/9./g
+           #s/ 8/8./g
+           #s/ 7/7./g
+           #s/ 6/6./g
+           #s/ 5/5./g
+           #s/ 4/4./g
+           #s/ 3/3./g
+           #s/ 2/2./g
+           #s/ 1/1./g' T_OEBA88_C_KNWC.ice
+           #The folowing is to avoid changing the number becuase the previous lines 
+           #spaceb=' '
+           #sed -i "1s/x/${spaceb}/" T_OEBA88_C_KNWC.ice
+           # Use inpaint to extend ice concentrations over ice-file land mask
+           # (Conservative approach: no averaging to fill model-data sea gaps)
+           cp -f ${FIXwave}/GLWU_NIC.mask ./T_OEBA88_C_KNWC.mask
+         else
+           echo '********************************************'
+           echo '*** FATAL ERROR IN ICE RESOLUTION CHOICE **'
+           echo '**  IceResol muste : LOW or HIGH         **'
+           echo '********************************************'
+           echo ' '
+           postmsg "$jlogfile" "ERROR IN ICE RESOLUTION CHOICE"
+           [[ "$LOUD" = YES ]] && set -x
+           exit 
+        fi 
+#END XXX RPH CHANGES =============================
+
         $EXECwave/inpaint_nic_glwu #1> inpaint.out 2>&1
 
         if [ ! -f T_OEBA88_C_KNWC.newice ]

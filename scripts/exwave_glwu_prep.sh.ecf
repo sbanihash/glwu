@@ -434,10 +434,19 @@
 # and glwu runs.
 
 # 1.c Ice preprocessor template file
-  if [ -f $FIXwave/multiwaveprep.ice_glw.tmpl ]
-  then
-    cp $FIXwave/multiwaveprep.ice_glw.tmpl ./multiwaveprep.ice.tmpl
-  fi
+
+
+#  if [ -f $FIXwave/multiwaveprep.ice_glw.tmpl ]
+#  then
+set -xa
+   if [ "${IceResol}" = "LOW" ]
+   then
+      cp $FIXwave/multiwaveprep.ice_glw.tmpl ./multiwaveprep.ice.tmpl
+   elif [ "${IceResol}" = "HIGH" ]
+   then
+      cp $FIXwave/multiwaveprep.ice_glw_HighRes.tmpl ./multiwaveprep.ice.tmpl
+   fi
+#  fi
 
   if [ -f multiwaveprep.ice.tmpl ]
   then
@@ -488,15 +497,36 @@
 #
 # This is an approach using directly the T_OEBA88_C_KNWC NIC format
 #
-  for ftype in mask0 ll  
-  do
- 
-    file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+   for ftype in mask0 ll  
 
-    if [ -f $file ]
-    then
+  do
+    #XXX Chose LOW or HIGH ICE RESOLUTION FILE
+    #XXX Change the next line for the if block
+    #file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+
+   if [ "${IceResol}" = "LOW" ]
+   then
+      file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+   elif [ "${IceResol}" = "HIGH" ]
+   then
+      file=$FIXwave/HighResIce.${ftype}
+   fi
+
+
+
+#XXX    if [ -f $file ]
+#XXX    then
+#XXX      cp $file ./
+#XXX   fi
+
+   if [ "${IceResol}" = "LOW" ]
+   then
       cp $file ./
-    fi
+   elif [ "${IceResol}" = "HIGH" ]
+   then
+      cp $file ./T_OEBA88_C_KNWC.${ftype}
+   fi
+
 
     if [ -f ${file} ]
     then
@@ -723,7 +753,21 @@
   for grdID in $grids
   do
 
-    cp mod_def.$grdID mod_def.ww3
+   #if [ "${IceResol}" = "LOW" ]
+   #then
+     cp mod_def.$grdID mod_def.ww3
+   #elif [ "${IceResol}" = "HIGH" ]
+   #then
+   #   if [ ! -f $FIXwave/wave_glwu_ice_500m.moddef.v1.0.0 ]
+   #   then
+   #      set +x
+   #      echo "         File $FIXwave/wave_glwu_ice_500m.moddef.v1.0.0 : file not found"
+   #      [[ "$LOUD" = YES ]] && set -x
+   #      nr_err=`expr $nr_err + 1`
+   #   else
+   #        cp $FIXwave/wave_glwu_ice_500m.moddef.v1.0.0 mod_def.ww3
+   #   fi
+   #fi
     $EXECcode/multiwaveprep > multiwaveprep.out
     err=$?
 
@@ -764,9 +808,9 @@
       cp ice.ww3 ice.$grdID
     fi
   done
-  rm -f eice.*
-  rm -f ice.new
-  rm -f multiwaveprep.inp
+#XXX  rm -f eice.*
+#XXX  rm -f ice.new
+#XXX  rm -f multiwaveprep.inp
 # --------------------------------------------------------------------------- #
 # 5.  NDFD fields: Check for errors and pack onto input file
 
@@ -873,6 +917,7 @@
         mail.py -s "Missing GLWU/GLW ice info for $PDY t${cyc}z" Xiaoxue.Wang@noaa.gov email.ice
     fi
       sort -b what_wave${runID}_used.$cycle > $COMOUT/what_wave${runID}_used.$cycle
+      #XXX Next line not working $DBNROOT NOT DEFINED
       $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_wave${runID}_used.$cycle
   fi
 
