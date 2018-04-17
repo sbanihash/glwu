@@ -497,35 +497,40 @@ set -xa
 #
 # This is an approach using directly the T_OEBA88_C_KNWC NIC format
 #
+#
+# FOR LOW ONLY   --------->
+  if [ "${IceResol}" = "LOW" ]
+  then
+
    for ftype in mask0 ll  
 
   do
     #XXX Chose LOW or HIGH ICE RESOLUTION FILE
     #XXX Change the next line for the if block
-    #file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+    file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
 
-   if [ "${IceResol}" = "LOW" ]
-   then
-      file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
-   elif [ "${IceResol}" = "HIGH" ]
-   then
-      file=$FIXwave/HighResIce.${ftype}
-   fi
+   #if [ "${IceResol}" = "LOW" ]
+   #then
+   #   file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+   #elif [ "${IceResol}" = "HIGH" ]
+   #then
+   #   file=$FIXwave/HighResIce.${ftype}
+   #fi
 
 
 
-#XXX    if [ -f $file ]
-#XXX    then
-#XXX      cp $file ./
-#XXX   fi
-
-   if [ "${IceResol}" = "LOW" ]
-   then
+    if [ -f $file ]
+    then
       cp $file ./
-   elif [ "${IceResol}" = "HIGH" ]
-   then
-      cp $file ./T_OEBA88_C_KNWC.${ftype}
    fi
+
+   #if [ "${IceResol}" = "LOW" ]
+   #then
+   #   cp $file ./
+   #elif [ "${IceResol}" = "HIGH" ]
+   #then
+   #   cp $file ./T_OEBA88_C_KNWC.${ftype}
+   #fi
 
 
     if [ -f ${file} ]
@@ -546,7 +551,8 @@ set -xa
     fi
 
   done
-
+ fi # FOR LOW ONLY   <-------------
+#
 # --------------------------------------------------------------------------- #
 # 2.  Make command file(s) (ice, SST, coefficient files)i and/or (NDFD winds)
 
