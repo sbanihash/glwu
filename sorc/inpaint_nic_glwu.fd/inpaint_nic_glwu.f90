@@ -16,7 +16,8 @@ READ (13,*)NLON,NLAT
 
 ALLOCATE(CICE(NLON,NLAT),MASK(NLON,NLAT))
 
-!->New liines fro High Res Ice fields
+!->New liines for High Res Ice fields
+!It works for low res ice fields
 IF (NLON .GT. 2500) THEN
   SCALEFAC=1E-3
 ELSE
@@ -24,26 +25,16 @@ ELSE
 ENDIF
 !<-end
 
-
 DO ILAT=1,NLAT
 DO ILON=1,NLON
   READ(12,*)MASK(ILON,ILAT)
   READ(13,*)CICE(ILON,ILAT)
-!   divide by 1000 for the High Resolution Ice conc.
-
   IF ((CICE(ILON,ILAT).EQ.9.999e+20).OR.(MASK(ILON,ILAT).EQ.-1)) THEN
      CICE(ILON,ILAT)=-1.
   ELSE 
 !    CICE(ILON,ILAT)=1E-1*CICE(ILON,ILAT)
-!    ->New line for High Res Ice. Replace the line above
+!    ->New line for High and low Res Ice. Replaced the line above
      CICE(ILON,ILAT)=SCALEFAC*CICE(ILON,ILAT)
-
-! Unstructured grid does not yet use transparencies for ico
-! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
-! Anything > 30% is totally blocked.
-     IF ((CICE(ILON,ILAT).GT.0.).AND.(CICE(ILON,ILAT).LE.0.4)) THEN
-       CICE(ILON,ILAT)=-1.
-     ENDIF
   ENDIF
 ENDDO
 ENDDO
@@ -52,13 +43,18 @@ CALL INPAINT(NLON,NLAT,CICE)
 
 DO ILAT=1,NLAT
 DO ILON=1,NLON
-!  WRITE(FMT,'("(",I0,"F10.4)")') NLON
-!  WRITE(FMT2,'("(",I0,"F6.0)")') NLON
   WRITE(FMT2,'("(",I0,"F6.2)")') 1
+! Unstructured grid does not yet use transparencies for ico
+! (eg, FLAGTR=4 in WW3). Setting here lower ice bound to 40%
+! Anything > 25% is totally blocked.
+  IF(CICE(ILON,ILAT).LT.0.70)THEN
+    CICE(ILON,ILAT)=0.
+  ELSE
+    CICE(ILON,ILAT)=0.95
+  ENDIF 
   WRITE(52,FMT2)MAX(0.,CICE(ILON,ILAT))
 ENDDO
 ENDDO
-
 
 END
 
@@ -141,4 +137,5 @@ endif
 end function meanundef
 !
 end subroutine inpaint
+
 

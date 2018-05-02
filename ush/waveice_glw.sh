@@ -80,19 +80,47 @@
   export CYCtag=`echo $ymdh | cut -c9-10`
 
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
-
+#======================================================================
 # Initial NIC ice concentration file
+#  if [ "${IceResol}" = "LOW" ]
+#  then
+#     nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+#  elif [ "${IceResol}" = "HIGH" ]
+#  then
+#     #START NEW LINES
+#     NOSCRUB=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/NICNewIce/${PDYCE}/wgrbbul
+#     Prefix=T_OEBA88_C_KNWC
+#     cp ${NOSCRUB}/NIC_LKS_2018_Jan_05.zip ${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
+#     nicice=${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
+#  fi
+  set -xa
+  echo "DCOMIN/PDYCE in waveice.glw.sh: ${DCOMIN}/${PDYCE}"
   if [ "${IceResol}" = "LOW" ]
   then
      nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
-  elif [ "${IceResol}" = "HIGH" ]
+  elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "YES" ]
   then
      #START NEW LINES
-     NOSCRUB=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/NICNewIce/${PDYCE}/wgrbbul
+     IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
      Prefix=T_OEBA88_C_KNWC
-     cp ${NOSCRUB}/NIC_LKS_2018_Jan_05.zip ${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
-     nicice=${NOSCRUB}/${Prefix}_${PDYCE}120000.zip
+     #while read line; do     IceFile="$line"        ; done << (ls ${IceDir}/NIC*)
+     for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done
+
+  elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "NOT" ]
+  then
+     #START NEW LINES
+     IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+     Prefix=T_OEBA88_C_KNWC
+     for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done
+
   fi
+
+#======================================================================
+
+
+
+
+
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -152,7 +180,8 @@
            cp ${FIXwave}/T_OEBA88_C_KNWC.mask ./
         elif [ "${IceResol}" = "HIGH" ]
         then
-           #NWE LINES FROM HERE
+           cp ${nicice} ./${Prefix}_${PDYCE}120000.zip
+           nicice=${Prefix}_${PDYCE}120000.zip
            cp ${nicice} ./nicice.zip
            # unzip the ice file
            unzip nicice.zip
@@ -170,29 +199,13 @@
            echo '2554 1823' > T_OEBA88_C_KNWC.ice
            #Extracting only the third column, the ice concentartion, and send this to ice_conc.new
            sed 's/[\t ][\t ]*/ /g' < $icefile | cut -d',' -f3 >> T_OEBA88_C_KNWC.ice
-           #The ice concentration is givin in thousends 
-           # Then "dividing" by 1000 this way is faster compared to doing an actual division
-           #sed -i -e 's/-1/0/g' T_OEBA88_C_KNWC.ice
-           #sed -i -e 's/ -1/0/g
-           #s/ 9/9./g
-           #s/ 8/8./g
-           #s/ 7/7./g
-           #s/ 6/6./g
-           #s/ 5/5./g
-           #s/ 4/4./g
-           #s/ 3/3./g
-           #s/ 2/2./g
-           #s/ 1/1./g' T_OEBA88_C_KNWC.ice
-           #The folowing is to avoid changing the number becuase the previous lines 
-           #spaceb=' '
-           #sed -i "1s/x/${spaceb}/" T_OEBA88_C_KNWC.ice
-           # Use inpaint to extend ice concentrations over ice-file land mask
+           #
            # (Conservative approach: no averaging to fill model-data sea gaps)
            cp -f ${FIXwave}/GLWU_NIC.mask ./T_OEBA88_C_KNWC.mask
          else
            echo '********************************************'
            echo '*** FATAL ERROR IN ICE RESOLUTION CHOICE **'
-           echo '**  IceResol muste : LOW or HIGH         **'
+           echo '**  IceResol must be : LOW or HIGH         **'
            echo '********************************************'
            echo ' '
            postmsg "$jlogfile" "ERROR IN ICE RESOLUTION CHOICE"
@@ -233,9 +246,24 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+        ### Replace by if block nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
 
-      fi
+## NEW for High or Low Ice resolution and retrospectives or not
+        if [ "${IceResol}" = "LOW" ]
+        then
+           nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+        elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "YES" ]
+        then
+           IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+           Prefix=T_OEBA88_C_KNWC
+           for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done
+        elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "NOT" ]
+        then
+           #START NEW LINES
+           IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+           Prefix=T_OEBA88_C_KNWC
+           for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done        fi
+         fi
 
 # Write file to whatused
       if [ "${foundOK}" = "yes" ]

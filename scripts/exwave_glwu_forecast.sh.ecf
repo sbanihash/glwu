@@ -53,16 +53,32 @@
 # --------------------------------------------------------------------------- #
 # 1.  Set times
 # 1.a Times
-
+   set -xa
   export date=$PDY
   export YMDH=${PDY}${cyc}
 
+# This is set in exwave_glwu_prep.sh.ecf
   if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
   then
     lsth=149
   else
     lsth=48
   fi
+
+  echo " lsth: $lsth"
+
+ # if  [ "$RetroRun" = "YES" ]
+ # then
+ #    lsth=24
+ # else
+ #    if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
+ #    then
+ #       lsth=149
+ #    else
+ #       lsth=48
+ #    fi
+ # fi
+  echo " Forecast hours (lsth): $lsth"
 
   nrst=1
     
@@ -312,7 +328,7 @@
       -e "s/OUT_BEG/$time_beg/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ 3600/g" \
-      -e "s/FIELDS/N \n WND HS FP DP PHS PTP PDIR CHA/g" \
+      -e "s/FIELDS/N \n WND HS FP DP PHS PTP PDIR ICE CHA/g" \
       -e "s/DTPNT/ 3600/g" \
       -e "/BUOY_FILE/r buoy.loc" \
       -e "s/BUOY_FILE/DUMMY/g" \
