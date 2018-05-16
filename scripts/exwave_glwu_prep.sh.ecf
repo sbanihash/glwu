@@ -228,17 +228,17 @@
     #echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
 
     wndID='NDFD'
-    #if  [ "$RetroRun" = "YES" ]
-    #then
-    #   lsth=24
-    #else
+    if  [ "$RetroRun" = "YES" ]
+    then
+       lsth=6
+    else
        if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
        then
          lsth=149
        else
          lsth=48
        fi
-    #fi
+    fi
 #
   fi
 
