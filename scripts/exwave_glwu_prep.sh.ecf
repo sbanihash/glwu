@@ -99,7 +99,7 @@
 
   inc=0
   foundOK='no'
-  lookback=12 # hours to look back for NDFD files
+  lookback=24 # hours to look back for NDFD files
   while [ "$inc" -le "$lookback" ] && [ "$foundOK" = 'no' ]
   do
 # Search for files sets a +- 30 min search ahead and behind a given bottom of hour
