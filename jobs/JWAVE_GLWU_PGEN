@@ -54,6 +54,8 @@ export wavelog=${COMOUTwave}/wave.log
  
 env
 
+startmsg
+
 # Execute the script.
 ${HOMEwave}/scripts/exwave_glwu_pgen.sh.ecf
 

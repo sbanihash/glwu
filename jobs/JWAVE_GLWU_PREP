@@ -59,6 +59,8 @@ export wavelog=${COMOUTwave}/wave.log
 
 env
 
+startmsg
+
 # Execute the Script  
 ${HOMEwave}/scripts/exwave_${modID}_prep.sh.ecf
 export err=$?; err_chk
