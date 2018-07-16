@@ -212,9 +212,10 @@
            [[ "$LOUD" = YES ]] && set -x
            exit 
         fi 
-#END XXX RPH CHANGES =============================
-
+        #END XXX RPH CHANGES =============================
+        startmsg
         $EXECwave/inpaint_nic_glwu #1> inpaint.out 2>&1
+        export err=$?; err_chk
 
         if [ ! -f T_OEBA88_C_KNWC.newice ]
         then 

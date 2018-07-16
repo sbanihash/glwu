@@ -41,7 +41,7 @@
 
   rm -rf ts_$1
   mkdir ts_$1
-  err=$?
+  export err=$?
   if [ "$err" != '0' ]
   then
     set +x
@@ -52,7 +52,7 @@
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec (Could not create temp directory)"
-    exit 1
+    exit 1; err_chk
   fi
 
   cd ts_$1
@@ -159,8 +159,9 @@
   echo "   Executing $EXECcode/multiwavespec"
   [[ "$LOUD" = YES ]] && set -x
 
+  startmsg
   $EXECcode/multiwavespec
-  err=$?
+  export err=$?; err_chk
 
   if [ "$err" != '0' ]
   then

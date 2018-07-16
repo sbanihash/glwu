@@ -6,7 +6,7 @@
 #                                                                             #
 # Remarks :                                                                   #
 # - The necessary files are retrieved by the mother script.                   #
-# - This script generates it own sub-directory 'nc_*'.                      # 
+# - This script generates it own sub-directory 'nc_*'.                        # 
 # - See section 0.b for variables that need to be set.                        # 
 #                                                                             #
 # Script parameters are:                                                      #
@@ -102,8 +102,9 @@
   echo "   Run multiwavenc"
   [[ "$LOUD" = YES ]] && set -x
 
+  startmsg
   $EXECcode/multiwavefldn
-  err=$?
+  export err=$?; err_chk
 
   if [ "$err" != '0' ]
   then

@@ -136,9 +136,9 @@
 #then
 #   cp -f $FIXwave/precomp_weights.bin.$grdID ./precomp_weights.bin
 #fi
-
+  startmsg
   $EXECcode/multiwavegrid_interp
-  err=$?
+  export err=$?; err_chk
 
   if [ "$err" != '0' ]
   then

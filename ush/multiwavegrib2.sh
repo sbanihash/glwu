@@ -124,8 +124,9 @@
   [[ "$LOUD" = YES ]] && set -x
 
   ln -sf ../$runID.$grdID.$cycle.grib2 gribfile
+  startmsg
   $EXECcode/multiwavegrib2
-  err=$?
+  err=$?; err_chk
 
   if [ "$err" != '0' ]
   then
@@ -149,7 +150,7 @@
 # 1.d Create grib2 index file
 
   $GRB2INDEX gribfile gribfile_indx
-  err=$?
+  export err=$?; err_chk
   echo "err from grb2index = $err"
 
 # Copy files to $COMOUT

@@ -145,8 +145,10 @@
     do 
 
       cp ../mod_def.$grdID mod_def.ww3
+
+      startmsg
       $EXECcode/multiwaveprnc > multiwaveprnc.out.$ymdh 
-      err=$?
+      export err=$?; err_chk
 
       if [ "$err" != '0' ]
       then

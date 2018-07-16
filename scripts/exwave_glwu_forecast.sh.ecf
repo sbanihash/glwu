@@ -358,8 +358,10 @@ pwd
   ln -fs mod_def.${grids} mod_def.ww3
   ln -fs wind.${grids} wind.ww3
   ln -fs ice.${grids} ice.ww3
+
+  startmsg
   ${mpicmd} $EXECcode/multiwavefcst         
-  err=$?      
+  export err=$?; err_chk
     
   if [ "$err" != '0' ]    
   then        

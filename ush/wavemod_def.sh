@@ -96,9 +96,9 @@
   then
     ln -fs ../mesh.$grdID .
   fi
-
+  startmsg
   $EXECcode/multiwavegrid
-  err=$?
+  export err=$?; err_chk
 
   if [ "$err" != '0' ]
   then

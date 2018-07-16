@@ -44,7 +44,7 @@
 
   rm -rf bull_$1
   mkdir bull_$1
-  err=$?
+  export err=$?
   if [ "$err" != '0' ]
   then
     set +x
@@ -160,9 +160,10 @@
   set +x
   echo "   Executing $EXECcode/multiwavespec"
   [[ "$LOUD" = YES ]] && set -x
-
+  
+  startmsg
   $EXECcode/multiwavespec
-  err=$?
+  export err=$?; errchk
 
   if [ "$err" != '0' ]
   then

@@ -183,11 +183,11 @@ export grint_OK='yes'
   if [ "$nfile" -gt '1' ]
   then
     aprun -n120 -N24 -j1 cfp cmdfile
-    exit=$?
+    export err=$?; err_chk
   else
     nfile=1
     ./cmdfile
-    exit=$?
+    export err=$?; err_chk
   fi
 
   if [ "$exit" != '0' ]
@@ -596,7 +596,7 @@ export grint_OK='yes'
    
     ln -s mod_def.$pntgrd mod_def.ww3
     $EXECcode/multiwavespec > buoy_tmp.loc 
-    err=$?
+    export err=$?; err_chk
 
     if [ "$err" != '0' ]
     then
@@ -689,12 +689,12 @@ export grint_OK='yes'
   then
     # ${mpicmd} cmdfile
     aprun -n120 -N24 -j1 cfp cmdfile
-    exit=$?
+    export err=$?; err_chk
   else
     nfile=1
 #    ./cmdfile.1
     ./cmdfile
-    exit=$?
+    export err=$?; err_chk
   fi
 
   if [ "$exit" != '0' ]
@@ -884,11 +884,11 @@ export grint_OK='yes'
   then
     # ${mpicmd} cmdfile
     aprun -n120 -N24 -j1 cfp cmdfile
-    exit=$?
+  export err=$?; err_chk
   else
 #    ./cmdfile.1
     ./cmdfile
-    exit=$?
+  export err=$?; err_chk
   fi
 
   if [ "$exit" != '0' ]
@@ -1202,11 +1202,11 @@ export grint_OK='yes'
   then
     # ${mpicmd} cmdfile
     aprun -n120 -N24 -j1 cfp cmdfile
-    exit=$?
+    export err=$?; err_chk
   else
 #    ./cmdfile.1
     ./cmdfile
-    exit=$?
+    export err=$?; err_chk
   fi
 
   if [ "$exit" != '0' ]

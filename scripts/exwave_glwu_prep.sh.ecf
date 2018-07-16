@@ -368,11 +368,11 @@
     if [ "$nfile" -gt '1' ]
     then
       aprun -N5 -n5 -j1 cfp cmdfile
-      exit=$?
+      export err=$?; err_chk
     else
       ./cmdfile.1
       ./cmdfile
-      exit=$?
+      export err=$?; err_chk
     fi
 
   fi
@@ -619,10 +619,10 @@ set -xa
   if [ "$nfile" -gt '1' ]
   then
     aprun -n120 -N24 -j1 cfp cmdfile
-    exit=$?
+    export err=$?; err_chk
   else
     ./cmdfile
-    exit=$?
+    export err=$?; err_chk
   fi
 
 # 3.b Error trap on ${mpicmd} or shell
@@ -782,7 +782,7 @@ set -xa
    #   fi
    #fi
     $EXECcode/multiwaveprep > multiwaveprep.out
-    err=$?
+    export err=$?; err_chk
 
     if [ "$err" != '0' ]
     then
