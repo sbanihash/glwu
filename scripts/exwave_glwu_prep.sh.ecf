@@ -368,11 +368,11 @@
     if [ "$nfile" -gt '1' ]
     then
       aprun -N5 -n5 -j1 cfp cmdfile
-      export err=$?; err_chk
+      exit=$?
     else
       ./cmdfile.1
       ./cmdfile
-      export err=$?; err_chk
+      exit=$?; err_chk
     fi
 
   fi
@@ -619,10 +619,10 @@ set -xa
   if [ "$nfile" -gt '1' ]
   then
     aprun -n120 -N24 -j1 cfp cmdfile
-    export err=$?; err_chk
+    exit=$?
   else
     ./cmdfile
-    export err=$?; err_chk
+    exit=$?
   fi
 
 # 3.b Error trap on ${mpicmd} or shell
