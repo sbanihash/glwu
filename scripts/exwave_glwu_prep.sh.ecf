@@ -782,7 +782,7 @@ set -xa
    #   fi
    #fi
     $EXECcode/multiwaveprep > multiwaveprep.out
-    export err=$?; err_chk
+    err=$?
 
     if [ "$err" != '0' ]
     then

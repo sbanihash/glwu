@@ -163,7 +163,7 @@
   
   startmsg
   $EXECcode/multiwavespec
-  export err=$?; errchk
+  export err=$?
 
   if [ "$err" != '0' ]
   then

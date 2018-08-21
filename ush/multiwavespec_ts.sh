@@ -52,7 +52,7 @@
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec (Could not create temp directory)"
-    exit 1; err_chk
+    exit 1
   fi
 
   cd ts_$1
@@ -161,7 +161,7 @@
 
   startmsg
   $EXECcode/multiwavespec
-  export err=$?; err_chk
+  export err=$?
 
   if [ "$err" != '0' ]
   then

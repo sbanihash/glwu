@@ -104,7 +104,7 @@
 
   startmsg
   $EXECcode/multiwavefldn
-  export err=$?; err_chk
+  export err=$?
 
   if [ "$err" != '0' ]
   then

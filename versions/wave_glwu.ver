@@ -1,5 +1,5 @@
 export wave_glwu_ver=v1.0.0
-export wave_code_ver=v5.16.0
+export wave_code_ver=v6.5.0
 export wave_code_pkg=st4nc_nl3
 export envir=dev
 export iobuf_ver=2.0.5

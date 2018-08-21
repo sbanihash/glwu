@@ -138,7 +138,7 @@
 #fi
   startmsg
   $EXECcode/multiwavegrid_interp
-  export err=$?; err_chk
+  err=$?
 
   if [ "$err" != '0' ]
   then
