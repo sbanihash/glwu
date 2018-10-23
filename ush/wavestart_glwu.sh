@@ -34,7 +34,15 @@
 
   off_hour=0
 
-  stp_hour=6 # Hourly GLWU runs
+  #RP stp_hour=6 # Hourly GLWU runs
+  echo "RETRORUN: $RetroRun, in ush/wavestart_glwu.sh"
+  if  [ "$RetroRun" = "YES" ]
+  then
+     stp_hour=6 
+  else
+     stp_hour=1 
+  fi
+
 # --------------------------------------------------------------------------- #
 # 1.  Loop to find file
 
