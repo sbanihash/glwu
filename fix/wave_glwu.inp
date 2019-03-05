@@ -21,7 +21,7 @@ END OF NAMELISTS
 $
   'UNST' T 'NONE'
 $    
-   5.0 0.30  10  -1. 4 1 '(20f10.2)'  'NAME' 'mesh.glwu'
+   5.0 0.30  15  -1. 4 1 '(20f10.2)'  'NAME' 'mesh.glwu'
 $
    7 3 1 '(....)' 'PART' 'mapsta.inp'
 $

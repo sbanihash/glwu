@@ -90,8 +90,25 @@
    
 # off_hour is the offset for reding a prior restart file
 # stp_hour is the step for generating restart files 
-  grep 'off_hour=' $USHwave/wavestart_glwu.sh   > time_info
-  grep 'stp_hour=' $USHwave/wavestart_glwu.sh  >> time_info
+#XXX  grep 'off_hour=' $USHwave/wavestart_glwu.sh   > time_info
+#XXX  grep 'stp_hour=' $USHwave/wavestart_glwu.sh  >> time_info
+
+#NOW WE HAVE MORE THAN ONE  stp_hour VALUE IN  wavestart_glwu.sh
+#THEN
+  if  [ "$RetroRun" = "YES" ]
+  then
+     stp_hour=6 
+     off_hour=0
+  else
+     stp_hour=1 
+     off_hour=0
+  fi
+
+  echo " off_hour: ${off_hour}"
+  echo " stp_hour: ${stp_hour}"
+
+  echo "off_hour=${off_hour}" > time_info
+  echo "stp_hour=${stp_hour}" >> time_info
 
   . ./time_info ; rm -f time_info
 
@@ -328,7 +345,7 @@
       -e "s/OUT_BEG/$time_beg/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ 3600/g" \
-      -e "s/FIELDS/N \n WND HS FP DP PHS PTP PDIR ICE CHA/g" \
+      -e "s/FIELDS/N \n WND HS FP DP PHS PTP PDIR CHA/g" \
       -e "s/DTPNT/ 3600/g" \
       -e "/BUOY_FILE/r buoy.loc" \
       -e "s/BUOY_FILE/DUMMY/g" \

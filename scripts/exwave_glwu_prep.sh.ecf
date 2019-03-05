@@ -566,8 +566,8 @@ set -xa
 # 2.a Command file set-up
 #     The command file points to $nfile files named cmdfile.$ifile.            
 #     The actual work is distributed over these files.
-
-  set +x
+  #XXX set +x
+  set -xa
   echo '   Making command file(s)'
   echo "   Set up command file structure (type = $cmdtype)."
   echo "      Number of command files  : $nfile"
@@ -679,7 +679,8 @@ set -xa
     if [ -d eice_${ymdh} ]
     then
       postmsg "$jlogfile" "    File for $ymdh : error in waveice_glw.sh"
-      set +x
+      #XXX set +x
+      set -xa
       echo "         File for $ymdh : error in waveice_glw.sh"
       [[ "$LOUD" = YES ]] && set -x       
       nr_err=`expr $nr_err + 1`

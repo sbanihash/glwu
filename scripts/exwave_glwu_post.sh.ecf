@@ -26,7 +26,10 @@
 # Last CCS update                                               Mar 2011      #
 # Transition to WCOSS                                          Dec,  2012     # 
 # Transition to Cray                                           Jul,  2016     # 
+#Version 1.0.0                                                 Jul,  2018     # 
 #                                                                             #
+#Authors: Henrique.Alves@noaa.gov, Hendrik.Tolman@noaa.gov                    #
+#         Roberto.Padilla@noaaa.gov                                           #
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations

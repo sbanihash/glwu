@@ -12,6 +12,7 @@
 #  ymdh $1       - Date and time of data being processed                      #
 #                                                                             #
 #                                                                 Oct, 2014   #
+#  Roberto.Padilla@noaa.gov         ver 1.1.0   Nov/2018
 #                                                                             #
 ###############################################################################
 #
@@ -19,7 +20,7 @@
 # 0.  Preparations
 # 0.a Basic modes of operation
 
-  set -x
+  set -xa
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
@@ -109,17 +110,39 @@
   elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "NOT" ]
   then
      #START NEW LINES
-     IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+     IceDir=${DCOMIN}/nic_lks/
+     echo "IceDir: $IceDir"
      Prefix=T_OEBA88_C_KNWC
-     for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done
+
+     YYYY=${PDYCE:0:4}
+     MM=${PDYCE:4:2}
+     DD=${PDYCE:6:2}
+
+     case "$MM" in
+
+         01) MON=Jan ;;
+         02) MON=Feb ;;
+         03) MON=Mar ;;
+         04) MON=Apr ;;
+         05) MON=May ;;
+         06) MON=Jun ;;
+         07) MON=Jul ;;
+         08) MON=Aug ;;
+         09) MON=Sep ;;
+         10) MON=Oct ;;
+         11) MON=Nov ;;
+         12) MON=Dec ;;
+     esac
+     echo "Looking for file: NIC_LKS_${YYYY}_${MM}_${DD}.zip"
+     
+     file=$(ls $IceDir | grep $DD | grep $YYYY | grep -i "N*${MON}*")
+     nicice=${DCOMIN}/nic_lks/$file
+     echo " ICE FILE: $file"
+     echo " "
 
   fi
 
 #======================================================================
-
-
-
-
 
 
 # Set search windows for older ice files, and search cutoff
@@ -240,7 +263,7 @@ EOF
 
 # Continue search back in time
         ndays=`expr ${ndays} + 1`
-        set +x
+        set -xa
         echo " "
         echo " Moving back ${ndays} days to search for ice file " 
         echo " "
@@ -261,18 +284,47 @@ EOF
         elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "NOT" ]
         then
            #START NEW LINES
-           IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+           ##IceDir=${DCOMIN}/${PDYCE}/wgrbbul/
+           ##Prefix=T_OEBA88_C_KNWC
+           ##for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done        fi
+
+           IceDir=${DCOMIN}/nic_lks/
+           echo "IceDir: $IceDir"
            Prefix=T_OEBA88_C_KNWC
-           for file in "${IceDir}"/NIC*zip;do  nicice=$file; echo "$nicice"; done        fi
+
+           YYYY=${PDYCE:0:4}
+           MM=${PDYCE:4:2}
+           DD=${PDYCE:6:2}
+
+           case "$MM" in
+               01) MON=Jan ;;
+               02) MON=Feb ;;
+               03) MON=Mar ;;
+               04) MON=Apr ;;
+               05) MON=May ;;
+               06) MON=Jun ;;
+               07) MON=Jul ;;
+               08) MON=Aug ;;
+               09) MON=Sep ;;
+               10) MON=Oct ;;
+               11) MON=Nov ;;
+               12) MON=Dec ;;
+           esac
+           echo "Looking for file: NIC_LKS_${YYYY}_${MM}_${DD}.zip"
+     
+           file=$(ls $IceDir | grep $DD | grep $YYYY | grep -i "N*${MON}*")
+           nicice=$file
+           echo " ICE FILE: $file"
+           echo " "
          fi
 
 # Write file to whatused
-      if [ "${foundOK}" = "yes" ]
-      then
-        echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
-      fi
-
-    fi
+         if [ "${foundOK}" = "yes" ]
+         then
+           echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
+         fi
+      fi   #END for if [ -f ${nicice} ]
+    fi   # END for if [ $stag -gt $ice_season_end ] && [ $stag -lt $ice_season_start ] ; then
   done
 
 # Use zero ice file if NIC ice data has not been found

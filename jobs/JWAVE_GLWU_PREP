@@ -27,9 +27,11 @@ export modID=glwu
 
 export NET=wave
 export RUN=glwu
-export IceHighResol=HIGH
-
+export IceHighResol=HIGH   # For Operations
+export RetroRunOper=NOT   # For Operations
 export IceResol=${IceResol:-${IceHighResol}}
+export RetroRun=${RetroRun:-${RetroRunOper}}
+
 
 # Path to HOME Directory
 export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
@@ -40,9 +42,26 @@ export FIXwave=${FIXwave:-${HOMEwave}/fix}
 export PARMwave=${PARMwave:-${HOMEwave}/parm}
 export USHwave=${USHwave:-${HOMEwave}/ush}
 export EXECcode=${EXECcode:-${CODEwave}/exec}
+#===================================
+export PDYcyc_changed=2018103014
+PDYcyc_file="${PDY}${cyc}"
+if [ "$PDYcyc_file" -gt "$PDYcyc_changed" ] 
+then 
+  echo "THIS IS A RUN AFTER 20181030_14"
+  # IF the tmpl file is not ready for REAL TIME then edited
+  sed -i 's/ UGRD_surface VGRD_surface/ UGRD_10maboveground VGRD_10maboveground/g' $HOMEwave/fix/multiwaveprnc.ndfd_glwu.tmpl
+  cat $HOMEwave/fix/multiwaveprnc.ndfd_glwu.tmpl
+else
+  echo "THIS IS A RETROSPECTIVE OR HINDCAST RUN"
+  # EDIT the   fix/multiwaveprnc.ndfd_glwu.tmpl
+ sed -i 's/ UGRD_10maboveground VGRD_10maboveground/ UGRD_surface VGRD_surface/g' $HOMEwave/fix/multiwaveprnc.ndfd_glwu.tmpl
+fi
+
+#===================================
 
 # Location of NDFD input files
 export DCOMIN=${DCOMIN:-${DCOMROOT}/us007003} # serves ice and ndfd data
+## in prep.lsf DCOMROOT=/gpfs/${pref}p1/nco/ops/dcom
 
 # Set COM Paths
 export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
