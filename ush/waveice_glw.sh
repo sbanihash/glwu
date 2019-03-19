@@ -31,7 +31,8 @@
    mkdir eice_$1
    cd eice_$1
 
-  set +x
+  #set +x
+  set -xa
   echo ' '
   echo '+----------------------------------+'
   echo '!   Run codes to generate ice file |'
@@ -42,7 +43,7 @@
 
   if [ "$#" -lt '1' ]
   then
-    set +x
+    set -x
     echo ' '
     echo '*******************************************'
     echo '*** TIME IN waveice_glw.sh NOT SET ***'
@@ -53,7 +54,7 @@
     exit 1
   else
     ymdh=$1
-    set +x
+    set -x
     echo "   Time            : $ymdh"
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -133,12 +134,16 @@
          11) MON=Nov ;;
          12) MON=Dec ;;
      esac
-     echo "Looking for file: NIC_LKS_${YYYY}_${MM}_${DD}.zip"
+     echo "Looking for file: NIC_LKS_${YYYY}_${MON}_${DD}.zip"
      
-     file=$(ls $IceDir | grep $DD | grep $YYYY | grep -i "N*${MON}*")
+     file=$(ls $IceDir | grep $YYYY | grep -i "N*${MON}*"| grep $DD )
      nicice=${DCOMIN}/nic_lks/$file
-     echo " ICE FILE: $file"
-     echo " "
+     if [ -f ${nicice} ]
+     then
+       echo " "
+       echo " NIC ice file found: ${nicice}" 
+       echo " "        
+     fi
 
   fi
 
@@ -172,7 +177,8 @@
     else
 
 # Start searching for NIC file
-      set +x
+      #set +x
+      set -xa
       echo " "
       echo " Starting search for NIC ice concentrations file "
       echo " "
@@ -181,15 +187,15 @@
       if [ -f ${nicice} ]
       then
 
-        set +x
+        set -xa
         echo " "
         echo " NIC ice file found in ${DCOMIN}: ${nicice}" 
         echo " "
         [[ "$LOUD" = YES ]] && set -x
 
         foundOK='yes'
-
         # START XXX RPH CHANGES ====================================
+        echo "$nicice" >> ../whatglwice
         echo "ICE RESOLUTION : ${IceResol}"
         if [ "${IceResol}" = "LOW" ]
         then
@@ -310,19 +316,29 @@ EOF
                11) MON=Nov ;;
                12) MON=Dec ;;
            esac
-           echo "Looking for file: NIC_LKS_${YYYY}_${MM}_${DD}.zip"
-     
-           file=$(ls $IceDir | grep $DD | grep $YYYY | grep -i "N*${MON}*")
-           nicice=$file
-           echo " ICE FILE: $file"
+
+           set -xa
+           #file=$(ls $IceDir | grep $DD | grep $YYYY | grep -i "N*${MON}*")
+           file=$(ls $IceDir | grep $YYYY | grep -i "N*${MON}*"| grep $DD )
+           echo "Looking for file: $file"
+           nicice=${DCOMIN}/nic_lks/$file
+           echo " ICE FILE: $nicice"
            echo " "
-         fi
+           if [ -f ${nicice} ]
+           then
+             echo " "
+             echo " NIC ice file found: ${nicice}" 
+             echo " "        
+           fi
+
+        fi
 
 # Write file to whatused
-         if [ "${foundOK}" = "yes" ]
-         then
-           echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
-         fi
+         ##if [ "${foundOK}" = "yes" ]
+         ##then
+         ##  #echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
+         ##  echo "$nicice" >> ../whatglwice
+         ##fi
       fi   #END for if [ -f ${nicice} ]
     fi   # END for if [ $stag -gt $ice_season_end ] && [ $stag -lt $ice_season_start ] ; then
   done
