@@ -947,6 +947,9 @@ export grint_OK='yes'
         [[ "$LOUD" = YES ]] && set -x
         postmsg "$jlogfile" "NON-FATAL ERROR in NCDF encoding for $grdID."
         mv -f ncdf_$grdID.out ncdf_$grdID.err
+        ##XXX   As it is not a ftal error the run must continue
+        #rm ncdf_$grdID.err
+        ##XXX
       else
         set +x
         echo "      NCDF encoding successful for $grdID."
@@ -1337,7 +1340,9 @@ export grint_OK='yes'
   fi
 
 #  9.e Error outputs
-
+    #XXX
+       ls -lt *.err > Errors.log
+    #XXX
   if ls *.err  1> /dev/null 2>&1
   then
     set +x

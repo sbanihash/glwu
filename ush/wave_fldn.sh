@@ -126,7 +126,10 @@
   rm -f out_grd.ww3
 
 # Copy files up a tree level for ex-script handling of copies and alerts
-    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
+#XXX FOLLOWING LINE WILL BE ACTIVATED AFTER WW3 CODE CORRECTION
+#    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
+    ncDate="`echo $YMDH | cut -c1-8`"
+    cp ww3.${ncDate}.nc ../$runID.$grdID.$cycle.nc
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory

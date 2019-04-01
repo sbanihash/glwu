@@ -228,9 +228,29 @@
     #echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
 
     wndID='NDFD'
+#    if  [ "$RetroRun" = "YES" ]
+#    then
+#       lsth=6
+#    else
+#       if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
+#       then
+#         lsth=149
+#       else
+#         lsth=48
+#       fi
+#    fi
+# 
+#    if  [ "$RetroRun" = "NOT" ] && [ "$envir" = "dev" ]
+#    then
+#      lsth=${runLength}
+#    fi
+
     if  [ "$RetroRun" = "YES" ]
     then
-       lsth=6
+      lsth=6
+    elif  [ "$RetroRun" = "NOT" ] && [ "$envir" = "dev" ]
+    then
+      lsth=${runLength}
     else
        if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
        then
@@ -239,8 +259,13 @@
          lsth=48
        fi
     fi
-#
-  fi
+
+    echo " RetroRun envir: $RetroRun $envir" 
+    echo " Forecast hours (lsth): $lsth"
+
+
+
+  fi # [ "$foundOK" = 'no' ]
 
   ymdh_end=`$NDATE $lsth $YMDH`
   time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
