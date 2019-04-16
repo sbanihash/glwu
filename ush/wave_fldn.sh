@@ -127,11 +127,11 @@
 
 # Copy files up a tree level for ex-script handling of copies and alerts
 #XXX FOLLOWING LINE WILL BE ACTIVATED AFTER WW3 CODE CORRECTION
-    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
-    cp ww3.gridded.nc ../XXX.nc
-    cp ww3.gridded.nc XXX.XXX
-#    ncDate="`echo $YMDH | cut -c1-8`"
-#    cp ww3.${ncDate}.nc ../$runID.$grdID.$cycle.nc
+#    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
+#    cp ww3.gridded.nc ../XXX.nc
+#    cp ww3.gridded.nc XXX.XXX
+    ncDate="`echo $YMDH | cut -c1-8`"
+    cp ww3.${ncDate}.nc ../$runID.$grdID.$cycle.nc
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory
