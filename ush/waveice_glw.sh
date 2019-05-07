@@ -100,6 +100,16 @@
   if [ "${IceResol}" = "LOW" ]
   then
      nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+     if [ -f ${nicice} ]
+     then
+        echo " "
+        echo " NIC ice file found: ${nicice}" 
+        echo " "    
+     else  
+        echo " "
+        echo " NIC ice file NOT FOUND : ${nicice}" 
+        echo " Continue lookin for it in the previous days "    
+     fi
   elif [ "${IceResol}" = "HIGH" ] &&  [ "$RetroRun" = "YES" ]
   then
      #START NEW LINES

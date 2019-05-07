@@ -33,10 +33,10 @@
   fi
 
   off_hour=0
-
+  stp_hour=1 
   #RP stp_hour=6 # Hourly GLWU runs
-  echo "RETRORUN: $RetroRun, in ush/wavestart_glwu.sh"
-  if  [ "$RetroRun" = "YES" ]
+  echo "RETRORUN, envir: $RetroRun, $envir, in ush/wavestart_glwu.sh"
+  if  [ "$RetroRun" = "YES" ] || [ "$envir" = "dev" ]
   then
      stp_hour=6 
   else
