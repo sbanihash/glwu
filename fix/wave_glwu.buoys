@@ -17,6 +17,7 @@ $             ENCAN    Environment Canada
 $             GOMOOS   Gulf of Maine OOS
 $             IDT      Irish Department of Transportation
 $             METFR    Meteo France
+$             MTU      Michigan Technical Univerity
 $             NCEP     Boundary and other data points
 $             NDBC     National Data Buoy Center
 $             PRIV     Private and incidental data sources
@@ -68,6 +69,7 @@ $ ---------------------------------------------------------
    273.669   42.397   '45168     '  3.0   DAT   NDBC   25
    273.032   41.755   '45170     '  3.0   DAT   ENCAN  25
    272.345   42.135   '45174     '  3.0   DAT   NDBC   25
+   275.228   45.825   '45175     '  2.95  DAT   MTU    25
    272.437   44.146   'C58W3     ' 10.0   DAT   NDBC   25
    272.687   44.794   '0Y2W3     ' 10.0   DAT   NDBC   25
    273.412   43.649   'LITTLESABL' 999.   VBY   NCEP   25

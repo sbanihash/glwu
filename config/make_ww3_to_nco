@@ -1,0 +1,477 @@
+#!/bin/bash
+#
+# Script name: make_ww3_to_nco
+# Authors: J.H. Alves, A. Chawla, H. Tolman
+# Last Modified: 2018/07/26
+# 
+# Script to generate source codes and makefiles, converting from
+# WW3 development repository into independent code directories.
+#
+# Creates wave_code.vX.XX
+#
+# Run script from tree level above model directory
+#
+
+set -xa
+
+# Set version number (Manually, should somewhat resemble trunk version)
+export WW3VER=`grep CHARACTER ./model/ftn/w3initmd.ftn | grep PARAMETER | grep WWVER | awk '{print $6}' | sed 's/'\''//g'`
+echo " WW3 version is: $WW3VER"
+
+# Indicate if this is a multiwave case, or original ww3_ code build
+is_multiwave='yes'
+
+# Set WWATCH package and work directories
+SAVE=`pwd`
+
+export WWATCH3_DIR=${SAVE}/model
+export WWATCH3_TMP=${SAVE}/work
+
+if [ "$is_multiwave" = 'yes' ]
+then
+  export WWATCH3_BUILD=${SAVE}/wave_code.v${WW3VER}
+else
+  export WWATCH3_BUILD=${SAVE}/ww3_code.v${WW3VER}
+fi
+
+mkdir -p $WWATCH3_BUILD
+mkdir -p $WWATCH3_TMP
+mkdir -p ${WWATCH3_BUILD}/modules
+
+# Create parameter indicating source-term and other code options (eg nc etc)
+# This will become the subdirectory tag for the NCO wave_code directory
+options=st4nc_nl3
+
+# Choose host (theia, ibm, cray, dell)
+HOST="cray"
+
+# Load system-specific modules
+
+# Create module file
+modfile=${WWATCH3_BUILD}/modules/build_wavewatch3.modules
+
+cat > ${modfile} << EOF
+#%Module######################################################################
+##                                                     Henrique.Alves@NOAA.gov
+##                                                     SRG @ NOAA/NWS/NCEP/EMC
+## wave_code.v${WW3VER}
+##_____________________________________________________
+proc ModulesHelp { } {
+puts stderr "Set environment for WAVEWATCH III model "
+puts stderr "This module initializes the environment "
+puts stderr "for the CRAY implementation of WW3.\n"
+}
+module-whatis " wave_code whatis description"
+
+set ver v${WW3VER}
+
+set sys [uname sysname]
+
+# Known conflicts ???
+
+EOF
+
+if [ "$HOST" = 'cray' ]
+then
+
+  echo " Host is $HOST "
+
+  chipset=sandybridge
+
+  comps=ftn
+  compm=ftn
+
+cat >> ${modfile} << EOF
+
+  module load prod_util prod_envir
+  module load PrgEnv-intel
+  module unload craype-haswell
+  module load craype-${chipset}
+
+  module load HDF5-serial-intel-${chipset}
+  module load NetCDF-intel-${chipset}
+  module load iobuf
+  module load iobuf
+
+# used for multiwavegrib2
+  module load jasper-gnu-${chipset}
+  module load png-intel-${chipset}
+  module load zlib-intel-${chipset}
+  module load g2-intel
+
+# used for multiwavegrib1 and grib2
+  module load w3nco-intel
+  module load bacio-intel/2.0.2
+
+EOF
+
+elif [ "$HOST" = 'theia' ]
+then
+
+  echo " Host is $HOST "
+
+  comps=ifort
+  compm=mpiifort
+
+cat >> ${modfile} << EOF
+  module purge
+  module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
+  module load intel
+  module load hdf5
+  module load netcdf
+  module load impi
+
+# used for multiwavegrib2
+  module load jasper
+  module load png
+  module load z
+  module load g2
+
+# used for multiwavegrib1 and grib2
+  module load w3nco
+  module load bacio
+
+EOF
+
+elif [ "$HOST" = 'ibm' ]
+then
+
+  echo " Host is $HOST "
+
+  comps=ifort
+  compm="mpiifort -openmp"
+
+cat >> ${modfile} << EOF
+
+  module load EnvVars/1.0.1
+  module load ibmpe/1.3.0.12
+  module load ics/12.1
+  module load lsf/9.1
+  module load jasper/v1.900.1
+  module load png/v1.2.44
+  module load z/v1.2.6
+  module load g2/v2.5.0
+  module load w3nco/v2.0.6
+  module load bacio/v2.0.2
+  module load HDF5/1.8.9/serial
+  module load NetCDF/4.2/serial
+
+EOF
+
+
+else
+
+  echo " $HOST not found, exiting "
+  exit
+
+fi
+
+# Load modules
+module load ${modfile}
+
+# FORTRAN source code extension
+fextf='F90'
+
+echo ' '
+echo " Creating new code on ${WWATCH3_BUILD}"
+
+cd $WWATCH3_BUILD
+
+# Create new env file for this build
+cat > wwatch3.env << EOF
+WWATCH3_LPR Printer
+WWATCH3_F77 ifort
+WWATCH3_CC  icc
+WWATCH3_DIR ${WWATCH3_DIR}
+WWATCH3_TMP ${WWATCH3_TMP}
+WWATCH3_SOURCE no
+WWATCH3_LIST no
+EOF
+
+export WWATCH3_ENV=${WWATCH3_BUILD}/wwatch3.env
+#XXX RP
+#XXX cp ${WWATCH3_BUILD}/wwatch3.env ${HOME}/.wwatch3.env
+# Progs in wave_code for NCO
+#multiwavebound     multiwavefldn          multiwavegrads_points  multiwavegrid_interp  multiwavespec  wavesystrk
+#multiwavefcst      multiwaveflds          multiwavegrib2         multiwaveprep         multiwavespnc
+#multiwavefcst_sbs  multiwavegrads_fields  multiwavegrid          multiwaveprnc         wavefcst
+
+#progs='ww3_grid'
+progs='ww3_grid ww3_grid ww3_prep ww3_multi ww3_grib ww3_uprstr ww3_prnc ww3_shel ww3_sbs1 ww3_outf ww3_ounf ww3_ounp ww3_outp gx_outf gx_outp ww3_bound ww3_gint ww3_systrk'
+
+# SWITCH file
+# Source term and propagation scheme choices for switch file
+GEN="F90 NCO NOPA LRB4"
+#GEN="F90 NOPA LRB4"
+GRB="NCEP2"
+SCRIP="SCRIP SCRIPNC"
+NC="NC4"
+PROP="PR3 UQ"
+
+#STERM="ST2 STAB0 FLX2 LN1 NL3 BT1 DB1 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST4 STAB0 FLX0 LN1 NL3 BT1 DB1 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST4 STAB0 FLX0 LN1 NL3 BT0 DB0 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST6 STAB0 FLX0 LN1 NL1 BT0 DB0 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST4 STAB0 FLX0 LN1 NL1 BT0 DB0 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST2 STAB0 FLX2 LN1 NL3 BT4 DB1 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST4 STAB0 FLX0 LN1 NL1 BT1 DB1 IC0 IS0 REF0 MLIM TR0 BS0 XX0"; 
+#STERM="ST4 STAB0 FLX0 LN1 NL3 BT1 DB1 IC4 IS0 REF0 TR0 BS0 XX0"; 
+
+#ORIGINAL SWITCHS FOR GLWU
+STERM="ST4 STAB0 FLX0 LN1 NL3 BT1 DB1 IC0 IS0 REF0 TR0 BS0 XX0"; 
+#NEXT LINE FOR DEBUGGING
+# w/debugio STERM="ST4 STAB0 FLX0 LN1 NL3 BT1 DB1 IC0 IS0 REF0 TR0 BS0 XX0 DEBUGIO"; 
+
+#WNDCUR="WNX1 WNT1 CRX1 CRT1 RWND" # Including wind correction due to currents
+WNDCUR="WNX1 WNT1 CRX0 CRT0" # Excluding wind correction due to currents
+
+OFLAG="O0 O1 O2 O4 O5 O6 O7 O14 O15"
+
+# Define alternate switch types
+# Shared memory/serial
+PROC='SHRD'
+GRB='NCEP2'
+SBS=
+SWITCH_SHRD="${GEN} ${GRB} ${PROC} ${SBS} ${SCRIP} ${NC} ${PROP} ${STERM} ${WNDCUR} ${OFLAG}"
+
+# MPI/OMP HYBRID
+PROC='DIST MPI OMPH OMPG'
+#PROC='DIST MPI'
+GRB=NOGRB
+SBS=
+SWITCH_MPI="${GEN} ${GRB} ${PROC} ${SBS} ${SCRIP} ${NC} ${PROP} ${STERM} ${WNDCUR} ${OFLAG}"
+
+# Side-by-side multi
+#PROC='DIST MPI OMPH OMPG'
+PROC='DIST MPI'
+GRB=NOGRB
+SBS='SBS'
+SWITCH_SBS="${GEN} ${GRB} ${PROC} ${SBS} ${SCRIP} ${NC} ${PROP} ${STERM} ${WNDCUR} ${OFLAG}"
+
+# NetCDF libraries
+NCINC='-I${NETCDF}/include'
+LIBFCSTNC='-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz'
+
+# Define compilation options
+OPTFL="-O -convert big_endian -assume byterecl -prec-div -prec-sqrt -ip -ftz"
+#OPTFL="-O -convert big_endian -assume byterecl"
+
+# Loop through programs
+for prog in $progs
+do
+    case $prog in
+     ww3_grid  ) name=ww3_grid  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_bound ) name=ww3_bound  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_prep  ) name=ww3_prep  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_prnc  ) name=ww3_prnc  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL}' -I${NETCDF}/include' ;
+                 ldflags= ;
+                 libs='-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz' ;;
+     ww3_shel  ) name=ww3_shel  ; switch="$SWITCH_MPI" ; comp=$compm ;
+                 fflags=${OPTFL}' '${NCINC} ;
+                 ldflags= ;
+                 libs=${LIBFCSTNC} ;;
+     ww3_multi ) name=ww3_multi  ; switch="$SWITCH_MPI" ; comp=$compm ;
+                 fflags=${OPTFL}' '${NCINC} ;
+                 ldflags= ;
+                 libs=${LIBFCSTNC} ;;
+     ww3_sbs1 )  name=ww3_multi_sbs ; switch="$SWITCH_SBS" ; comp=$compm ;
+                 fflags=${OPTFL}' '${NCINC} ;
+                 ldflags= ;
+                 libs=${LIBFCSTNC} ;;
+     ww3_uprstr)  name=ww3_uprstr ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_gint)   name=ww3_gint  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_outp  ) name=ww3_outp  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_outf  ) name=ww3_outf  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     ww3_ounf  ) name=ww3_ounf  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL}' -I${NETCDF}/include' ;
+                 ldflags= ;
+                 libs='-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz' ;;
+     ww3_ounp  ) name=ww3_ounp  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL}' -I${NETCDF}/include' ; 
+                 ldflags= ; 
+                 libs='-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz' ;;
+     ww3_grib  ) name=ww3_grib ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 libs='${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${JASPER_LIB} ${PNG_LIB} ${Z_LIB}' ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;;
+     ww3_systrk) name=wavesystrk  ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs='-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz' ;;
+     gx_outf   ) name=gx_outf   ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+     gx_outp   ) name=gx_outp   ; switch="$SWITCH_SHRD" ; comp=$comps ;
+                 fflags=${OPTFL} ;
+                 ldflags= ;
+                 libs= ;;
+        *      ) echo "do not recognize $prog." ; exit ;;
+    esac
+
+# Set up flags for w3_source
+export FC=${comp}
+export FFLAGS=${fflags}
+export LDFLAGS=${ldflags}
+export LIBS=${libs}
+
+rm -f ${WWATCH3_DIR}/bin/switch
+
+echo $switch > ${WWATCH3_DIR}/bin/switch
+
+# Run w3_source
+echo ' '
+echo " Running w3_source for $prog "
+
+# Setting bmode paramter to batch for w3_stenv non-interactive
+export bmode='yes'
+
+${WWATCH3_DIR}/bin/w3_setup ${WWATCH3_DIR} -q -c Intel 
+
+${WWATCH3_DIR}/bin/w3_source $prog #> source_${prog}.out 2>&1
+
+# Move to build directory
+rm -rf ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd
+mkdir -p ${WWATCH3_BUILD}/${options}/exec
+mkdir -p ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd
+mv -f ${WWATCH3_DIR}/work/$prog.tar.gz ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd
+tar zxvf ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd/$prog.tar.gz -C ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd > /dev/null 2>&1
+rm -f ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd/$prog.tar.gz 
+
+
+if [ "${is_multiwave}" = "yes" ]
+then
+
+echo " Multiwave version "
+
+  cd ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd/
+
+    echo " Changing ${prog} and input file to NCO main program name "
+    echo ' ' 
+  
+      case $prog in
+        ww3_grid ) name=multiwavegrid
+                   sed -e 's/W3GRID/WAVEGRID/g' \
+                       -e 's/ww3_grid/'${name}'/g' $prog.${fextf} > $name.${fextf} 
+                   sed -e 's/NOSW   = 5/NOSW   = 2/g' $name.${fextf}  > ${name}.dummy
+                   mv ${name}.dummy ${name}.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_bound ) name=multiwavebound
+                    sed -e 's/W3BOUND/WAVEBOUND/g' \
+                       -e 's/ww3_bound/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_prep ) name=multiwaveprep
+                   sed -e 's/W3PREP/WAVEPREP/g' \
+                       -e 's/ww3_prep/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_prnc ) name=multiwaveprnc
+                   sed -e 's/W3PRNC/WAVEPRNC/g' \
+                       -e 's/ww3_prnc/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_shel ) name=wavefcst
+                   sed -e 's/W3SHEL/WAVEFCST/g' \
+                       -e 's/ww3_shel/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_multi ) name=multiwavefcst
+                    sed -e 's/W3SHEL/WAVEFCST/g' \
+                       -e 's/ww3_multi/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_sbs1 ) name=multiwavefcst_sbs
+                   sed -e 's/W3SHEL/WAVEFCST/g' \
+                       -e 's/ww3_multi/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_uprstr) name=wave_uprstr
+                   sed -e 's/W3UPRSTR/WAVEUPRSTR/g' \
+                          -e 's/ww3_uprstr/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf} ;;
+        ww3_gint ) name=multiwavegrid_interp
+                   sed -e 's/W3GRID_INT/WAVEGRID_INT/g' \
+                          -e 's/ww3_gint/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf} ;;
+        ww3_grib ) name=multiwavegrib2
+                   sed -e 's/W3GRIB/WAVEGRIB2/g' \
+                       -e 's/ww3_grib/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_outp ) name=multiwavespec
+                   sed -e 's/W3OUTP/WAVESPEC/g' \
+                       -e 's/ww3_outp/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_outf ) name=multiwaveflds
+                   sed -e 's/W3OUTF/WAVEFLDS/g' \
+                       -e 's/ww3_outf/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_ounp ) name=multiwavespnc
+                   sed -e 's/W3OUNF/WAVESPNC/g' \
+                       -e 's/ww3_ounp/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_ounf ) name=multiwavefldn
+                   sed -e 's/W3OUNF/WAVEFLDS/g' \
+                       -e 's/ww3_ounf/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        ww3_systrk ) name=wavesystrk
+                     sed -e 's/W3SYSTRK/WAVESYSTRK/g' -e 's/WW3_SYSTRK/WAVESYSTRK/g'\
+                       -e 's/ww3_systrk/wavesystrk/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        gx_outf  ) name=multiwavegrads_fields
+                   sed -e 's/GXOUTF/WAVEGXFL/g' \
+                       -e 's/gx_outf/'${name}'/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+        gx_outp  ) name=multiwavegrads_points
+                   sed -e 's/GXOUTP/WAVEGXSP/g' \
+                       -e 's/gx_outp/multiwavegrads_points/g' $prog.${fextf} > $name.${fextf}
+                   rm -f $prog.${fextf}      ;;
+           *     ) if [ "$prog" != "$name" ]
+                   then
+                     mv $prog.${fextf} $name.${fextf}
+                   fi;;
+      esac
+
+#   Change makefile to reflect NCO main prog name
+      sed  -e "s/$prog/$name/g" makefile > makefile.temp
+
+      mv makefile.temp makefile
+      rm -rf ${WWATCH3_BUILD}/${options}/sorc/${name}.fd
+      mv ${WWATCH3_BUILD}/${options}/sorc/${prog}.fd ${WWATCH3_BUILD}/${options}/sorc/${name}.fd
+
+fi
+
+cd $WWATCH3_BUILD/${options}/sorc/${name}.fd
+
+make clean
+make  1> $WWATCH3_BUILD/${options}/sorc/${name}.fd/make.${name}.out 2>&1
+mv -f $WWATCH3_BUILD/${options}/sorc/${name}.fd/${name} $WWATCH3_BUILD/${options}/exec
+make clean
+
+	# Remove obj and mod files to ensure switch options are enforced
+rm -f ${WWATCH3_DIR}/obj*/*
+rm -f ${WWATCH3_DIR}/mod*/*
+
+done
+
+# Copy make.codes.sh script from aux/scripts 
+#cp ${SAVE}/aux/scripts/make.codes.sh ${WWATCH3_BUILD}/${options}/sorc/
+
+echo ' '
+echo " All done "
