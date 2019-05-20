@@ -1,7 +1,7 @@
 #!/bin/bash
 ## ---------------------------------------------------------------------------#
 # build.sh: Script to clone the WW3 code from a Git  repository and runs the  #
-#           program "CompileScript" to generate source codes and makefiles,   #
+#           program "CompilerScript" to generate source codes and makefiles,   #
 #           converting WW3 from a development branch or Master repository     # 
 #           into independent code  directories.  The code is cloned in the    #
 #           "WW3/" directory and inside this directory source code and        #
@@ -36,10 +36,10 @@ branchName=HF_ounf_fixedfile
 #branchName=master
 #
 # Set your script for compilation, this must in the same directory as this script (build.sh) 
-CompileScript=make_ww3_to_nco
+CompilerScript=make_ww3_to_nco
 #
 # SET the directory where WW3 code will reside
-WW3Dir=WW3XXX     # This is the default name
+WW3Dir=WW3     # This is the default name
 
 
 # 1. Checking the input arguments
@@ -95,9 +95,9 @@ then
   #
   #=================================================================
   cd $WW3Dir
-  git checkout $branchName  2>&1
-
+  #git checkout $branchName  2>&1
   #git symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
+
   export WW3VER=`grep CHARACTER ./model/ftn/w3initmd.ftn | grep PARAMETER | grep WWVER | awk '{print $6}' | sed 's/'\''//g'`
   echo " WW3 version is: $WW3VER"
   #Delete all directories except the model/
@@ -122,18 +122,19 @@ then
      echo " WW3 version is: $WW3VER"
     #Always run quietly when setup and compilation is done automatically
     sed -i '/WCOSS/d' model/bin/w3_setenv
-    sed '/basename $0/ a  quiet=1  # Run quitley in WCOSS'  model/bin/w3_setenv  > model/bin/w3_setenv.temp
+    sed '/basename $0/ a  quiet=1  # Run quietly in WCOSS'  model/bin/w3_setenv  > model/bin/w3_setenv.temp
     mv -f model/bin/w3_setenv.temp  model/bin/w3_setenv
     chmod +x model/bin/w3_setenv
     # Make the code and executables for NCO
-    cp ${configDir}/$CompileScript .
-    chmod +x $CompileScript
-    ./$CompileScript
+    cp ${configDir}/$CompilerScript .
+    chmod +x $CompilerScript
+    ./$CompilerScript
     echo " WW3 Version number: $WW3VER "
     echo " "
   else
     echo "$WW3Dir IS EMPTY OR DOES NOT EXIST"
-    echo "You must clone WW3 code"
+    echo "You must clone the WW3 code"
+    echo "Set the variables -gitRepos- and -branchName- at the top of this Script"
     echo "RUN: build.sh -clone -compile"
     exit 1
   fi
