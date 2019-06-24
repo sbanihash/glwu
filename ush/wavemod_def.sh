@@ -96,7 +96,10 @@
   then
     ln -fs ../mesh.$grdID .
   fi
+  #XXX Production utilities
+  . prep_step
   startmsg
+
   $EXECcode/multiwavegrid
   export err=$?
 

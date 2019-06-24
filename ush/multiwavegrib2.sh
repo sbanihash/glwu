@@ -124,7 +124,11 @@
   [[ "$LOUD" = YES ]] && set -x
 
   ln -sf ../$runID.$grdID.$cycle.grib2 gribfile
+
+  #XXX Production utilities
+  . prep_step
   startmsg
+
   $EXECcode/multiwavegrib2
   err=$?
 

@@ -136,7 +136,10 @@
 #then
 #   cp -f $FIXwave/precomp_weights.bin.$grdID ./precomp_weights.bin
 #fi
+  #XXX Production utilities
+  . prep_step
   startmsg
+
   $EXECcode/multiwavegrid_interp
   err=$?
 

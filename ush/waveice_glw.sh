@@ -252,7 +252,10 @@
            exit 
         fi 
         #END XXX RPH CHANGES =============================
-        startmsg
+       #XXX Production utilities
+       . prep_step
+       startmsg
+
         $EXECwave/inpaint_nic_glwu #1> inpaint.out 2>&1
         export err=$?; err_chk
 

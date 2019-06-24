@@ -146,7 +146,10 @@
 
       cp ../mod_def.$grdID mod_def.ww3
 
-      startmsg
+       #XXX Production utilities
+       . prep_step
+       startmsg
+
       $EXECcode/multiwaveprnc > multiwaveprnc.out.$ymdh 
       export err=$?; err_chk
 

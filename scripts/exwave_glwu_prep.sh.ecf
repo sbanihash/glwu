@@ -806,7 +806,11 @@ set -xa
    #   else
    #        cp $FIXwave/wave_glwu_ice_500m.moddef.v1.0.0 mod_def.ww3
    #   fi
-   #fi
+   #fi 
+   #
+    # XXX Production utilities
+    . prep_step
+    
     $EXECcode/multiwaveprep > multiwaveprep.out
     err=$?
 

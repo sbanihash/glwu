@@ -598,6 +598,11 @@ export grint_OK='yes'
                                multiwavespec.inp.tmpl > multiwavespec.inp
    
     ln -s mod_def.$pntgrd mod_def.ww3
+
+    # XXX Production utilities
+    . prep_step
+    startmsg
+
     $EXECcode/multiwavespec > buoy_tmp.loc 
     err=$?
 

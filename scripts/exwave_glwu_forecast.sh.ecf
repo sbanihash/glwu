@@ -398,7 +398,9 @@ pwd
   ln -fs mod_def.${grids} mod_def.ww3
   ln -fs wind.${grids} wind.ww3
   ln -fs ice.${grids} ice.ww3
-
+  # XXX Production utilities
+  . prep_step
+    
   startmsg
   ${mpicmd} $EXECcode/multiwavefcst         
   export err=$?; err_chk

@@ -102,7 +102,10 @@
   echo "   Run multiwavenc"
   [[ "$LOUD" = YES ]] && set -x
 
+  #XXX Production utilities
+  . prep_step
   startmsg
+
   $EXECcode/multiwavefldn
   export err=$?
 

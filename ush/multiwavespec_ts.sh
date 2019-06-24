@@ -159,7 +159,10 @@
   echo "   Executing $EXECcode/multiwavespec"
   [[ "$LOUD" = YES ]] && set -x
 
+  #XXX Production utilities
+  . prep_step
   startmsg
+
   $EXECcode/multiwavespec
   export err=$?
 
