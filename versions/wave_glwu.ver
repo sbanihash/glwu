@@ -1,8 +1,8 @@
-export wave_glwu_ver=v1.0.2
-export wave_code_ver=v5.16.0
+export wave_glwu_ver=v1.0.3
+export wave_code_ver=v6.07
 export wave_code_pkg=st4nc_nl3
 export envir=dev
 export iobuf_ver=2.0.5
 export grib_util_ver=1.0.3
-export cfp-intel-sandybridge_ver=1.1.0
+export cfp-intel-sandybridge_ver=2.0.1
 export util_shared_ver=1.0.5
