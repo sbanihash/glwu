@@ -1,0 +1,5 @@
+# Mesh files and grid interpolation weights
+mesh.glwu
+grint_weights.grlc_2p5km
+grint_weights.grlr
+grint_weights.grlr_500m
