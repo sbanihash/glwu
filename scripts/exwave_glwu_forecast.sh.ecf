@@ -417,7 +417,7 @@ pwd
         ymdh=`$NDATE $stp_hour $ymdh`
         ndate=`echo $ymdh | cut -c 1-8`
         ncycle=t`echo $ymdh | cut -c 9-10`z
-        COMOUTrst=${COMOUTwave}/${RUN}.${ndate}
+        COMOUTrst=${COMINwave}/${RUN}.${ndate}
         if [ ! -d $COMOUTrst ]; then
           mkdir -p $COMOUTrst
         fi
