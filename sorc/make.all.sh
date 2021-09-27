@@ -4,6 +4,9 @@ module purge
 module use ../modulefiles
 module load build_glwu.module
 
+# Install large external fix files
+./get_externals.sh
+
 dirs=`ls -d *.fd`
 codes=`echo $dirs | sed 's/\.fd/ /g'`
 
