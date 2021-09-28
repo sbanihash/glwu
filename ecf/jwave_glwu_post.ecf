@@ -1,0 +1,76 @@
+#BSUB -J %E%wave_glwu_post_%CYC%
+#BSUB -o /%COM%/output/%ENVIR%/today/wave_glwu_post_%CYC%.o%J
+#BSUB -e /%COM%/output/%ENVIR%/today/wave_glwu_post_%CYC%.o%J
+#BSUB -L /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -W 00:30
+#BSUB -cwd /tmp
+#BSUB -extsched 'CRAYLINUX[]'
+#BSUB -P %PROJ%-%PROJENVIR%
+#BSUB -M 1000
+export NODES=13
+
+%include <head.h>
+%include <envir-xc40.h>
+
+set -x
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+
+# specify X threads if using openmp
+export OMP_NUM_THREADS=1
+
+#Unlimit the stack size
+ulimit -s unlimited
+
+export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
+ 
+# Set global variables
+modID=glwu
+MODID=GLWU
+ 
+# EXPORT list here
+export cyc=%CYC%
+
+# CALL executable job script here
+
+# versions file for wave_glwu sets $model_ver and $code_ver
+VERSION_FILE=$NWROOT/versions/wave_glwu.ver
+if [ -f $VERSION_FILE ]; then
+  . $VERSION_FILE
+else
+  ecflow_client --msg="***JOB ${SMSNAME} ERROR: Version File $VERSION_FILE does not exist ***"
+  ecflow_client --abort
+  exit
+fi
+
+# Setup and load modules
+module load PrgEnv-intel
+module load cfp-intel-sandybridge
+module load grib_util/${grib_util_ver}
+module load iobuf/${iobuf_ver}
+
+$NWROOT/wave_glwu.${wave_glwu_ver}/jobs/JWAVE_GLWU_POST
+
+if [ $? -ne 0 ]; then
+  ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
+  ecflow_client --abort
+  exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that runs the glwu wave model
+#          post on the IBMSP
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
