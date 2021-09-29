@@ -1,0 +1,127 @@
+
+
+############################################
+### JWAVE_GLWU_POST: Great Lakes Wave Sys ###
+###      LSF card for development        ###
+############################################
+#
+# LSF options
+#
+#BSUB -M 3000
+#BSUB -P GLW-T2O
+#BSUB -J JWAVE_GLWU_POST
+#AW #BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} +312*{select[craylinux && vnode]span[ptile=24] cu[type=cabinet]}'
+#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} +312*{select[craylinux && vnode]span[ptile=12] cu[type=cabinet]}'
+#BSUB -oo JWAVE_GLWU_POST.out
+#BSUB -eo JWAVE_GLWU_POST.out 
+#BSUB -W 00:30
+#BSUB -q "dev"
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Andre.VanderWesthuysen/wave_glwu.v1.0.3/dev/lsf_scripts
+
+# Setup and load modules 
+source $MODULESHOME/etc/modules.sh
+module load PrgEnv-intel
+module load prod_envir
+module load prod_util
+
+module load cfp-intel-sandybridge/1.1.0
+module load grib_util/1.0.3
+module load iobuf/2.0.5
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+# specify X threads if using openmp
+export OMP_NUM_THREADS=1
+
+ulimit -s unlimited
+
+export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
+
+# Set global variables
+export modID=glwu
+export MODID=GLWU
+export RUN=$modID
+
+runuser=$USER
+NWROOT=/gpfs/hps3/emc/marine/noscrub/${runuser}      # root of file system
+
+# envir now set by version card
+# Check HOST file for where to run
+. ./HOST_${modID}
+
+# Set pref to point to matching CRAY machines
+pref=$( echo $COMROOTp1 | cut -c7 )
+export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
+export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
+
+
+# Lines below for retrospective testing using data in noscrub
+# export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
+# export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
+
+export job=JWAVE_GLWU_POST
+export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
+
+ #Set Version numbers
+version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version info
+if [ -f $version_file ]
+then
+  source $version_file
+else
+  echo '##############################################'
+  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
+  echo '##############################################'
+  exit 1
+fi
+
+# Set PDY and cycle here
+export COMDATE=`pwd`
+
+echo $COMDATE
+ls $COMDATE
+
+if [ -f $COMDATE/PDY_${modID} ]
+then
+   source $COMDATE/PDY_${modID}
+else
+  echo '##################################################'
+  echo '### ERROR !! : COULD NOT SET THE PDY AND CYCLE ###'
+  echo '##################################################'
+  exit 1
+fi
+
+# Set j-job parameters (extracted from j-job for DEV by new NCO standards)
+# the stmp file system is hugely slow
+export DATA=/gpfs/hps3/stmp/${runuser}/${GLWUdir}/${envir}/${job}
+#export DATA=/gpfs/hps3/ptmp/wavepa/${envir}/${job}
+#export DATA=/gpfs/hps3/emc/marine/noscrub/${runuser}/tmp/${envir}/${job}
+rm -rf $DATA
+mkdir -p $DATA
+export jlogfile=/dev/null
+export SENDECF=NO 
+export SENDDBN=NO
+export SENDCOM=YES 
+
+# Set paths to home etc
+export NET=wave
+export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+
+# Set COM paths
+export COMINwave=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+
+export COMOUTwave=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMOUT=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMINOUT=$COMOUT
+
+export COMROOT=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+
+
+# Choose to keep temporary directory
+export KEEPDATA='YES'
+
+# Execute the actual J job
+############################################################################
+${NWROOT}/wave_${modID}.${wave_glwu_ver}/jobs/JWAVE_${MODID}_POST
+############################################################################

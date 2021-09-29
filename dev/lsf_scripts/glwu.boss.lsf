@@ -1,0 +1,469 @@
+#!/bin/bash
+# --------------------------------------------------------------------------- #
+# glwu.boss : Master script to run the multi-grid ocean wave model             #
+#                parallel version and/or private pieces of it.                #
+#                                                                             #
+# Remarks      - Can be run interactively, or from LSF                        #
+#                                                                             #
+# Origination                                                   April 2011    #
+# Transition to WCOSS                                           Dec   2012    #
+# Transition to CRAY                                            May   2016    #
+# --------------------------------------------------------------------------- #
+# 0.  Initializations
+# 0.a LSF stuff
+
+# LSF options
+#BSUB -W 06:00
+##BSUB -W 01:00
+#BSUB -q "dev"
+##BSUB -q "debug"
+#BSUB -J glwu.boss.lsf
+#BSUB -M 1000
+#BSUB -P GLW-T2O
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Andre.VanderWesthuysen/wave_glwu.v1.0.3/dev/lsf_scripts/glwu.boss.out
+#BSUB -eo /gpfs/hps3/emc/marine/noscrub/Andre.VanderWesthuysen/wave_glwu.v1.0.3/dev/lsf_scripts/glwu.boss.out
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Andre.VanderWesthuysen/wave_glwu.v1.0.3/dev/lsf_scripts
+#XXX 
+set -xa
+# Setup and load modules 
+source $MODULESHOME/etc/modules.sh
+module load PrgEnv-intel
+module load cfp-intel-sandybridge
+module load prod_util
+
+# Set runuser
+#runuser=Andre.VanderWesthuysen
+export runuser=$(whoami)
+envir=dev
+
+# 0.a Version card
+
+#AW  sysver=`pwd | sed 's/\// /g' | awk '{print $NF}'`
+
+NWROOT=/gpfs/hps3/emc/marine/noscrub/${runuser}      # root of file system
+LSFDIR=/gpfs/hps3/emc/marine/noscrub/${runuser}/${sysver}/dev/lsf_scripts
+
+cd ${LSFDIR}
+
+version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version info
+
+ if ! [ ${wave_glwu_ver} ]
+ then
+  if [ -f $version_file ]
+  then
+    . ./$version_file
+    echo $wave_glwu_ver
+  else
+    echo ' '
+    echo ' *****************************************************************'
+    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/wave_glwu.ver) ***'
+    echo ' *****************************************************************'
+    echo ' '
+    exit 20
+  fi
+ fi
+
+# 0.a Set necessary variables
+
+export NET=WAVE
+
+  host_s=`hostname | cut -c1-1`
+  case $host_s in
+   'l' ) host='luna'; ohost='surge' ;;
+   's' ) host='surge'; ohost='luna' ;;
+  esac 
+
+  export modID=glwu
+  export MODID=GLWU
+  export start_dir=${LSFDIR}  # start/work dir.
+
+# USHwave changed to USHwavepa to avoid mixup with USHwave in j-jobs
+  if [ "$envir" = "ops" ]
+  then
+    dirext=
+  else
+    dirext="_${envir}"
+  fi
+  export GLWUdir=GLWU
+  export UTILdir=${GLWUdir}/util/ush
+
+  export USHwavepa=/gpfs/hps3/emc/marine/noscrub/${runuser}/${UTILdir}
+  export com=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM${dirext}
+  export pcom=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/PCOM${dirext}
+
+  export wavelog=${com}/${modID}.log                     # log for wave com
+
+  if [ -f $wavelog ]
+  then
+    rm $wavelog
+  fi
+
+  if [ -f ${com}/wave.log ]
+  then
+    rm ${com}/wave.log
+  fi
+
+  touch $wavelog
+  export web=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/WEB${dirext}
+  export weblog=${web}/${modID}.log                      # log for web page
+  export out=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/OUTPUT${dirext}
+
+  export iceID=icean_5m                              # ice ID
+  export wndID=glwu                              # wind ID (for the WW3 grid used for wind data)
+  export COMDATE=/gpfs/hps3/emc/marine/noscrub/${runuser}/${sysver}/dev/lsf_scripts      # directory where PDY date                                                      # stored
+#JS="WEB PUBWEB ARC WEB"
+#JS="PREP FORECAST POST WEB PUBWEB"
+#JS="PREP FORECAST POST WEB"
+JS="PREP FORECAST POST PGEN"
+ 
+  for j in ${JS}
+  do
+    export main_jobs="${main_jobs} J${NET}_${MODID}_${j}"                 # main jobs, to be run
+  done                                                                  #   sequentially.
+                                                     # SEE ALSO 0.c !!!
+  export spin_jobs= # jobs to be spun off.
+  export aux_jobs='                  '         # aux jobs, to be run
+                                                     #   in parallel.
+
+  export cycle_PDY='yes'                             # update PDY file ?
+
+  export DATA=/gpfs/hps3/stmp/${runuser}/${GLWUdir}/${envir}                  # Temporary base directory
+  export lsfst=$DATA/lsf.$modID.${wave_glwu_ver}.boss.out.$$            # work file for lsfsubmit
+  export lsfse=$DATA/lsf.$modID.${wave_glwu_ver}.boss.err.$$            # work file for lsfsubmit
+
+  if [ ! -d "$DATA" ]
+  then
+    mkdir -p $DATA
+  fi
+
+  if [ ! -d "$out" ]
+  then
+    mkdir -p $out
+  fi
+
+
+  if [ ! -d "$com" ]
+  then
+    mkdir -p $com
+  fi
+
+# 0.b ID output
+
+  cd $start_dir
+
+  echo ' '
+  echo '                  ***************************************'
+  echo '                  *** NWW3 MASTER SCRIPT glwu.boss ***'
+  echo '                  ***************************************'
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Script settings :'
+  echo '        ------------------------------------------------------------'
+  echo "           model ID           : $modID"
+  echo "           com directory      : $com"
+  echo "           web directory      : $web"
+  echo "           output directory   : $out"
+  echo "           main jobs          : $main_jobs"
+  echo "           spin-off jobs      : $spin_jobs"
+  echo "           auxiliary jobs     : $aux_jobs"
+
+# 0.c Set run time
+
+  if [ -f $COMDATE/PDY_${modID} ]
+  then
+    . $COMDATE/PDY_${modID} 
+  else
+    echo ' '
+    echo ' ***************************************************'
+    echo " *** FILE WITH TIME INFO NOT FOUND (PDY_$modID) ***"
+    echo ' ***************************************************'
+    echo ' '
+    date=`date -u +"%Y%m%d t%Hz"`
+    echo "$modID.boss $date : PDY file not found." >> $wavelog
+    exit 1
+  fi
+
+  export runID=glwu
+
+  date=$PDY
+  cycle=t${cyc}z
+  YMDH=$date$cyc
+
+  echo ' '
+  echo "           date and cycle     : $date $cycle"
+
+# 0.d Set Check files
+
+  export J${NET}_${MODID}_PREP=${runID}.${wndID}.${cycle}.wind
+  export J${NET}_${MODID}_FORECAST=where_wave_${runID}_ran.$cycle
+  export J${NET}_${MODID}_POST=${runID}.$cycle.postdone
+  export J${NET}_${MODID}_PGEN=${runID}.$cycle.awipsbull
+  export J${NET}_${MODID}_WEB=${runID}.$cycle.webdone
+  export J${NET}_${MODID}_ARC=${runID}.$cycle.arcdone
+  export J${NET}_${MODID}_PUBWEB=${runID}.$cycle.pubwebdone
+  export J${NET}_${MODID}_COPY=${runID}.$cycle.pushrestartdone
+
+# 0.e Run cleanup script
+
+   ${USHwavepa}/cleanup.sh  $main_jobs $spin_jobs $aux_jobs
+
+# --------------------------------------------------------------------------- #
+# 1.  Clean up files
+#     Directories done in scrub.boss
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Clean up files :'
+  echo '        ------------------------------------------------------------'
+
+# 1.a Clean up output files
+
+  if [ -n "$main_jobs" ] || [ -n "$spin_jobs" ] || [ -n "$aux_jobs" ]
+  then
+    for job in $main_jobs $spin_jobs $aux_jobs
+    do
+      jobout=`cat ${job}.lsf | grep 'export job=' | sed 's/=/ /g' | awk '{print $3}'`
+      if [ -f $jobout.out ]
+      then
+        echo "           Removing $jobout.out"
+        rm -f $jobout.out
+      else
+        echo "           File $jobout.out not found."
+      fi
+    done
+  fi
+
+# --------------------------------------------------------------------------- #
+# 2.  Run string of main jobs
+# 2.a Making output directory if necessary
+
+  cd $out
+  if [ ! -d ${modID}.$date ]
+  then
+    echo "           Making output directory $out/${modID}.$date"
+    mkdir -p ${modID}.$date
+  fi
+
+  cd $com
+  YMDHn=`$NDATE 24 $YMDH`
+  daten="`echo $YMDHn | cut -c1-8`"
+
+  if [ ! -d ${modID}.$date ]
+  then
+    echo "           Making com directory $com/${modID}.$date"
+    mkdir -p ${modID}.$date
+  fi
+
+  if [ ! -d ${modID}.$daten ]
+  then
+    echo "           Making com directory $com/${modID}.$daten"
+    mkdir -p ${modID}.$daten
+  fi
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Run main jobs (sequentially) :'
+  echo '        ------------------------------------------------------------'
+
+# 2.b Running main jobs if any
+  #XXX
+  set -xa
+  cd $start_dir
+
+  if [ -z "$main_jobs" ]
+  then
+    echo "           No main jobs to submit."
+  else
+    for job in $main_jobs
+    do
+      echo "           Starting $job at `date`"
+        bsub < ${job}.lsf  > $lsfst 2> $lsfse
+      OK=$?
+      if [ "$OK" != '0' ]
+      then
+        cat $lsfse
+        echo "$modID.boss $date $cycle : Error in lsf (main)." >> $wavelog
+        exit 2
+      fi
+
+      jobname="`sed 's/<//g' $lsfst | sed 's/>//g' | awk '{ print $2 }'`"
+      echo "              Job name is $jobname"
+
+# Output file name is now extracted from lsf Jscripts
+
+      jobout=`cat ${job}.lsf | grep 'export job=' | sed 's/=/ /g' | awk '{print $3}'`
+      echo " Out file is  ${jobout}.out"
+
+      while [ "`bjobs | grep $jobname | awk '{print $1}'`" = "$jobname" ] || [ ! -f ${jobout}.out ]
+      do
+        sleep 60
+      done
+      mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+
+#      eval echo $`echo $job` | read check
+      check=$(eval echo $`echo $job`)
+      if [ ! -f $com/${modID}.$date/$check ] && [ ! -f $pcom/${modID}.$date/$check ]
+      then
+        echo " ***********************************************"
+        echo " *** CHECK FILE FOR THIS JOB CANNOT BE FOUND ***"
+        echo " ***********************************************"
+        echo "                     Directory : $com/${modID}.$date"
+        echo "                     File      : $check"
+        echo "$modID.boss $date $cycle : check file ${check} not found." >> $wavelog
+        exit 3
+      fi
+
+      sleep 60
+
+    done
+    echo "           All finished at `date`"
+  fi
+
+# --------------------------------------------------------------------------- #
+# 3.  Run string of spin-off jobs
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo "        Submit spin-off jobs (don't wait) :"
+  echo '        ------------------------------------------------------------'
+
+  if [ -z "$spin_jobs" ]
+  then
+    echo "           No jobs to spin-off."
+  else
+    jobnames=
+    for job in $spin_jobs
+    do
+      echo "           Starting $job at `date`"
+      bsub  <  $job  > $lsfst 2> $lsfse
+      OK=$?
+      if [ "$OK" != '0' ]
+      then
+        cat $lsfse
+        echo "$modID.boss $date $cycle : Error in bsub (spin)." >> $wavelog
+        exit 4
+      fi
+ 
+      jobname="`sed 's/\"//g' $lsfst | sed 's/\.ncep\.noaa\.gov//g' \
+                                    | awk '{ print $4 }'`"
+      echo "              Job name is $jobname"
+
+    done
+  fi
+
+# --------------------------------------------------------------------------- #
+# 4.  Run string of aux jobs
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Run auxiliary jobs (in parallel) :'
+  echo '        ------------------------------------------------------------'
+
+  if [ -z "$aux_jobs" ]
+  then
+    echo "           No auxiliary jobs to submit."
+  else
+    jobnames=
+    for job in $aux_jobs
+    do
+      echo "           Starting $job at `date`"
+      bsub  <  $job.lsf  > $lsfst 2> $lsfse
+      OK=$?
+      if [ "$OK" != '0' ]
+      then
+        cat $lsfse
+        echo "$modID.boss $date $cycle : Error in bsub (aux)." >> $wavelog
+        exit 5
+      fi
+ 
+      jobname="`sed 's/\"//g' $lsfst | sed 's/\.ncep\.noaa\.gov//g' \
+                                    | awk '{ print $4 }'`"
+      echo "              Job name is $jobname"
+ 
+      if [ -z "$jobnames" ]
+      then
+        jobnames=$jobname
+      else
+        jobnames="$jobnames $jobname"
+      fi
+    done
+
+    for job in $aux_jobs
+    do
+# Output file name is now extracted from lsf Jscripts
+
+      jobout=`cat ${job}.lsf | grep 'export job=' | sed 's/=/ /g' | awk '{print $3}'`
+      echo " Out file is  ${jobout}.out"
+      while [ ! -f ${jobout}.out ]
+      do
+        sleep 30
+      done
+    done
+
+    for jobname in $jobnames
+    do
+      while [ -n "`bjobs | grep $jobname`" ]
+      do
+        sleep 60
+      done
+    done
+
+    for job in $aux_jobs
+    do
+      jobout=`cat ${job}.lsf | grep 'export job=' | sed 's/=/ /g' | awk '{print $3}'`
+      mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+    done
+
+    echo "           All finished at `date`"
+  fi
+
+  #XXX rm -f $lsfst
+  #XXX rm -f $lsfse
+
+# --------------------------------------------------------------------------- #
+# 5.  What to do next ?
+
+  if [ "$cycle_PDY" = 'yes' ] 
+  then
+    echo ' '
+    echo " Time : `date`"
+    echo ' '
+
+    DTCYC=1
+    if  [ "$RetroRun" = "YES" ]
+    then
+       DTCYC=6
+    fi
+    if  [ "$RetroRun" = "NOT" ]
+    then
+       DTCYC=1
+    fi
+
+    YMDHn=`$NDATE ${DTCYC} $YMDH`
+    daten="`echo $YMDHn | cut -c1-8`"
+    cycn="`echo $YMDHn | cut -c9-10`"
+    cyclen="t${cycn}z"
+
+    cd $start_dir
+    echo "export PDY=$daten"    > $COMDATE/PDY_${modID}
+    echo "export cyc=$cycn"    >> $COMDATE/PDY_${modID}
+
+    echo "        PDY file set to $daten $cyclen"
+
+  fi
+
+# --------------------------------------------------------------------------- #
+# 6.  End of it all
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo ' '
+  echo '                        *** End of glwu.boss ***'
+
+# - end of glwu.boss ----------------------------------------------------- #
