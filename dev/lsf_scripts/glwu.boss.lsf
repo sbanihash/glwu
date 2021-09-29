@@ -51,7 +51,7 @@ version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version i
  then
   if [ -f $version_file ]
   then
-    . ./$version_file
+    . $version_file
     echo $wave_glwu_ver
   else
     echo ' '
