@@ -24,12 +24,12 @@ mkdir ../exec
 
 for i in  $codes
 do
-        cd ${i}.fd
+	cd ${i}.fd
         mv make.log make.log.bak
-        make clean > make.log 2>&1
+	make clean > make.log 2>&1
         module list >> make.log 2>&1
-        make >> make.log 2>&1
-        mv $i ../../exec/
+	make >> make.log 2>&1
+        mv $i ../../exec
         make clean
         cd ../
 done
