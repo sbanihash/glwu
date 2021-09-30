@@ -27,7 +27,7 @@ do
         make clean > make.log 2>&1
         module list >> make.log 2>&1
         make >> make.log 2>&1
-        mv $i ../../exec
+        mv $i ../../exec/
         make clean
         cd ../
 done
@@ -63,7 +63,7 @@ module load build_wavewatch3.modules
     if [ -f ${code} ]
     then
       echo " Code ${code} created successfully, moving to exec "
-      mv ${code} ../exec
+      mv ${code} ../../exec/
     else
       echo " FATAL ERROR making ${code} "
     fi
