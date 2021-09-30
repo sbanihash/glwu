@@ -104,7 +104,8 @@ export SENDCOM=YES
 
 # Set paths to home etc
 export NET=wave
-export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+#export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
 export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
 
 # Set COM paths
