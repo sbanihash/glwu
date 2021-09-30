@@ -127,7 +127,10 @@ export SENDCOM=YES
 #fi
 #
 # Location of WW3 code
-export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+#export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+
 # Set COM paths
 export COMINwave=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
 export COMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
@@ -153,7 +156,6 @@ mv PDY PDY.TODAY
 PDYcyc_file="${PDY_file}${cyc_file}"
 echo "COMPARING $PDYcyc_file >= $PDYcyc_changed ?"
 
-export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
 #if [ "$PDYcyc_file" -gt "$PDYcyc_changed" ] 
 #then 
 #  echo "THIS IS A RUN AFTER 20181030_14"
