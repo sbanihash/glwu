@@ -20,6 +20,8 @@ module load build_glwu.module
 dirs=`ls -d inpaint*.fd`
 codes=`echo $dirs | sed 's/\.fd/ /g'`
 
+mkdir ../exec
+
 for i in  $codes
 do
         cd ${i}.fd
