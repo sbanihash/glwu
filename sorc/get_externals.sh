@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------------- #
 
 echo 'Fetching externals...'
-cp -p /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_glwu/mesh.glwu ../fix/
-cp -p /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km ../fix/
-cp -p /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
-cp -p /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/git/fv3gfs/fix/fix_glwu/mesh.glwu ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m ../fix/
