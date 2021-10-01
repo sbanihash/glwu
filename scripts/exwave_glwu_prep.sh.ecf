@@ -360,7 +360,7 @@
 
     if [ "$nfile" -gt '1' ]
     then
-      aprun -N5 -n5 -j1 cfp cmdfile
+      mpiexec -np 5 --cpu-bind verbose,core cfp cmdfile
       exit=$?
     else
       ./cmdfile.1
@@ -575,7 +575,7 @@
 
   if [ "$nfile" -gt '1' ]
   then
-    aprun -n120 -N24 -j1 cfp cmdfile
+    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
     exit=$?
   else
     ./cmdfile
