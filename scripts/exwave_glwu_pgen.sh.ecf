@@ -341,14 +341,14 @@
       if [ "$SENDCOM" = 'YES' ]
       then
         echo "      Saving $AWIPSGRB.$grdID as grib2.$cycle.awipsww3_${grdID}"
-        echo "          in $PCOM"
-        cp $AWIPSGRB.$grdID $PCOM/grib2.$cycle.awipsww3_${grdID}
+        echo "          in COMOUTwmo"
+        cp $AWIPSGRB.$grdID $COMOUTwmo/grib2.$cycle.awipsww3_${grdID}
       fi
 
       if [ "$SENDDBN_NTC" = 'YES' ]
       then
         echo "      Sending $AWIPSGRB.$grdID to DBNET."
-        $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/grib2.$cycle.awipsww3_${grdID}
+        $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $COMOUTwmo/grib2.$cycle.awipsww3_${grdID}
       fi
 
       rm -f $AWIPSGRB.$grdID tocgrib2.out
@@ -371,7 +371,7 @@
 
 # 2.b.1 Set up environment variables
 
-    . awipsbull.data
+    . ${DATA}/awipsbull.data
 
 # 2.b.2 Generate list of bulletins to process
 
@@ -416,11 +416,11 @@
   
 # test version
 #     $HOMEwave/scripts/formbul.pl -d $headr -f $fname -j $job -m $modID \
-#          -p $PCOM -s NO -o $oname > formbul.out 2>&1
+#          -p $COMOUTwmo -s NO -o $oname > formbul.out 2>&1
 
 # operational version
       formbul.pl -d $headr -f $fname -j $job -m $modID \
-           -p $PCOM -s NO -o $oname > formbul.out 2>&1
+           -p $COMOUTwmo -s NO -o $oname > formbul.out 2>&1
 
       OK=$?
 
@@ -447,11 +447,11 @@
     done
 
   if [ $SENDCOM = "YES" ] ; then
-    #XXW cp  awipsbull.$job $PCOM/awipsbull.$job
-    cp  glwu.t${cyc}z.awipsbull $PCOM/.
+    #XXW cp  awipsbull.$job $COMOUTwmo/awipsbull.$job
+    cp  glwu.t${cyc}z.awipsbull $COMOUTwmo/.
     if [ $SENDDBN = "YES" ] ; then
-       #XXW make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/awipsbull.$job $PCOM/awipsbull.$job
-       make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/glwu.t${cyc}z.awipsbull $PCOM/glwu.t${cyc}z.awipsbull
+       #XXW make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/awipsbull.$job $COMOUTwmo/awipsbull.$job
+       make_ntc_bull.pl  WMOBH NONE KWBJ NONE $DATA/glwu.t${cyc}z.awipsbull $COMOUTwmo/glwu.t${cyc}z.awipsbull
     fi
   fi
 
