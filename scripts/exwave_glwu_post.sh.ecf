@@ -182,7 +182,7 @@ export grint_OK='yes'
 
   if [ "$nfile" -gt '1' ]
   then
-    aprun -n120 -N24 -j1 cfp cmdfile
+    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
     exit=$?
   else
     nfile=1
@@ -275,7 +275,7 @@ export grint_OK='yes'
       echo "   Generating mod_def file for $grdID ... "
       [[ "$LOUD" = YES ]] && set -x
 
-      aprun -j1 -n1 -N1 $USHwave/wavemod_def.sh $grdID > $grdID.out
+      $USHwave/wavemod_def.sh $grdID > $grdID.out
 
     fi
 
@@ -347,7 +347,7 @@ export grint_OK='yes'
     echo "   Generating mod_def file for $pntgrd ... "
     [[ "$LOUD" = YES ]] && set -x
 
-    aprun -j1 -n1 -N1 $USHwave/wavemod_def.sh $pntgrd > $pntgrd.out
+    $USHwave/wavemod_def.sh $pntgrd > $pntgrd.out
 
   fi
 
@@ -663,7 +663,7 @@ export grint_OK='yes'
       ymdh_int=`$NDATE -9 $YMDH`
       dt_int=3600.
       n_int=9999
-      aprun -j1 -n1 -N1 $USHwave/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out
+      $USHwave/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out
     done
 
     for igrdID in $itgrids
@@ -688,7 +688,7 @@ export grint_OK='yes'
   if [ "$nfile" -gt '1' ]
   then
     # ${mpicmd} cmdfile
-    aprun -n120 -N24 -j1 cfp cmdfile
+    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
     exit=$?
   else
     nfile=1
@@ -883,7 +883,7 @@ export grint_OK='yes'
   if [ "$nfile" -gt '1' ]
   then
     # ${mpicmd} cmdfile
-    aprun -n120 -N24 -j1 cfp cmdfile
+    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
     exit=$?
   else
 #    ./cmdfile.1
@@ -1201,7 +1201,7 @@ export grint_OK='yes'
   if [ "$nfile" -gt '1' ]
   then
     # ${mpicmd} cmdfile
-    aprun -n120 -N24 -j1 cfp cmdfile
+    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
     exit=$?
   else
 #    ./cmdfile.1
@@ -1446,7 +1446,7 @@ export grint_OK='yes'
       echo "RUNID: $runID "
       echo THIS IS IT '$grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN'
       echo $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN
-      aprun -N1 -n1 -j1 $USHwave/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1
+      $USHwave/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1
     done
   fi
 # --------------------------------------------------------------------------- #
