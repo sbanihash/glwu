@@ -44,10 +44,10 @@ export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
 export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export PCOM=${PCOM:-$PCOMROOT/${NET}}
+export COMOUTwmo=${COMOUTwmo:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/wmo}
 
 if [ "$SENDCOM" = YES ]; then
-  mkdir -p $COMOUT $PCOM
+  mkdir -p $COMOUT $COMOUTwmo
 fi
 
 export wavelog=${COMOUTwave}/wave.log
