@@ -7,26 +7,34 @@
 #
 # LSF options
 #
-#BSUB -M 3000
-#BSUB -P GLW-T2O
-#BSUB -J JWAVE_GLWU_POST
-#AW #BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} +312*{select[craylinux && vnode]span[ptile=24] cu[type=cabinet]}'
-#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} +312*{select[craylinux && vnode]span[ptile=12] cu[type=cabinet]}'
-#BSUB -oo JWAVE_GLWU_POST.out
-#BSUB -eo JWAVE_GLWU_POST.out 
-#BSUB -W 00:30
-#BSUB -q "dev"
-#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Andre.VanderWesthuysen/wave_glwu.v1.0.3/dev/lsf_scripts
+#PBS -A GLWU-DEV
+#PBS -N JWAVE_GLWU_POST
+#PBS -q dev
+#PBS -l walltime=00:30:00
+#PBS -l select=3:ncpus=104:mem=10GB
+#PBS -l place=excl
+#PBS -V
+#PBS -j oe
+#PBS -o JWAVE_GLWU_POST.out
+#PBS -e JWAVE_GLWU_POST.out
 
-# Setup and load modules 
-source $MODULESHOME/etc/modules.sh
-module load PrgEnv-intel
-module load prod_envir
-module load prod_util
-
-module load cfp-intel-sandybridge/1.1.0
-module load grib_util/1.0.3
-module load iobuf/2.0.5
+cd $PBS_O_WORKDIR
+ 
+# Setup the modules
+module load envvar/1.0
+module load prod_envir/2.0.5
+module load prod_util/2.0.8
+module load PrgEnv-intel/8.1.0
+module load craype/2.7.8
+module load intel/19.1.3.304
+module load cfp/2.0.4
+module load wgrib2/2.0.8
+module load grib_util/1.2.2
+module load libjpeg/9c
+module load hdf5/1.10.6
+module load netcdf/4.7.4
+module load iobuf/2.0.10
+module list
 
 # Set LSF variables
 export KMP_AFFINITY=disabled
@@ -43,7 +51,7 @@ export MODID=GLWU
 export RUN=$modID
 
 runuser=$USER
-NWROOT=/gpfs/hps3/emc/marine/noscrub/${runuser}      # root of file system
+NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
 
 # envir now set by version card
 # Check HOST file for where to run
@@ -92,7 +100,7 @@ fi
 
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
-export DATA=/gpfs/hps3/stmp/${runuser}/${GLWUdir}/${envir}/${job}
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${envir}/${job}
 #export DATA=/gpfs/hps3/ptmp/wavepa/${envir}/${job}
 #export DATA=/gpfs/hps3/emc/marine/noscrub/${runuser}/tmp/${envir}/${job}
 rm -rf $DATA
@@ -104,19 +112,19 @@ export SENDCOM=YES
 
 # Set paths to home etc
 export NET=wave
-#export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
-export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
-export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+#export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+export HOMEwave=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
 
 # Set COM paths
-export COMINwave=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
 
-export COMOUTwave=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMOUT=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
 export COMINOUT=$COMOUT
 
-export COMROOT=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
 
 
 # Choose to keep temporary directory
