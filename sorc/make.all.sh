@@ -13,9 +13,15 @@
 
 # 1. Build ice field processor
 
+source ../versions/build.ver
+
+outfile=`pwd`/make.all.out
+rm -f ${outfile}
+
 module purge
-module use ../modulefiles
-module load build_glwu.module
+#module use ../modulefiles
+#module load build_glwu.module
+source ../modulefiles/build_glwu.module
 
 dirs=`ls -d inpaint*.fd`
 codes=`echo $dirs | sed 's/\.fd/ /g'`
@@ -25,10 +31,9 @@ mkdir ../exec
 for i in  $codes
 do
 	cd ${i}.fd
-        mv make.log make.log.bak
-	make clean > make.log 2>&1
-        module list >> make.log 2>&1
-	make >> make.log 2>&1
+	make clean > ${outfile} 2>> ${outfile}
+        module list >> ${outfile} 2>> ${outfile}
+	make >> ${outfile} 2>> ${outfile}
         mv $i ../../exec
         make clean
         cd ../
@@ -38,21 +43,19 @@ done
 
 set -x
 module purge
-module use ../modulefiles
-module load build_wavewatch3.modules
+#module use ../modulefiles
+#module load build_wavewatch3.modules
+source ../modulefiles/build_wavewatch3.modules
 
 # 2.1 Preparations: seek source codes to be compiled
 
   fcodes=`ls -d *wave*.fd | sed 's/\.fd//g'`
-  ccodes=`ls -d *wave*.Cd | sed 's/\.Cd//g'`
 
   echo " FORTRAN codes found: "$fcodes
-  echo " C codes found: "$ccodes
-
-  outfile=`pwd`/make_codes.out
-  rm -f ${outfile}
 
 # 2.2 Create executables
+
+  module list >> ${outfile} 2>> ${outfile}
 
   for code in $fcodes $ccodes
   do
