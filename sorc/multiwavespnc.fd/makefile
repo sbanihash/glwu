@@ -10,7 +10,7 @@ CPPFLAGS =
 FC       = ftn
 FFLAGS   = -O3  -convert big_endian -assume byterecl -prec-div -prec-sqrt -ip -ftz -I${NETCDF}/include
 LDFLAGS  = 
-LIBS     = -L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz
+LIBS     = -L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_ROOT}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz
 
 INCS     = w3macros.h
 SRCS     = multiwavespnc.F90 w3triamd.F90 w3gdatmd.F90 w3wdatmd.F90 w3adatmd.F90 w3idatmd.F90 w3odatmd.F90 w3flx1md.F90 w3sln1md.F90 w3src4md.F90 w3snl3md.F90 w3sbt1md.F90 w3sdb1md.F90 w3bullmd.F90 w3iogrmd.F90 w3iopomd.F90 w3partmd.F90 constants.F90 w3servmd.F90 w3timemd.F90 w3arrymd.F90 w3dispmd.F90 w3gsrumd.F90
