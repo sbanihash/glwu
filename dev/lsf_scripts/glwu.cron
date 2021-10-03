@@ -107,7 +107,7 @@ fi
   com_date=${LSFDIR}
 
   time_file=$com_date/PDY_${modID}                                       # file with time info
-  version_file=$NWROOT/${sysver}/versions/wave_glwu.ver    # file with version info
+  version_file=$NWROOT/${sysver}/versions/run.ver    # file with version info
 
   key_on=wind                                 # key on wind or wave files
 
@@ -268,9 +268,9 @@ fi
     . $version_file
   else
     echo ' '
-    echo ' *****************************************************************'
-    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/wave_glwu.ver) ***'
-    echo ' *****************************************************************'
+    echo ' ***********************************************************'
+    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/run.ver) ***'
+    echo ' ***********************************************************'
     echo ' '
     exit 20
   fi
