@@ -49,7 +49,7 @@ LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}/dev/lsf_scripts
 
 cd ${LSFDIR}
 
-version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version info
+version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
 
  if ! [ ${wave_glwu_ver} ]
  then
@@ -59,9 +59,9 @@ version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version i
     echo $wave_glwu_ver
   else
     echo ' '
-    echo ' *****************************************************************'
-    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/wave_glwu.ver) ***'
-    echo ' *****************************************************************'
+    echo ' ***********************************************************'
+    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/run.ver) ***'
+    echo ' ***********************************************************'
     echo ' '
     exit 20
   fi
