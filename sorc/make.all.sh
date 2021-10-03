@@ -19,14 +19,15 @@ outfile=`pwd`/make.all.out
 rm -f ${outfile}
 
 module purge
-#module use ../modulefiles
-#module load build_glwu.module
 source ../modulefiles/build_glwu.module
 
 dirs=`ls -d inpaint*.fd`
 codes=`echo $dirs | sed 's/\.fd/ /g'`
 
-mkdir ../exec
+if [ ! -d "../exec" ]; then
+   echo 'Creating exec directory'
+   mkdir ../exec
+fi
 
 for i in  $codes
 do
@@ -43,8 +44,6 @@ done
 
 set -x
 module purge
-#module use ../modulefiles
-#module load build_wavewatch3.modules
 source ../modulefiles/build_wavewatch3.modules
 
 # 2.1 Preparations: seek source codes to be compiled
