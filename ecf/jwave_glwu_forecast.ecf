@@ -1,21 +1,20 @@
-#BSUB -J %E%wave_glwu_forecast_%CYC%
-#BSUB -o /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
-#BSUB -e /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
-#BSUB -L /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -W 00:35
-#BSUB -cwd /tmp
-#BSUB -M 2700
-#BSUB -P %PROJ%-%PROJENVIR%
-#BSUB -extsched 'CRAYLINUX[]'
-export NODES=32
+#PBS -N wave_glwu_forecast_%CYC%
+#PBS -j oe
+#PBS -o /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
+#PBS -e /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:00:00
+#PBS -l select=6:ncpus=128:mem=150GB
+##PBS -l select=24:ncpus=32
+#PBS -l place=excl
+#PBS -l debug=true
 
 %include <head.h>
 %include <envir-xc40.h>
 
 set -x
-module load PrgEnv-intel
-module load iobuf/${iobuf_ver}
 
 # Set LSF variables
 export KMP_AFFINITY=disabled
@@ -32,11 +31,11 @@ MODID=GLWU
 
 export cyc=%CYC%
 
-export mpicmd='aprun -S12 -j1 -n768 -N24'
+export mpicmd='mpiexec -n 768 -ppn 128'
 # CALL executable job script here
 
 # versions file for wave_glwu sets $model_ver and $code_ver
-VERSION_FILE=$NWROOT/versions/wave_glwu.ver
+VERSION_FILE=$NWROOT/versions/run.ver
 if [ -f $VERSION_FILE ]; then
   . $VERSION_FILE
 else
@@ -44,6 +43,33 @@ else
   ecflow_client --abort
   exit
 fi
+
+module purge
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load libfabric/${libfabric_ver}
+module load jasper/${jasper_ver}
+module load libpng/${libpng_ver}
+module load zlib/${zlib_ver}
+module load g2/${g2_ver}
+module load w3nco/${w3nco_ver}
+module load bacio/${bacio_ver}
+module load iobuf/${iobuf_ver}
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+# specify X threads if using openmp
+export OMP_NUM_THREADS=1
+
+export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
 
 $NWROOT/wave_glwu.${wave_glwu_ver}/jobs/JWAVE_GLWU_FORECAST
 
