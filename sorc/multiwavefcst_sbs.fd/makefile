@@ -10,7 +10,7 @@ CPPFLAGS =
 FC       = ftn
 FFLAGS   = -O3  -convert big_endian -assume byterecl -prec-div -prec-sqrt -ip -ftz -I${NETCDF}/include
 LDFLAGS  = 
-LIBS     = -L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz
+LIBS     = -L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_ROOT}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz
 
 INCS     = w3macros.h
 SRCS     = multiwavefcst_sbs.F90 wmmdatmd.F90 w3gdatmd.F90 w3wdatmd.F90 w3adatmd.F90 w3idatmd.F90 w3odatmd.F90 wminitmd.F90 wmwavemd.F90 wmfinlmd.F90 wmgridmd.F90 wmupdtmd.F90 wminiomd.F90 w3fldsmd.F90 w3initmd.F90 w3wavemd.F90 w3wdasmd.F90 w3updtmd.F90 w3profsmd.F90 w3pro3md.F90 w3uqckmd.F90 w3triamd.F90 w3srcemd.F90 w3flx1md.F90 w3sln1md.F90 w3src4md.F90 w3snl3md.F90 w3sbt1md.F90 w3sdb1md.F90 w3iogrmd.F90 w3iogomd.F90 w3iopomd.F90 wmiopomd.F90 w3iotrmd.F90 w3iorsmd.F90 w3iobcmd.F90 w3iosfmd.F90 w3partmd.F90 constants.F90 w3servmd.F90 w3timemd.F90 w3arrymd.F90 w3dispmd.F90 w3cspcmd.F90 w3gsrumd.F90 wmunitmd.F90 w3namlmd.F90 scrip_constants.f scrip_grids.f scrip_iounitsmod.f90 scrip_remap_vars.f scrip_timers.f scrip_errormod.f90 scrip_interface.F90 scrip_kindsmod.f90 scrip_remap_conservative.f wmscrpmd.F90 scrip_netcdfmod.f90 scrip_remap_write.f scrip_remap_read.f
