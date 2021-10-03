@@ -54,7 +54,7 @@ export wavelog=${COMOUTwave}/wave.log
 env
 
 # Execute the Script  
-${HOMEwave}/scripts/exwave_${modID}_post.sh.ecf
+${HOMEwave}/scripts/exwave_${modID}_post.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
