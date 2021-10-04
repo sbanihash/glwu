@@ -1,0 +1,35 @@
+A) TITLE:
+ wave_glwu.v1.1.0: Port codebase from WCOSS1 to WCOSS2 
+                   
+B) SYSTEM DEPENDENCIES
+- The wave model code 'wave_code.v5.16.0' has now been integrated into the 'wave_glwu' 
+  codebase. See GLWU_v1.1.0_RELNOTES.txt for details. It is now built as part of wave_glwu, 
+  and is thus no longer an external dependency.
+  
+C) INPUT FILE CHANGES
+ None
+
+D) IMPLEMENTATION INSTRUCTIONS
+ 1) Clone wave_glwu from Github, and checkout the release tag:
+    >> git clone https://github.com/NOAA-EMC/wave_glwu.git
+    >> git checkout IT-wave_glwu_v1.1.0-20211003
+
+ 2) >> cd wave_glwu/sorc
+ 3) >> ./make.all.sh 
+ 4) ***VERY IMPORTANT*** DELETE any wave_glwu*.moddef.* files in the fix directory,
+    these should be generated when the system is run for the first time.
+ 5) All restart files from the current operational runs should work seamlessly.
+
+E) TESTING INSTRUCTIONS
+  1) The WCOSS2 installation has been tested using canned input data from WCOSS1. These 
+     are available from:
+     /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom/prod/20211003/wgrbbul
+  2) Set DCOM to the above canned data directory.
+  3) Copy the 01z restart file from the canned WCOSS1 output to the local COMOUT. The former  
+     is available at:
+     /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_wcoss1_prod/glwu.20211003/glwu.glwu.t01z.restart
+  4) Set %CYC% to 01 to run the long cycle (149 hours).
+  5) Compare output to the canned WCOSS1 01z output available at:
+     /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_wcoss1_prod/glwu.20211003
+  6) Using the restart created by the 01z cycle, set %CYC% to 02 to run the short cycle (48 hours).
+  7) Compare output to the canned WCOSS1 02z output above.
