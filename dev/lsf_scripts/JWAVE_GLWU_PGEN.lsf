@@ -7,31 +7,35 @@
 #
 # LSF options
 #
-#PBS -A GLWU-DEV
 #PBS -N JWAVE_GLWU_PGEN
+#PBS -j oe
+#PBS -S /bin/bash
 #PBS -q dev
-#PBS -l walltime=06:00:00
+#PBS -A GLWU-DEV
+#PBS -l walltime=00:10:00
 #PBS -l select=1:ncpus=1:mem=1000MB
 #PBS -l place=excl
+#PBS -l debug=true
 #PBS -V
-#PBS -j oe
 #PBS -o JWAVE_GLWU_PGEN.out
 #PBS -e JWAVE_GLWU_PGEN.out
 
 cd $PBS_O_WORKDIR
 
 # Setup the modules
-module load envvar/1.0
-module load prod_envir/2.0.5
-module load prod_util/2.0.8
-module load PrgEnv-intel/8.1.0
-module load craype/2.7.8
-module load intel/19.1.3.304
-module load libjpeg/9c
-module load libpng/1.6.37
-module load grib_util/1.2.3
-module load wgrib2/2.0.8
-module load util_shared/1.4.0
+source ../../versions/run.ver
+module purge
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${inter_ver}
+module load libjpeg/${libjpeg_ver}
+module load libpng/${libpng_ver}
+module load wgrib2/${wgrib2_ver}
+module load grib_util/${grib_util_ver}
+module load util_shared/${util_shared_ver}
 module list
 
 # Set LSF variables
@@ -71,17 +75,17 @@ fi
 export job=JWAVE_GLWU_PGEN
 export SMSBIN=/gpfs/${pref}p1/emc/marine/save/wavepa/sms_fake
 
- #Set Version numbers
-version_file=$NWROOT/${sysver}/versions/wave_glwu.ver      # file with version info
-if [ -f $version_file ]
-then
-  source $version_file
-else
-  echo '##############################################'
-  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
-  echo '##############################################'
-  exit 1
-fi
+# #Set Version numbers
+#version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
+#if [ -f $version_file ]
+#then
+#  source $version_file
+#else
+#  echo '##############################################'
+#  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
+#  echo '##############################################'
+#  exit 1
+#fi
 
 # Set PDY and cycle here
 export COMDATE=`pwd`
