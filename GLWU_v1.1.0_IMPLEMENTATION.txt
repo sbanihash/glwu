@@ -12,7 +12,7 @@ C) INPUT FILE CHANGES
 D) IMPLEMENTATION INSTRUCTIONS
  1) Clone wave_glwu from Github, and checkout the release tag:
     >> git clone https://github.com/NOAA-EMC/wave_glwu.git
-    >> git checkout IT-wave_glwu_v1.1.0-20211003
+    >> git checkout IT-wave_glwu.v1.1.0-20211003
 
  2) >> cd wave_glwu/sorc
  3) >> ./make.all.sh 
