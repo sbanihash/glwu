@@ -3,7 +3,7 @@ Release Notes:  wave_glwu v1.1.0 - released to NCO on October 3, 2021
 Transition from WCOSS Cray to WCOSS2.
 
 Where is the release tag on subversion/git/vlab?
-https://github.com/NOAA-EMC/wave_glwu.git Tag: IT-wave_glwu_v1.1.0-20211003
+https://github.com/NOAA-EMC/wave_glwu.git Tag: IT-wave_glwu.v1.1.0-20211003
 
 List of external software used (anything outside of your vertical structure), 
 including compilers and version numbers for everything. Software used must be 
