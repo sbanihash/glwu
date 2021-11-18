@@ -1911,9 +1911,9 @@ END SUBROUTINE
  
       STATUS = 1
       CALL GET_BOUNDARY(NX, NTRI, TRIGP, STATUS, PREVVERT, NEXTVERT)
-      DO IP= 1, NX
-        WRITE(12000,*) IP, STATUS(IP)
-      ENDDO
+!      DO IP= 1, NX
+!        WRITE(12000,*) IP, STATUS(IP)
+!      ENDDO
  
 !#ifdef MPI_PARALL_GRID
 !      CALL exchange_p2di(STATUS)
