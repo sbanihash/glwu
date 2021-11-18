@@ -8,7 +8,7 @@ CC       =
 CFLAGS   = 
 CPPFLAGS = 
 FC       = ftn
-FFLAGS   = -O3  -convert big_endian -assume byterecl -prec-div -prec-sqrt -ip -I${NETCDF}/include -fp-model precise -fast-transcendentals -no-prec-div -no-prec-sqrt -align array64byte
+FFLAGS   = -O3  -convert big_endian -assume byterecl -no-prec-div -no-prec-sqrt -ip -I${NETCDF}/include -fp-model precise -fast-transcendentals -align array64byte
 LDFLAGS  = 
 LIBS     = -L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_ROOT}/lib -lhdf5_hl -lhdf5 -lrt -lm -lz
 
