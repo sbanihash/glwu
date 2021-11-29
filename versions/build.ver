@@ -1,4 +1,4 @@
-export wave_glwu_ver=v1.1.0
+export wave_glwu_ver=v1.1.1
 export wave_code_ver=v5.16.0
 export wave_code_pkg=st4nc_nl3
 export envvar_ver=1.0
@@ -14,4 +14,3 @@ export w3nco_ver=2.4.1
 export bacio_ver=2.4.1
 export hdf5_ver=1.10.6
 export netcdf_ver=4.7.4
-export iobuf_ver=2.0.10
