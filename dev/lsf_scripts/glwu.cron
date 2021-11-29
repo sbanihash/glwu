@@ -25,8 +25,8 @@
 #PBS -q dev
 #PBS -N glwu.boss.lsf
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.0/glwu.cron.out
-#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.0/glwu.cron.out
+#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.1/glwu.cron.out
+#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.1/glwu.cron.out
 
 cd $PBS_O_WORKDIR
 
@@ -152,7 +152,7 @@ fi
   echo "           host machine       : $host"
 
   #AW prod=`cat /etc/prod | awk '{ print $1 }'`
-  prod=dogwood
+  prod=cactus
   echo "           production  mach.  : $prod"
 
   if [ -f $start_dir/HOST_$modID ]
@@ -173,7 +173,7 @@ fi
     target='none'
   else
     #AW target=`cat /etc/$run_on | awk '{ print $1 }'`
-    target=cactus
+    target=dogwood
   fi
   echo "           running on         : $run_on [$target]"
 
