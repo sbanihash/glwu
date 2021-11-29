@@ -11,7 +11,7 @@
 #PBS -q dev
 #PBS -A GLWU-DEV
 #PBS -l walltime=01:00:00
-#PBS -l select=6:ncpus=128:mem=150GB
+#PBS -l select=12:ncpus=128:mem=500GB
 ##PBS -l select=24:ncpus=32
 #PBS -l place=excl
 #PBS -l debug=true
@@ -41,7 +41,6 @@ module load zlib/${zlib_ver}
 module load g2/${g2_ver}
 module load w3nco/${w3nco_ver}
 module load bacio/${bacio_ver}
-module load iobuf/${iobuf_ver}
 module list
 
 # Set LSF variables
@@ -146,8 +145,7 @@ export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
 export KEEPDATA='YES'
 
 # Set aprun options consistent with resource allocation
-export mpicmd='mpiexec -n 768 -ppn 128'
-#export mpicmd='mpiexec -n 768 -ppn 32 --depth 4 --cpu-bind depth'
+export mpicmd='mpiexec -n 768 -ppn 64 --depth 2 --cpu-bind depth'
 
 # Execute the actual J job
 ############################################################################
