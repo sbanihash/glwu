@@ -36,7 +36,6 @@ module load cfp/${cfp_ver}
 module load wgrib2/${wgrib2_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load iobuf/${iobuf_ver}
 module list
 
 # Set LSF variables
