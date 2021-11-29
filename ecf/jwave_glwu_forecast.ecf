@@ -1,18 +1,16 @@
 #PBS -N wave_glwu_forecast_%CYC%
 #PBS -j oe
-#PBS -o /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
-#PBS -e /%COM%/output/%ENVIR%/today/wave_glwu_forecast_%CYC%.o%J
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=01:00:00
-#PBS -l select=6:ncpus=128:mem=150GB
-##PBS -l select=24:ncpus=32
+#PBS -l select=12:ncpus=128:mem=500GB
 #PBS -l place=excl
 #PBS -l debug=true
 
+export model=wave_glwu
 %include <head.h>
-%include <envir-xc40.h>
+%include <envir-p1.h>
 
 set -x
 
@@ -23,7 +21,6 @@ export OMP_NUM_THREADS=1
 
 #Unlimit the stack size
 ulimit -s unlimited
-export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1' 
 
 # Set global variables
 modID=glwu
@@ -31,20 +28,8 @@ MODID=GLWU
 
 export cyc=%CYC%
 
-export mpicmd='mpiexec -n 768 -ppn 128'
+export mpicmd='mpiexec -n 768 -ppn 64 --depth 2 --cpu-bind depth'
 # CALL executable job script here
-
-# versions file for wave_glwu sets $model_ver and $code_ver
-VERSION_FILE=$NWROOT/versions/run.ver
-if [ -f $VERSION_FILE ]; then
-  . $VERSION_FILE
-else
-  ecflow_client --msg="***JOB ${SMSNAME} ERROR: Version File $VERSION_FILE does not exist ***"
-  ecflow_client --abort
-  exit
-fi
-
-module purge
 module load envvar/${envvar_ver}
 module load prod_envir/${prod_envir_ver}
 module load prod_util/${prod_util_ver}
@@ -55,14 +40,14 @@ module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load libfabric/${libfabric_ver}
+#module load libfabric/${libfabric_ver}
 module load jasper/${jasper_ver}
 module load libpng/${libpng_ver}
 module load zlib/${zlib_ver}
 module load g2/${g2_ver}
 module load w3nco/${w3nco_ver}
 module load bacio/${bacio_ver}
-module load iobuf/${iobuf_ver}
+module list
 
 # Set LSF variables
 export KMP_AFFINITY=disabled
@@ -71,7 +56,7 @@ export OMP_NUM_THREADS=1
 
 export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
 
-$NWROOT/wave_glwu.${wave_glwu_ver}/jobs/JWAVE_GLWU_FORECAST
+${HOMEwave_glwu}/jobs/JWAVE_GLWU_FORECAST
 
 if [ $? -ne 0 ]; then
   ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
