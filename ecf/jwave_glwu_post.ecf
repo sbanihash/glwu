@@ -1,7 +1,5 @@
 #PBS -N wave_glwu_post_%CYC%
 #PBS -j oe
-#PBS -o /%COM%/output/%ENVIR%/today/wave_glwu_post_%CYC%.o%J
-#PBS -e /%COM%/output/%ENVIR%/today/wave_glwu_post_%CYC%.o%J
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -10,8 +8,9 @@
 #PBS -l place=excl
 #PBS -l debug=true
 
+export model=wave_glwu
 %include <head.h>
-%include <envir-xc40.h>
+%include <envir-p1.h>
 
 set -x
 
@@ -23,8 +22,6 @@ export OMP_NUM_THREADS=1
 
 #Unlimit the stack size
 ulimit -s unlimited
-
-export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
  
 # Set global variables
 modID=glwu
@@ -33,20 +30,7 @@ MODID=GLWU
 # EXPORT list here
 export cyc=%CYC%
 
-# CALL executable job script here
-
-# versions file for wave_glwu sets $model_ver and $code_ver
-VERSION_FILE=$NWROOT/versions/run.ver
-if [ -f $VERSION_FILE ]; then
-  . $VERSION_FILE
-else
-  ecflow_client --msg="***JOB ${SMSNAME} ERROR: Version File $VERSION_FILE does not exist ***"
-  ecflow_client --abort
-  exit
-fi
-
 # Setup and load modules
-module purge
 module load envvar/${envvar_ver}
 module load prod_envir/${prod_envir_ver}
 module load prod_util/${prod_util_ver}
@@ -55,13 +39,14 @@ module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cfp/${cfp_ver}
 module load wgrib2/${wgrib2_ver}
-module load grib_util/${grib_util_ver}
 module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load iobuf/${iobuf_ver}
+module list
 
-$NWROOT/wave_glwu.${wave_glwu_ver}/jobs/JWAVE_GLWU_POST
+# CALL executable job script here
+${HOMEwave_glwu}/jobs/JWAVE_GLWU_POST
 
 if [ $? -ne 0 ]; then
   ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
