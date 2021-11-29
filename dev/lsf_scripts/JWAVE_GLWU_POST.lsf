@@ -37,7 +37,6 @@ module load grib_util/${grib_util_ver}
 module load libjpeg/${libjpeg_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
-module load iobuf/${iobuf_ver}
 module list
 
 # Set LSF variables
