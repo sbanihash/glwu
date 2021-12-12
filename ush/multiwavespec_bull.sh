@@ -106,7 +106,7 @@
 #     The tested variables should be exported by the postprocessor script.
 
   if [ -z "$YMDH" ] || [ -z "$date" ] || [ -z "$cycle" ] || \
-     [ -z "$dtbull" ] || [ -z "$EXECcode" ] || [ -z "$runID" ] || \
+     [ -z "$dtbull" ] || [ -z "$EXECglwu" ] || [ -z "$runID" ] || \
      [ -z "$ymdh" ] || [ -z "${STA_DIR}" ]
   then
     set +x
@@ -158,10 +158,10 @@
 # 2.b Run the postprocessor
 
   set +x
-  echo "   Executing $EXECcode/multiwavespec"
+  echo "   Executing $EXECglwu/multiwavespec"
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/multiwavespec
+  $EXECglwu/multiwavespec
   err=$?
 
   if [ "$err" != '0' ]
