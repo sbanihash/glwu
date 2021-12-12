@@ -67,7 +67,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECcode" ] || [ -z "$wave_glwu_ver" ]
+  if [ -z "$grdID" ] || [ -z "$EXECglwu" ] || [ -z "$glwu_ver" ]
   then
     set +x
     echo ' '
@@ -86,7 +86,7 @@
   set +x
   echo ' '
   echo '   Creating mod_def file ...'
-  echo "   Executing $EXECcode/multiwavegrid"
+  echo "   Executing $EXECglwu/multiwavegrid"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
  
@@ -97,7 +97,7 @@
     ln -fs ../mesh.$grdID .
   fi
 
-  $EXECcode/multiwavegrid
+  $EXECglwu/multiwavegrid
   err=$?
 
   if [ "$err" != '0' ]
@@ -115,7 +115,7 @@
  
   if [ -f mod_def.ww3 ]
   then
-    cp mod_def.ww3 $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}
+    cp mod_def.ww3 $FIXglwu/wave_${modID}_${grdID}.moddef.${glwu_ver}
     mv mod_def.ww3 ../mod_def.$grdID
   else
     set +x
