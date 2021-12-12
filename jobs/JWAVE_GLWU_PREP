@@ -20,33 +20,31 @@ setpdy.sh
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export SENDCOM=${SENDCOM:-YES}
+export KEEPDATA=${KEEPDATA:-NO}
 
 # Set runID (Until modID becomes glwn and glw is dumped) 
 export runID=glwu
 export modID=glwu
 
-export NET=wave
+export NET=glwu
 export RUN=glwu
+#set for compath.py 
+export model_ver=${glwu_ver}
 
-# Path to HOME Directory
-export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
-export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
-
-export EXECwave=${EXECwave:-${HOMEwave}/exec}
-export FIXwave=${FIXwave:-${HOMEwave}/fix}
-export PARMwave=${PARMwave:-${HOMEwave}/parm}
-export USHwave=${USHwave:-${HOMEwave}/ush}
-export EXECcode=${EXECcode:-${CODEwave}/exec}
+export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}_${modID}.${glwu_ver}}
+export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
+export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
+export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
+export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
 # Location of NDFD input files
 export DCOMIN=${DCOMIN:-${DCOMROOT}/prod} # serves ice and ndfd data
 
-# Set COM Paths
-export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
-export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMIN=${COMIN:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMINwave=${COMINwave:-$(compath.py -v -o ${NET}/${model_ver})}
+export COMOUT=${COMOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMOUTwave=${COMOUTwave:-$(compath.py -v -o ${NET}/${model_ver})}
+export COMINOUT=${COMINOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
 
 if [ "$SENDCOM" = YES ]; then
   mkdir -p $COMOUT
@@ -57,7 +55,7 @@ export wavelog=${COMOUTwave}/wave.log
 env
 
 # Execute the Script  
-${HOMEwave}/scripts/exwave_${modID}_prep.sh
+${HOMEglwu}/scripts/exwave_glwu_prep.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
