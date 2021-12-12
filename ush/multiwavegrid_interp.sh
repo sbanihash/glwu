@@ -73,7 +73,7 @@
   echo " Model Run ID       : $runID"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECglwu" ] || \
      [ -z "$COMOUT" ] || [ -z "$runID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$SENDDBN" ] || [ -z "$grids" ]
   then
@@ -83,7 +83,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "$YMDH $cycle $EXECcode $COMOUT $runID $SENDCOM $SENDDBN $grids"
+    echo "$YMDH $cycle $EXECglwu $COMOUT $runID $SENDCOM $SENDDBN $grids"
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
@@ -94,13 +94,13 @@
   rm -f ../out_grd.$grdID
   
   if [ ! -f ../${grdID}_interp.inp.tmpl ]; then
-    cp $FIXwave/${grdID}_interp.inp.tmpl ../.
+    cp $FIXglwu/${grdID}_interp.inp.tmpl ../.
   fi
-  if [ -f "$FIXwave/grint_weights.${grdID}" ]
+  if [ -f "$FIXglwu/grint_weights.${grdID}" ]
   then
     echo ' '
     echo "Copying grint weight file grint_weights.${grdID}"
-    cp $FIXwave/grint_weights.${grdID} ./WHTGRIDINT.bin 
+    cp $FIXglwu/grint_weights.${grdID} ./WHTGRIDINT.bin 
   fi
   ln -sf ../${grdID}_interp.inp.tmpl . 
 
@@ -128,16 +128,16 @@
 
   set +x
   echo "   Run multiwavegrid_interp"
-  echo "   Executing $EXECcode/multiwavegrid_interp"
+  echo "   Executing $EXECglwu/multiwavegrid_interp"
   [[ "$LOUD" = YES ]] && set -x
 
 ## If there is a precomputed weights file, copy from FIX
-#if [ -f $FIXwave/precomp_weights.bin.$grdID ]
+#if [ -f $FIXglwu/precomp_weights.bin.$grdID ]
 #then
-#   cp -f $FIXwave/precomp_weights.bin.$grdID ./precomp_weights.bin
+#   cp -f $FIXglwu/precomp_weights.bin.$grdID ./precomp_weights.bin
 #fi
 
-  $EXECcode/multiwavegrid_interp
+  $EXECglwu/multiwavegrid_interp
   err=$?
 
   if [ "$err" != '0' ]
