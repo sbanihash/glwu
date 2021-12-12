@@ -61,7 +61,7 @@
   echo "   Run   ID         : $runID"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
+  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECglwu" ] || \
      [ -z "$COMOUT" ] || [ -z "$runID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$dtgrib" ] || [ -z "$ngrib" ] || \
      [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
@@ -124,7 +124,7 @@
   [[ "$LOUD" = YES ]] && set -x
 
   ln -sf ../$runID.$grdID.$cycle.grib2 gribfile
-  $EXECcode/multiwavegrib2
+  $EXECglwu/multiwavegrib2
   err=$?
 
   if [ "$err" != '0' ]
