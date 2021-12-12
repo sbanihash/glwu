@@ -104,7 +104,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$YMDH" ] || [ -z "$dtts" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$YMDH" ] || [ -z "$dtts" ] || [ -z "$EXECglwu" ] || \
      [ -z "$runID" ] || [ -z "${STA_DIR}" ]
   then
     set +x
@@ -156,10 +156,10 @@
 # 2.b Run the postprocessor
 
   set +x
-  echo "   Executing $EXECcode/multiwavespec"
+  echo "   Executing $EXECglwu/multiwavespec"
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/multiwavespec
+  $EXECglwu/multiwavespec
   err=$?
 
   if [ "$err" != '0' ]
