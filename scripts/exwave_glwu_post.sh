@@ -232,28 +232,28 @@ export grint_OK='yes'
 
   for grdID in $grids $itgrids $isgrids $ggrids $ngrids $addggrids
   do
-    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}" ]
+    if [ -f "$FIXglwu/wave_${modID}_${grdID}.moddef.${glwu_ver}" ]
     then
       set +x
-      echo " Mod def file for $grdID found in $FIXwave. copying ...."
+      echo " Mod def file for $grdID found in $FIXglwu. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver} mod_def.$grdID
+      cp $FIXglwu/wave_${modID}_${grdID}.moddef.${glwu_ver} mod_def.$grdID
 
     else
       set +x
-      echo " Mod def file for $grdID not found in $FIXwave. Setting up to generate ..."
+      echo " Mod def file for $grdID not found in $FIXglwu. Setting up to generate ..."
       [[ "$LOUD" = YES ]] && set -x
 
-      if [ -f $FIXwave/wave_$grdID.inp ]
+      if [ -f $FIXglwu/wave_$grdID.inp ]
       then
-        cp $FIXwave/wave_$grdID.inp $grdID.inp
+        cp $FIXglwu/wave_$grdID.inp $grdID.inp
       fi
 
       if [ -f $grdID.inp ]
       then
         set +x
-        echo "   $grdID.inp copied ($FIXwave/wave_$grdID.inp)."
+        echo "   $grdID.inp copied ($FIXglwu/wave_$grdID.inp)."
         [[ "$LOUD" = YES ]] && set -x
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
@@ -275,7 +275,7 @@ export grint_OK='yes'
       echo "   Generating mod_def file for $grdID ... "
       [[ "$LOUD" = YES ]] && set -x
 
-      $USHwave/wavemod_def.sh $grdID > $grdID.out
+      $USHglwu/wavemod_def.sh $grdID > $grdID.out
 
     fi
 
@@ -307,25 +307,25 @@ export grint_OK='yes'
 
 # 1.c Raw point data file and moddef file
 
-  if [ -f "$FIXwave/wave_${modID}_${pntgrd}.moddef.${wave_glwu_ver}" ]
+  if [ -f "$FIXglwu/wave_${modID}_${pntgrd}.moddef.${glwu_ver}" ]
   then
     set +x
-    echo " Mod def file for $pntgrd found in $FIXwave. copying ...."
+    echo " Mod def file for $pntgrd found in $FIXglwu. copying ...."
     [[ "$LOUD" = YES ]] && set -x
-    cp $FIXwave/wave_${modID}_${pntgrd}.moddef.${wave_glwu_ver} mod_def.$pntgrd
+    cp $FIXglwu/wave_${modID}_${pntgrd}.moddef.${glwu_ver} mod_def.$pntgrd
   else
     set +x
-    echo " Mod def file for $pntgrd not found in $FIXwave. Setting up to generate ..."
+    echo " Mod def file for $pntgrd not found in $FIXglwu. Setting up to generate ..."
     [[ "$LOUD" = YES ]] && set -x
-    if [  -f $FIXwave/wave_${pntgrd}.inp ]
+    if [  -f $FIXglwu/wave_${pntgrd}.inp ]
     then 
-       cp $FIXwave/wave_$pntgrd.inp $pntgrd.inp
+       cp $FIXglwu/wave_$pntgrd.inp $pntgrd.inp
     fi 
 
     if [  -f $pntgrd.inp ]
     then
       set +x
-      echo "   $pntgrd.inp copied ($FIXwave/wave_$pntgrd.inp)."
+      echo "   $pntgrd.inp copied ($FIXglwu/wave_$pntgrd.inp)."
       [[ "$LOUD" = YES ]] && set -x
     else
       msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
@@ -347,7 +347,7 @@ export grint_OK='yes'
     echo "   Generating mod_def file for $pntgrd ... "
     [[ "$LOUD" = YES ]] && set -x
 
-    $USHwave/wavemod_def.sh $pntgrd > $pntgrd.out
+    $USHglwu/wavemod_def.sh $pntgrd > $pntgrd.out
 
   fi
 
@@ -414,9 +414,9 @@ export grint_OK='yes'
 
   rm -f buoy.loc
 
-  if [ -f $FIXwave/wave_$modID.buoys ]
+  if [ -f $FIXglwu/wave_$modID.buoys ]
   then
-    cp $FIXwave/wave_$modID.buoys buoy.loc.temp
+    cp $FIXglwu/wave_$modID.buoys buoy.loc.temp
     sed -n '/^\$.*/!p' buoy.loc.temp > buoy.loc
     rm -f buoy.loc.temp
   fi
@@ -424,7 +424,7 @@ export grint_OK='yes'
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied and processed ($FIXwave/wave_$modID.buoys)."
+    echo "   buoy.loc copied and processed ($FIXglwu/wave_$modID.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
@@ -446,9 +446,9 @@ export grint_OK='yes'
 
   if [ "$grib_OK" = 'yes' ]
   then
-    if [ -f $FIXwave/multiwavegrib2.inp.tmpl ]
+    if [ -f $FIXglwu/multiwavegrib2.inp.tmpl ]
     then
-      cp $FIXwave/multiwavegrib2.inp.tmpl multiwavegrib2.inp.tmpl
+      cp $FIXglwu/multiwavegrib2.inp.tmpl multiwavegrib2.inp.tmpl
     fi
 
     if [ -f multiwavegrib2.inp.tmpl ]
@@ -474,9 +474,9 @@ export grint_OK='yes'
 
   if [ "$ncdf_OK" = 'yes' ]
   then
-    if [ -f $FIXwave/multiwavefldn.inp.tmpl ]
+    if [ -f $FIXglwu/multiwavefldn.inp.tmpl ]
     then
-      cp $FIXwave/multiwavefldn.inp.tmpl multiwavefldn.inp.tmpl
+      cp $FIXglwu/multiwavefldn.inp.tmpl multiwavefldn.inp.tmpl
     fi
 
     if [ -f multiwavefldn.inp.tmpl ]
@@ -500,9 +500,9 @@ export grint_OK='yes'
     fi
   fi
 
-  if [ -f $FIXwave/multiwavespec.inp.tmpl ]
+  if [ -f $FIXglwu/multiwavespec.inp.tmpl ]
   then
-    cp $FIXwave/multiwavespec.inp.tmpl multiwavespec.inp.tmpl
+    cp $FIXglwu/multiwavespec.inp.tmpl multiwavespec.inp.tmpl
   fi
 
   if [ -f multiwavespec.inp.tmpl ]
@@ -528,9 +528,9 @@ export grint_OK='yes'
     Obull_OK='no'
   fi
 
-  if [ -f $FIXwave/multiwavespec_ts.inp.tmpl ]
+  if [ -f $FIXglwu/multiwavespec_ts.inp.tmpl ]
   then
-    cp $FIXwave/multiwavespec_ts.inp.tmpl multiwavespec_ts.inp.tmpl
+    cp $FIXglwu/multiwavespec_ts.inp.tmpl multiwavespec_ts.inp.tmpl
   fi
 
  if [ -f multiwavespec_ts.inp.tmpl ]
@@ -554,9 +554,9 @@ export grint_OK='yes'
     ripin_OK='no'
   fi
 
-  if [ -f $FIXwave/multiwavespec_bull.inp.tmpl ]
+  if [ -f $FIXglwu/multiwavespec_bull.inp.tmpl ]
   then
-    cp $FIXwave/multiwavespec_bull.inp.tmpl multiwavespec_bull.inp.tmpl
+    cp $FIXglwu/multiwavespec_bull.inp.tmpl multiwavespec_bull.inp.tmpl
   fi
 
   if [ -f multiwavespec_bull.inp.tmpl ]
@@ -595,7 +595,7 @@ export grint_OK='yes'
                                multiwavespec.inp.tmpl > multiwavespec.inp
    
     ln -s mod_def.$pntgrd mod_def.ww3
-    $EXECcode/multiwavespec > buoy_tmp.loc 
+    $EXECglwu/multiwavespec > buoy_tmp.loc 
     err=$?
 
     if [ "$err" != '0' ]
@@ -663,7 +663,7 @@ export grint_OK='yes'
       ymdh_int=`$NDATE -9 $YMDH`
       dt_int=3600.
       n_int=9999
-      $USHwave/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out
+      $USHglwu/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out
     done
 
     for igrdID in $itgrids
@@ -671,7 +671,7 @@ export grint_OK='yes'
       ymdh_int=`$NDATE -9 $YMDH`
       dt_int=3600.
       n_int=9999
-      echo "$USHwave/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out 2>&1" >> cmdfile
+      echo "$USHglwu/multiwavegrid_interp.sh $igrdID $ymdh_int $dt_int $n_int > grint_$igrdID.out 2>&1" >> cmdfile
     done
 
   fi
@@ -814,7 +814,7 @@ export grint_OK='yes'
       fi
       if [ "$grib2_GO" = "yes" ]
       then 
-        echo "$USHwave/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1"               >> cmdfile
+        echo "$USHglwu/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1"               >> cmdfile
       fi
     done
   fi
@@ -827,7 +827,7 @@ export grint_OK='yes'
     ncdfFL=\''WND HS FP DP PHS PTP PDIR CHA'\'
     for grdID in $ngrids
     do
-      echo "$USHwave/wave_fldn.sh $grdID $dtnc $ncdfFL > ncdf_$grdID.out 2>&1"               >> cmdfile
+      echo "$USHglwu/wave_fldn.sh $grdID $dtnc $ncdfFL > ncdf_$grdID.out 2>&1"               >> cmdfile
     done
   fi
 
@@ -840,7 +840,7 @@ export grint_OK='yes'
 
     for buoy in $buoys
     do
-      echo "$USHwave/multiwavespec2.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> cmdfile
+      echo "$USHglwu/multiwavespec2.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> cmdfile
     done
   fi
 
@@ -851,7 +851,7 @@ export grint_OK='yes'
 
     for buoy in $buoys
     do
-      echo "$USHwave/multiwavespec_ts.sh $buoy $ymdh > ts_$buoy.out 2>&1" >> cmdfile
+      echo "$USHglwu/multiwavespec_ts.sh $buoy $ymdh > ts_$buoy.out 2>&1" >> cmdfile
     done
   fi
 
@@ -865,7 +865,7 @@ export grint_OK='yes'
    
     for buoy in $buoys
     do
-      echo "$USHwave/multiwavespec_bull.sh $buoy $ymdh > bull_$buoy.out 2>&1" >> cmdfile
+      echo "$USHglwu/multiwavespec_bull.sh $buoy $ymdh > bull_$buoy.out 2>&1" >> cmdfile
     done
   fi
 #  set +v; [[ "$LOUD" = YES ]] && set -x
@@ -1143,12 +1143,12 @@ export grint_OK='yes'
 
   if [ "$spec_OK" = 'yes' ]
   then
-    echo "$USHwave/multiwavetar.sh $runID spec $Nb > ${runID}_spec_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh $runID spec $Nb > ${runID}_spec_tar.out 2>&1 "   >> cmdfile
   fi
 
   if [ "$ts_OK" = 'yes' ]
   then
-    echo "$USHwave/multiwavetar.sh $runID ts $Nb > ${runID}_ts_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh $runID ts $Nb > ${runID}_ts_tar.out 2>&1 "   >> cmdfile
   fi
 
   if [ "$ripin_OK" = 'yes' ]
@@ -1165,28 +1165,28 @@ export grint_OK='yes'
       Nrip=`expr $Nrip + 1`
     done
     cd $DATA
-    echo "$USHwave/multiwavetar.sh $runID ripin $Nrip > ${runID}_ripin_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh $runID ripin $Nrip > ${runID}_ripin_tar.out 2>&1 "   >> cmdfile
   fi
 
 # 7.b Bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-    echo "$USHwave/multiwavetar.sh $runID bull $Nb > ${runID}_bull_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh $runID bull $Nb > ${runID}_bull_tar.out 2>&1 "   >> cmdfile
   fi
 
 # 7.c Compressed bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-     echo "$USHwave/multiwavetar.sh $runID cbull $Nb > ${runID}_cbull_tar.out 2>&1 " >> cmdfile
+     echo "$USHglwu/multiwavetar.sh $runID cbull $Nb > ${runID}_cbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # 7.d CSV bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-    echo "$USHwave/multiwavetar.sh $runID csbull $Nb > ${runID}_csbull_tar.out 2>&1 " >> cmdfile
+    echo "$USHglwu/multiwavetar.sh $runID csbull $Nb > ${runID}_csbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # --------------------------------------------------------------------------- #
@@ -1446,7 +1446,7 @@ export grint_OK='yes'
       echo "RUNID: $runID "
       echo THIS IS IT '$grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN'
       echo $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN
-      $USHwave/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1
+      $USHglwu/multiwavegrib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $GTMPLN > grib_$grdID.out 2>&1
     done
   fi
 # --------------------------------------------------------------------------- #
