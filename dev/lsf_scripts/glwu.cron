@@ -285,9 +285,9 @@ fi
 
   if [ "$envir" = "ops" ]
   then
-    out=$NWROOT/OUTPUT                           # output directory
+    out=$NWROOT/com/output                            # output directory
   else
-    out=$NWROOT/GLWU/OUTPUT_${envir}                  # output directory
+    out=$NWROOT/GLWU/com/output/${glwu_ver}              # output directory
   fi
 
 # 2.c Set file to check and check presence
@@ -320,7 +320,7 @@ fi
 # 3.  Manage batch job
 
   script=${modID}.boss.lsf                      # script to run
-  batch=${modID}.${wave_glwu_ver}.HOOK                # batch job name (made here)
+  batch=${modID}.${glwu_ver}.HOOK                # batch job name (made here)
 
   echo ' '
   echo " Time : `date`"
@@ -374,14 +374,15 @@ fi
     echo "#PBS -q dev"                                        >> $batch
     echo "cd $PBS_O_WORKDIR"                                  >> $batch
     echo " "                                                  >> $batch
-    echo "  mkdir -p $out/${modID}.$date"                     >> $batch
+    #echo "  mkdir -p $out/${modID}.$date"                     >> $batch
+    echo "  mkdir -p $out/$date"                              >> $batch
     echo " "                                                  >> $batch
-    echo "  $start_dir/$script > $out/${modID}.$date/$script.$cycle.out 2>&1" >> $batch
+    echo "  $start_dir/$script > $out/$date/$script.$cycle.out 2>&1" >> $batch
     echo " "                                                  >> $batch
     #echo "  rm -f $start_dir/$batch.out"                      >> $batch
 
     echo "           output of script $script routed to"
-    echo "              $out/${modID}.$date/$script.$cycle.out"
+    echo "              $out/$date/$script.$cycle.out"
 
     echo "           starting $batch at `date`"
     qsub $batch  > $llst 2> $llse
