@@ -183,9 +183,9 @@
   for grdID in $grids
   do
        
-    if [ -f $PARMwave/grib2_awips_${ext}.$grdID ]
+    if [ -f $PARMglwu/grib2_awips_${ext}.$grdID ]
     then
-      cp $PARMwave/grib2_awips_${ext}.$grdID awipsgrb.$grdID
+      cp $PARMglwu/grib2_awips_${ext}.$grdID awipsgrb.$grdID
     fi
 
     if [ -f awipsgrb.$grdID ]
@@ -210,9 +210,9 @@
 
   if [ "$awipsbull" = 'yes' ]
   then 
-    if [ -f $PARMwave/bull_awp$modID ]
+    if [ -f $PARMglwu/bull_awp$modID ]
     then
-      cp $PARMwave/bull_awp$modID awipsbull.data
+      cp $PARMglwu/bull_awp$modID awipsbull.data
     fi
   
     if [ -f awipsbull.data ]
@@ -415,7 +415,7 @@
       fi
   
 # test version
-#     $HOMEwave/scripts/formbul.pl -d $headr -f $fname -j $job -m $modID \
+#     $HOMEglwu/scripts/formbul.pl -d $headr -f $fname -j $job -m $modID \
 #          -p $COMOUTwmo -s NO -o $oname > formbul.out 2>&1
 
 # operational version
