@@ -1,0 +1,97 @@
+suite para
+ family primary
+  family 06
+   family glwu
+    family v1.1
+     edit PACKAGEHOME '/lfs/h1/ops/%ENVIR%/packages/wave_glwu.%wave_glwu_ver%'
+     edit PROJ 'GLWU'
+#     defstatus complete
+    family 06z
+      edit CYC '06'
+      task jwave_glwu_prep
+        time 05:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 07z
+      edit CYC '07'
+      task jwave_glwu_prep
+        time 06:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 08z
+      edit CYC '08'
+      task jwave_glwu_prep
+        time 07:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 09z
+      edit CYC '09'
+      task jwave_glwu_prep
+        time 08:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 10z
+      edit CYC '10'
+      task jwave_glwu_prep
+        time 09:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 11z
+      edit CYC '11'
+      task jwave_glwu_prep
+        time 10:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+   endfamily
+  endfamily
+ endfamily
+endfamily
+endsuite
+
+#ecflow_client --delete /para/primary/06/glwu --host=cecflow01 --port=14142
+
+#ecflow_client --get --host=cecflow01 --port=14142
+
+#ecflow_client --replace /para/primary/06/glwu /lfs/h1/ops/para/packages/wave_glwu.v1.1.0/def/prod06.def --host=cecflow01 --port=14142
+
+
+
+
+
+

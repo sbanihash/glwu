@@ -1,0 +1,80 @@
+  family glwu
+    edit ECF_FILES '/ecf/ecfnets/scripts/glwu'
+    edit COM 'gpfs/hps/nco/ops/com'
+    edit QUEUESERV 'prod_transfer'
+    edit PROJ 'GLW'
+    edit ALERT_FROM_P3 'YES'
+    family 18z
+      edit CYC '18'
+      task jwave_glwu_prep
+        time 17:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 19z
+      edit CYC '19'
+      task jwave_glwu_prep
+        time 18:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 20z
+      edit CYC '20'
+      task jwave_glwu_prep
+        time 19:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 21z
+      edit CYC '21'
+      task jwave_glwu_prep
+        time 20:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 22z
+      edit CYC '22'
+      task jwave_glwu_prep
+        time 21:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+    family 23z
+      edit CYC '23'
+      task jwave_glwu_prep
+        time 22:45
+      task jwave_glwu_forecast
+        trigger jwave_glwu_prep == complete
+      task jwave_glwu_post
+        trigger jwave_glwu_forecast == complete
+        event release_pgen
+      task jwave_glwu_pgen
+        trigger jwave_glwu_post:release_pgen
+    endfamily
+  endfamily
+
