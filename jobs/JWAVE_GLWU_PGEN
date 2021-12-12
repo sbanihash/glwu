@@ -20,31 +20,31 @@ setpdy.sh
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export SENDCOM=${SENDCOM:-YES}
+export KEEPDATA=${KEEPDATA:-NO}
 
 # Set runID (Until modID becomes glwn and glw is dumped) 
 export runID=glwu
 export modID=glwu
 
-export NET=wave
+export NET=glwu
 export RUN=glwu
+export model_ver=${glwu_ver}
 
 # Path to HOME Directory
-export HOMEwave=${HOMEwave:-${NWROOT}/${NET}_${modID}.${wave_glwu_ver}}
-export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}_${modID}.${glwu_ver}}
 
-export EXECwave=${EXECwave:-${HOMEwave}/exec}
-export FIXwave=${FIXwave:-${HOMEwave}/fix}
-export PARMwave=${PARMwave:-${HOMEwave}/parm}
-export USHwave=${USHwave:-${HOMEwave}/ush}
-export EXECcode=${EXECcode:-${CODEwave}/exec}
+export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
+export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
+export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
+export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
 # Set COM Paths
-export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUTwave=${COMOUTwave:-${COMROOT}/${NET}/${envir}}
-export COMINOUT=${COMINOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUTwmo=${COMOUTwmo:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/wmo}
+export COMIN=${COMIN:-$(compath.py -v -o  ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMINwave=${COMINwave:-$(compath.py -v -o  ${NET}/${model_ver})}
+export COMOUT=${COMOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMOUTwave=${COMOUTwave:-$(compath.py -v -o ${NET}/${model_ver})}
+export COMINOUT=${COMINOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMOUTwmo=${COMOUTwmo:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})/wmo}
 
 if [ "$SENDCOM" = YES ]; then
   mkdir -p $COMOUT $COMOUTwmo
@@ -55,7 +55,7 @@ export wavelog=${COMOUTwave}/wave.log
 env
 
 # Execute the script.
-${HOMEwave}/scripts/exwave_glwu_pgen.sh
+${HOMEglwu}/scripts/exwave_glwu_pgen.sh
 
 if [ "$KEEPDATA" != YES ]; then
   rm -rf $DATA
