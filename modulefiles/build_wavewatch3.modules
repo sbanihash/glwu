@@ -10,7 +10,7 @@
 #}
 #module-whatis " wave_code whatis description"
 
-set ver ${wave_code_ver}
+set ver ${glwu_ver}
 
 set sys [uname sysname]
 
