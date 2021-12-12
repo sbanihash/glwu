@@ -74,8 +74,8 @@
    
 # off_hour is the offset for reding a prior restart file
 # stp_hour is the step for generating restart files 
-  grep 'off_hour=' $USHwave/wavestart_glwu.sh   > time_info
-  grep 'stp_hour=' $USHwave/wavestart_glwu.sh  >> time_info
+  grep 'off_hour=' $USHglwu/wavestart_glwu.sh   > time_info
+  grep 'stp_hour=' $USHglwu/wavestart_glwu.sh  >> time_info
 
   . ./time_info ; rm -f time_info
 
@@ -118,8 +118,8 @@
     
     if [ ! -f mod_def.$grdID ]        
     then      
-      echo "   Copy mod_def.$grdID from $FIXwave/wave_${modID}_$grdID.moddef.${wave_glwu_ver}"      
-      cp $FIXwave/wave_${modID}_$grdID.moddef.${wave_glwu_ver} mod_def.$grdID        
+      echo "   Copy mod_def.$grdID from $FIXglwu/wave_${modID}_$grdID.moddef.${glwu_ver}"      
+      cp $FIXglwu/wave_${modID}_$grdID.moddef.${glwu_ver} mod_def.$grdID        
     fi
     
     if [ -f mod_def.$grdID ]  
@@ -215,7 +215,7 @@
 #     Make sure nback is set identically in the preprocessor !!!   
     
   export nback=0
-  $USHwave/wavestart_glwu.sh
+  $USHglwu/wavestart_glwu.sh
 
   ymdh=`head wavestart.out | awk '{ print $1 }'`         
   rm -f wavestart.out  
@@ -269,14 +269,14 @@
     
 # 2.f Buoy location file    
     
-  if [ -f $FIXwave/wave_$modID.buoys ]  
+  if [ -f $FIXglwu/wave_$modID.buoys ]  
   then        
-    cp $FIXwave/wave_$modID.buoys buoy.loc        
+    cp $FIXglwu/wave_$modID.buoys buoy.loc        
   fi
     
   if [ -f buoy.loc ]      
   then        
-    echo "   buoy.loc copied ($FIXwave/wave_$modID.buoys)."   
+    echo "   buoy.loc copied ($FIXglwu/wave_$modID.buoys)."   
   else        
     echo "   buoy.loc not found.   **** WARNING **** " 
     postmsg "$jlogfile" " **** WARNING **** buoy.loc NOT FOUND"  
@@ -286,9 +286,9 @@
     
 # 2.g Create model input file from template       
     
-  if [ -f $FIXwave/multiwavefcst.$runID.tmpl ]    
+  if [ -f $FIXglwu/multiwavefcst.$runID.tmpl ]    
   then        
-    cp $FIXwave/multiwavefcst.$runID.tmpl multiwavefcst.inp.tmpl   
+    cp $FIXglwu/multiwavefcst.$runID.tmpl multiwavefcst.inp.tmpl   
   fi
     
   if [ ! -f multiwavefcst.inp.tmpl ]  
@@ -342,7 +342,7 @@ pwd
   ln -fs mod_def.${grids} mod_def.ww3
   ln -fs wind.${grids} wind.ww3
   ln -fs ice.${grids} ice.ww3
-  ${mpicmd} $EXECcode/multiwavefcst         
+  ${mpicmd} $EXECglwu/multiwavefcst         
   err=$?      
     
   if [ "$err" != '0' ]    
