@@ -134,8 +134,8 @@
         $WGRIB2 T_OEBA88_C_KNWC.grb2 -text T_OEBA88_C_KNWC.ice
 # Use inpaint to extend ice concentrations over ice-file land mask
 # (Conservative approach: no averaging to fill model-data sea gaps)
-        cp ${FIXwave}/T_OEBA88_C_KNWC.mask ./
-        $EXECwave/inpaint_nic_glwu #1> inpaint.out 2>&1
+        cp ${FIXglwu}/T_OEBA88_C_KNWC.mask ./
+        $EXECglwu/inpaint_nic_glwu #1> inpaint.out 2>&1
 
         if [ ! -f T_OEBA88_C_KNWC.newice ]
         then 
@@ -190,7 +190,7 @@ EOF
        echo " "
     [[ "$LOUD" = YES ]] && set -x
 
-    cp ${FIXwave}/T_OEBA88_C_KNWC.zeros ./
+    cp ${FIXglwu}/T_OEBA88_C_KNWC.zeros ./
 
 # Create final ice file for intake in ww3_prep
 cat > ../T_OEBA88_C_KNWC.${ymdh} << EOF
