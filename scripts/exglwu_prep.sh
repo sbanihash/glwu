@@ -303,7 +303,7 @@
       set +x
       echo " Mod def file for $grdID not found in $FIXglwu. Setting up to generate ..."
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXglwu/wave_$grdID.inp ] || [ -f $FIXwave/mesh.$grdID ]
+      if [ -f $FIXglwu/wave_$grdID.inp ] || [ -f $FIXglwu/mesh.$grdID ]
       then
         cp $FIXglwu/wave_$grdID.inp $grdID.inp
         cp $FIXglwu/mesh.$grdID mesh.$grdID
