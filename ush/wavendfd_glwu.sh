@@ -72,7 +72,7 @@
 
 # 0.c The tested variables should be exported by the calling script.
 
-  if [ -z "$DCOMIN" ] || [ -z "$EXECwave" ]
+  if [ -z "$DCOMIN" ] || [ -z "$EXECglwu" ]
   then
     set +x
     echo ' '
@@ -145,7 +145,7 @@
     do 
 
       cp ../mod_def.$grdID mod_def.ww3
-      $EXECcode/multiwaveprnc > multiwaveprnc.out.$ymdh 
+      $EXECglwu/multiwaveprnc > multiwaveprnc.out.$ymdh 
       err=$?
 
       if [ "$err" != '0' ]
