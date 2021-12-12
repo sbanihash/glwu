@@ -6,75 +6,75 @@
     edit ALERT_FROM_P3 'YES'
     family 06z
       edit CYC '06'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 05:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
     family 07z
       edit CYC '07'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 06:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
     family 08z
       edit CYC '08'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 07:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
     family 09z
       edit CYC '09'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 08:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
     family 10z
       edit CYC '10'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 09:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
     family 11z
       edit CYC '11'
-      task jwave_glwu_prep
+      task jglwu_prep
         time 10:45
-      task jwave_glwu_forecast
-        trigger jwave_glwu_prep == complete
-      task jwave_glwu_post
-        trigger jwave_glwu_forecast == complete
+      task jglwu_forecast
+        trigger jglwu_prep == complete
+      task jglwu_post
+        trigger jglwu_forecast == complete
         event release_pgen
-      task jwave_glwu_pgen
-        trigger jwave_glwu_post:release_pgen
+      task jglwu_pgen
+        trigger jglwu_post:release_pgen
     endfamily
   endfamily
 
