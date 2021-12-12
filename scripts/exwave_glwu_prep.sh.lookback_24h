@@ -69,7 +69,7 @@
   export date=$PDY
   export YMDH=${PDY}${cyc}
   export nback=0
-  $USHwave/wavestart_glwu.sh
+  $USHglwu/wavestart_glwu.sh
   ymdh_beg=`head wavestart.out | awk '{ print $1 }'`
   rm -f wavestart.out
   time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"    
@@ -293,35 +293,35 @@
 
   for grdID in $grids $igrids #$buoy
   do
-    if [ -f "$FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver}" ]
+    if [ -f "$FIXglwu/wave_${modID}_${grdID}.moddef.${glwu_ver}" ]
     then
       set +x
-      echo " Mod def file for $grdID found in $FIXwave. copying ...."
+      echo " Mod def file for $grdID found in $FIXglwu. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $FIXwave/wave_${modID}_${grdID}.moddef.${wave_glwu_ver} mod_def.$grdID
+      cp $FIXglwu/wave_${modID}_${grdID}.moddef.${glwu_ver} mod_def.$grdID
 
     else
       set +x
-      echo " Mod def file for $grdID not found in $FIXwave. Setting up to generate ..."
+      echo " Mod def file for $grdID not found in $FIXglwu. Setting up to generate ..."
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/wave_$grdID.inp ] || [ -f $FIXwave/mesh.$grdID ]
+      if [ -f $FIXglwu/wave_$grdID.inp ] || [ -f $FIXwave/mesh.$grdID ]
       then
-        cp $FIXwave/wave_$grdID.inp $grdID.inp
-        cp $FIXwave/mesh.$grdID mesh.$grdID
+        cp $FIXglwu/wave_$grdID.inp $grdID.inp
+        cp $FIXglwu/mesh.$grdID mesh.$grdID
       fi
 
       if [ -f $grdID.inp ] && [ "$grdID" = 'points' ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/wave_$grdID.inp)."
+        echo "   $grdID.inp copied ($FIXglwu/wave_$grdID.inp)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       elif [ -f $grdID.inp ] && [ -f mesh.$grdID ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/wave_$grdID.inp)."
+        echo "   $grdID.inp copied ($FIXglwu/wave_$grdID.inp)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
@@ -340,7 +340,7 @@
         err=2;export err;err_chk
       fi
 
-      echo "$USHwave/wavemod_def.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      echo "$USHglwu/wavemod_def.sh $grdID > $grdID.out 2>&1" >> cmdfile
 
       nmoddef=`expr $nmoddef + 1`
 
@@ -407,14 +407,14 @@
 
 # 1.b Wind preprocessor template file
 
-  if [ -f $FIXwave/multiwaveprnc.${wndTAG}.tmpl ]
+  if [ -f $FIXglwu/multiwaveprnc.${wndTAG}.tmpl ]
   then
-    cp $FIXwave/multiwaveprnc.${wndTAG}.tmpl .
+    cp $FIXglwu/multiwaveprnc.${wndTAG}.tmpl .
   fi
 
   if [ -f multiwaveprnc.${wndTAG}.tmpl ]
   then
-    echo "   multiwaveprnc."${wndTAG}".tmpl copied ($FIXwave/multiwaveprnc."${wndTAG}".tmpl)."
+    echo "   multiwaveprnc."${wndTAG}".tmpl copied ($FIXglwu/multiwaveprnc."${wndTAG}".tmpl)."
   else
     msg="ABNORMAL EXIT: NO FILE multiwaveprnc."${wndTAG}".tmpl"
     postmsg "$jlogfile" "$msg"
@@ -435,14 +435,14 @@
 # and glwu runs.
 
 # 1.c Ice preprocessor template file
-  if [ -f $FIXwave/multiwaveprep.ice_glw.tmpl ]
+  if [ -f $FIXglwu/multiwaveprep.ice_glw.tmpl ]
   then
-    cp $FIXwave/multiwaveprep.ice_glw.tmpl ./multiwaveprep.ice.tmpl
+    cp $FIXglwu/multiwaveprep.ice_glw.tmpl ./multiwaveprep.ice.tmpl
   fi
 
   if [ -f multiwaveprep.ice.tmpl ]
   then
-    echo "   multiwaveprep.ice.tmpl copied ($FIXwave/multiwaveprep.ice_glw.tmpl)."
+    echo "   multiwaveprep.ice.tmpl copied ($FIXglwu/multiwaveprep.ice_glw.tmpl)."
   else
     msg="ABNORMAL EXIT: NO FILE multiwaveprep.ice.tmpl"
     postmsg "$jlogfile" "$msg"
@@ -461,7 +461,7 @@
 # 1.d copy the wave model mask file
 
 # Ice data uses the regular 2km grid grlr
-  file=$FIXwave/wave_grlr.mask
+  file=$FIXglwu/wave_grlr.mask
 
   if [ -f $file ]
   then
@@ -492,7 +492,7 @@
   for ftype in mask0 ll  
   do
  
-    file=$FIXwave/T_OEBA88_C_KNWC.${ftype}
+    file=$FIXglwu/T_OEBA88_C_KNWC.${ftype}
 
     if [ -f $file ]
     then
@@ -542,7 +542,7 @@
 
   while [ "$ymdh" -le "$ymdh_end_ice" ]
   do
-  echo "$USHwave/waveice_glw.sh $ymdh > ice_$ymdh.err 2>&1"     >> cmdfile
+  echo "$USHglwu/waveice_glw.sh $ymdh > ice_$ymdh.err 2>&1"     >> cmdfile
     tinc_ice=1
     if [ $ymdh -ge $ymdh_newtres_ice -o $ymdh -lt $YMDH_ICE ]
     then
@@ -559,7 +559,7 @@
   do
     if [ "$ymdh" -le "$ymdh_end" ]
     then
-      echo "$USHwave/wavendfd_glwu_inc.sh $ymdh 1 $hdr > ndfd_$ymdh.err 2>&1"     >> cmdfile
+      echo "$USHglwu/wavendfd_glwu_inc.sh $ymdh 1 $hdr > ndfd_$ymdh.err 2>&1"     >> cmdfile
 # Remove header from subsequent binary WW3 wind files so they can be catted  
       hdr='F'
     else
@@ -725,7 +725,7 @@
   do
 
     cp mod_def.$grdID mod_def.ww3
-    $EXECcode/multiwaveprep > multiwaveprep.out
+    $EXECglwu/multiwaveprep > multiwaveprep.out
     err=$?
 
     if [ "$err" != '0' ]
