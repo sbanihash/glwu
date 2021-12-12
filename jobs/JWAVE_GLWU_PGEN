@@ -55,7 +55,7 @@ export wavelog=${COMOUTwave}/wave.log
 env
 
 # Execute the script.
-${HOMEglwu}/scripts/exwave_glwu_pgen.sh
+${HOMEglwu}/scripts/exglwu_pgen.sh
 
 if [ "$KEEPDATA" != YES ]; then
   rm -rf $DATA
