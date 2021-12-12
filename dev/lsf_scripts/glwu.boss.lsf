@@ -51,12 +51,12 @@ cd ${LSFDIR}
 
 version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
 
- if ! [ ${wave_glwu_ver} ]
+ if ! [ ${glwu_ver} ]
  then
   if [ -f $version_file ]
   then
     . $version_file
-    echo $wave_glwu_ver
+    echo $glwu_ver
   else
     echo ' '
     echo ' ***********************************************************'
@@ -69,7 +69,7 @@ version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
 
 # 0.a Set necessary variables
 
-export NET=WAVE
+export NET=GLWU
 
   host_s=`hostname | cut -c1-1`
   case $host_s in
@@ -92,9 +92,10 @@ export NET=WAVE
   export UTILdir=${GLWUdir}/util/ush
 
   export USHwavepa=/lfs/h2/emc/couple/noscrub/${runuser}/${UTILdir}
-  export com=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM${dirext}
+  export com=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${modID}/${glwu_ver}
 
-  export wavelog=${com}/${modID}.log                     # log for wave com
+  #export wavelog=${com}/${modID}.log                     # log for wave com
+  export wavelog=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/output/${glwu_ver}/${modID}.log      # log for wave com
 
   if [ -f $wavelog ]
   then
@@ -109,7 +110,8 @@ export NET=WAVE
   touch $wavelog
   export web=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/WEB${dirext}
   export weblog=${web}/${modID}.log                      # log for web page
-  export out=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/OUTPUT${dirext}
+  #export out=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/OUTPUT${dirext}
+  export out=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/output/${glwu_ver}
 
   export iceID=icean_5m                              # ice ID
   export wndID=glwu                              # wind ID (for the WW3 grid used for wind data)
@@ -121,7 +123,7 @@ JS="PREP FORECAST POST PGEN"
 
   for j in ${JS}
   do
-    export main_jobs="${main_jobs} J${NET}_${MODID}_${j}"                 # main jobs, to be run
+    export main_jobs="${main_jobs} J${NET}_${j}"                 # main jobs, to be run
   done                                                                  #   sequentially.
                                                      # SEE ALSO 0.c !!!
   export spin_jobs= # jobs to be spun off.
@@ -130,9 +132,9 @@ JS="PREP FORECAST POST PGEN"
 
   export cycle_PDY='yes'                             # update PDY file ?
 
-  export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${envir}                  # Temporary base directory
-  export lsfst=$DATA/lsf.$modID.${wave_glwu_ver}.boss.out.$$            # work file for lsfsubmit
-  export lsfse=$DATA/lsf.$modID.${wave_glwu_ver}.boss.err.$$            # work file for lsfsubmit
+  export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${glwu_ver}                  # Temporary base directory
+  export lsfst=$DATA/lsf.$modID.${glwu_ver}.boss.out.$$            # work file for lsfsubmit
+  export lsfse=$DATA/lsf.$modID.${glwu_ver}.boss.err.$$            # work file for lsfsubmit
 
   if [ ! -d "$DATA" ]
   then
@@ -198,14 +200,14 @@ JS="PREP FORECAST POST PGEN"
 
 # 0.d Set Check files
 
-  export J${NET}_${MODID}_PREP=${runID}.${wndID}.${cycle}.wind
-  export J${NET}_${MODID}_FORECAST=where_wave_${runID}_ran.$cycle
-  export J${NET}_${MODID}_POST=${runID}.$cycle.postdone
-  export J${NET}_${MODID}_PGEN=${runID}.$cycle.awipsbull
-  export J${NET}_${MODID}_WEB=${runID}.$cycle.webdone
-  export J${NET}_${MODID}_ARC=${runID}.$cycle.arcdone
-  export J${NET}_${MODID}_PUBWEB=${runID}.$cycle.pubwebdone
-  export J${NET}_${MODID}_COPY=${runID}.$cycle.pushrestartdone
+  export J${NET}_PREP=${runID}.${wndID}.${cycle}.wind
+  export J${NET}_FORECAST=where_wave_${runID}_ran.$cycle
+  export J${NET}_POST=${runID}.$cycle.postdone
+  export J${NET}_PGEN=${runID}.$cycle.awipsbull
+  export J${NET}_WEB=${runID}.$cycle.webdone
+  export J${NET}_ARC=${runID}.$cycle.arcdone
+  export J${NET}_PUBWEB=${runID}.$cycle.pubwebdone
+  export J${NET}_COPY=${runID}.$cycle.pushrestartdone
 
 # 0.e Run cleanup script
 
@@ -243,10 +245,10 @@ JS="PREP FORECAST POST PGEN"
 # 2.a Making output directory if necessary
 
   cd $out
-  if [ ! -d ${modID}.$date ]
+  if [ ! -d $date ]
   then
-    echo "           Making output directory $out/${modID}.$date"
-    mkdir -p ${modID}.$date
+    echo "           Making output directory $out/$date"
+    mkdir -p $date
   fi
 
   cd $com
@@ -304,7 +306,8 @@ JS="PREP FORECAST POST PGEN"
       do
         sleep 60
       done
-      mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+      #mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+      mv ${jobout}.out $out/$date/$job.$cycle.out
 
 #      eval echo $`echo $job` | read check
       check=$(eval echo $`echo $job`)
@@ -419,7 +422,8 @@ JS="PREP FORECAST POST PGEN"
     for job in $aux_jobs
     do
       jobout=`cat ${job}.lsf | grep 'export job=' | sed 's/=/ /g' | awk '{print $3}'`
-      mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+      #mv ${jobout}.out $out/${modID}.$date/$job.$cycle.out
+      mv ${jobout}.out $out/$date/$job.$cycle.out
     done
 
     echo "           All finished at `date`"
