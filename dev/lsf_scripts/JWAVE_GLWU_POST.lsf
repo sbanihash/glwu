@@ -1,13 +1,13 @@
 
 
 ############################################
-### JWAVE_GLWU_POST: Great Lakes Wave Sys ###
+###   JGLWU_POST: Great Lakes Wave Sys   ###
 ###      LSF card for development        ###
 ############################################
 #
 # LSF options
 #
-#PBS -N JWAVE_GLWU_POST
+#PBS -N JGLWU_POST
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q dev
@@ -17,8 +17,8 @@
 #PBS -l place=excl
 #PBS -l debug=true
 #PBS -V
-#PBS -o JWAVE_GLWU_POST.out
-#PBS -e JWAVE_GLWU_POST.out
+#PBS -o JGLWU_POST.out
+#PBS -e JGLWU_POST.out
 
 cd $PBS_O_WORKDIR
  
@@ -51,7 +51,6 @@ export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
 # Set global variables
 export modID=glwu
 export MODID=GLWU
-export RUN=$modID
 
 runuser=$USER
 NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
@@ -70,7 +69,7 @@ export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
 # export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
 # export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
 
-export job=JWAVE_GLWU_POST
+export job=JGLWU_POST
 export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
 
 # #Set Version numbers
@@ -101,11 +100,15 @@ else
   exit 1
 fi
 
+# Set paths to home etc
+export NET=glwu
+export RUN=glwu
+export model_ver=${glwu_ver}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
+
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
-export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${envir}/${job}
-#export DATA=/gpfs/hps3/ptmp/wavepa/${envir}/${job}
-#export DATA=/gpfs/hps3/emc/marine/noscrub/${runuser}/tmp/${envir}/${job}
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${model_ver}/${job}
 rm -rf $DATA
 mkdir -p $DATA
 export jlogfile=/dev/null
@@ -113,21 +116,15 @@ export SENDECF=NO
 export SENDDBN=NO
 export SENDCOM=YES 
 
-# Set paths to home etc
-export NET=wave
-#export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
-export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
-export HOMEwave=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
-
 # Set COM paths
-export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 
-export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 export COMINOUT=$COMOUT
 
-export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 
 
 # Choose to keep temporary directory
@@ -135,5 +132,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/wave_${modID}.${wave_glwu_ver}/jobs/JWAVE_${MODID}_POST
+${NWROOT}/wave_${modID}.${glwu_ver}/jobs/J${MODID}_POST
 ############################################################################
