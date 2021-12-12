@@ -1,7 +1,7 @@
 #%Module######################################################################
 ##                                             Andre.VanderWesthuysen@NOAA.gov
 ##                                                    IMSG @ NOAA/NWS/NCEP/EMC
-## wave_glwu
+## glwu
 ##_____________________________________________________
 #proc ModulesHelp { } {
 #puts stderr "Set environment for the Great Lakes GLWU"
@@ -10,7 +10,7 @@
 #}
 #module-whatis " GLWU whatis description"
 
-set ver ${wave_glwu_ver}
+set ver ${glwu_ver}
 
 set sys [uname sysname]
 
