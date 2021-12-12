@@ -49,7 +49,7 @@
   echo "   Run   ID         : $runID"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
+  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECglwu" ] || \
      [ -z "$COMOUT" ] || [ -z "$runID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$ncflags" ] || [ -z "$SENDDBN" ]
   then
@@ -102,7 +102,7 @@
   echo "   Run multiwavenc"
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/multiwavefldn
+  $EXECglwu/multiwavefldn
   err=$?
 
   if [ "$err" != '0' ]
