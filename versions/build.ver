@@ -1,6 +1,4 @@
-export wave_glwu_ver=v1.1.1
-export wave_code_ver=v5.16.0
-export wave_code_pkg=st4nc_nl3
+export glwu_ver=v1.1.1
 export envvar_ver=1.0
 export PrgEnv_intel_ver=8.1.0
 export craype_ver=2.7.8
