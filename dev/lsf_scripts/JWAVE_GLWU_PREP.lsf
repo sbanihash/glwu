@@ -1,12 +1,12 @@
 
 ############################################
-### JWAVE_GLWU_MIC_PREP: Great Lakes Wave Sys ###
+###  JGLWU_PREP: Great Lakes Wave Sys    ###
 ###      LSF card for development        ###
 ############################################
 #
 # LSF options
 #
-#PBS -N JWAVE_GLWU_PREP
+#PBS -N JGLWU_PREP
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q dev
@@ -16,8 +16,8 @@
 #PBS -l place=excl
 #PBS -l debug=true
 #PBS -V
-#PBS -o JWAVE_GLWU_PREP.out
-#PBS -e JWAVE_GLWU_PREP.out
+#PBS -o JGLWU_PREP.out
+#PBS -e JGLWU_PREP.out
 
 cd $PBS_O_WORKDIR
 
@@ -60,14 +60,16 @@ export IOBUF_PARAMS='*.dat:count=4:size=32M:prefetch=1:preflush=1'
 # Set global variables
 export modID=glwu
 export MODID=GLWU
-export RUN=$modID
 
 runuser=$USER
 NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
 
 # Set paths to home etc
-export NET=wave
-export HOMEwave=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}}
+export NET=glwu
+export RUN=glwu
+export model_ver=${glwu_ver}
+#export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
 
 # Check HOST file for where to run
 . ./HOST_${modID}
@@ -82,17 +84,17 @@ export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
 # export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
 # export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
 
-export job=JWAVE_GLWU_PREP
+export job=JGLWU_PREP
 export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
 
 # #Set Version numbers
-#if [ -f "$HOMEwave/versions/run.ver" ]
+#if [ -f "$HOMEglwu/versions/run.ver" ]
 #then
-#  source $HOMEwave/versions/run.ver
+#  source $HOMEglwu/versions/run.ver
 #else
 #  echo '##############################################'
 #  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
-#  echo "$HOMEwave/version/run.ver"
+#  echo "$HOMEglwu/version/run.ver"
 #  echo '##############################################'
 #  exit 1
 #fi
@@ -116,9 +118,7 @@ PDY_file=$PDY
 cyc_file=$cyc
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
-export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${envir}/${job}
-#export DATA=/gpfs/hps3/ptmp/wavepa/${envir}/${job}
-#export DATA=/gpfs/hps3/emc/marine/noscrub/${runuser}/tmp/${envir}/${job}
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${model_ver}/${job}
 rm -rf $DATA
 mkdir -p $DATA
 export jlogfile=/dev/null
@@ -138,17 +138,17 @@ fi
 
 # Location of WW3 code
 #export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
-export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_${modID}.${wave_glwu_ver}}
+#export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
 
 # Set COM paths
-export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 
-export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
-export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}/${RUN}.${PDY}
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 export COMINOUT=$COMOUT
 
-export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/COM_${envir}
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 
 #There was a change for the wind name in the ndfd files this happenned at 20181030_15
 #So the variable name must be change in ~fix/multiwaveprnc.ndfd
@@ -168,11 +168,11 @@ echo "COMPARING $PDYcyc_file >= $PDYcyc_changed ?"
 #then 
 #  echo "THIS IS A RUN AFTER 20181030_14"
 #  # IF the tmpl file is not ready for REAL TIME then edited
-#  sed -i 's/ UGRD_surface VGRD_surface/ UGRD_10maboveground VGRD_10maboveground/g' $HOMEwave/fix/multiwaveprnc.ndfd_glwu.tmpl
+#  sed -i 's/ UGRD_surface VGRD_surface/ UGRD_10maboveground VGRD_10maboveground/g' $HOMEglwu/fix/multiwaveprnc.ndfd_glwu.tmpl
 #else
 #  echo "THIS IS A RETROSPECTIVE OR HINDCAST RUN"
 #  # EDIT the   fix/multiwaveprnc.ndfd_glwu.tmpl
-# sed -i 's/ UGRD_10maboveground VGRD_10maboveground/ UGRD_surface VGRD_surface/g' $HOMEwave/fix/multiwaveprnc.ndfd_glwu.tmpl
+# sed -i 's/ UGRD_10maboveground VGRD_10maboveground/ UGRD_surface VGRD_surface/g' $HOMEglwu/fix/multiwaveprnc.ndfd_glwu.tmpl
 #fi
 
 export PDY=$PDY_file
@@ -183,5 +183,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/wave_${modID}.${wave_glwu_ver}/jobs/JWAVE_${MODID}_PREP
+${NWROOT}/wave_${modID}.${glwu_ver}/jobs/J${MODID}_PREP
 ############################################################################
