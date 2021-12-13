@@ -101,7 +101,7 @@
  if [ "${runID}" = "glwn" ]
   then
     set +x
-    wndID=`head -n 1 $COMIN/what_waveglwn_used.t${cyc}z`
+    wndID=`head -n 1 $COMIN/what_glwn_used.t${cyc}z`
     echo "   wind source   : $wndID"
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
