@@ -1,19 +1,19 @@
 A) TITLE:
- wave_glwu.v1.1.1: Port codebase from WCOSS1 to WCOSS2 (update for run time optimization) 
+ glwu.v1.1.1: Port codebase from WCOSS1 to WCOSS2 (update for run time optimization, and name change from 'wave_glwu' to 'glwu') 
                    
 B) SYSTEM DEPENDENCIES
-- As with v1.1.0, the wave model code 'wave_code.v5.16.0' is built as part of wave_glwu, 
+- As with v1.1.0, the wave model code 'wave_code.v5.16.0', wave_code_pkg=st4nc_nl3 is built as part of glwu, 
   and is thus no longer an external dependency.
   
 C) INPUT FILE CHANGES
  None
 
 D) IMPLEMENTATION INSTRUCTIONS
- 1) Clone wave_glwu from Github, and checkout the release tag:
-    >> git clone https://github.com/NOAA-EMC/wave_glwu.git
-    >> git checkout IT-wave_glwu.v1.1.1-20211128
+ 1) Clone glwu from Github, and checkout the release tag:
+    >> git clone https://github.com/NOAA-EMC/glwu.git
+    >> git checkout IT-glwu.v1.1.1-20211213
 
- 2) >> cd wave_glwu/sorc
+ 2) >> cd glwu/sorc
  3) >> ./make.all.sh 
  4) ***VERY IMPORTANT*** DELETE any wave_glwu*.moddef.* files in the fix directory,
     these should be generated when the system is run for the first time.
