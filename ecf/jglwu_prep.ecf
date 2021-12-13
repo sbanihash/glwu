@@ -1,0 +1,82 @@
+#PBS -N glwu_prep_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:20:00
+#PBS -l select=1:ncpus=120:mem=2700MB
+#PBS -l place=excl
+#PBS -l debug=true
+
+export model=glwu
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+# Set LSF variables
+export MP_EAGER_LIMIT=165536
+export MP_COREFILE_FORMAT=core.txt
+export MP_EUIDEVELOP=min
+export MP_MPILIB=mpich2
+
+export MP_LABELIO=yes
+export MP_SINGLE_THREAD=yes
+export MP_USE_BULK_XFER=yes
+export MPICH_ALLTOALL_THROTTLE=0
+
+export MP_TASK_AFFINITY=cpu
+export MP_EUIDEVICE=sn_all
+export MP_EUILIB=us
+
+ulimit -s unlimited
+
+# Set global variables
+modID=glwu
+MODID=GLWN
+ 
+# EXPORT list here
+export cyc=%CYC%
+export modID=glwu
+export MODID=GLWU
+
+# Setup and load modules 
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${inter_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module list
+
+# CALL executable job script here
+${HOMEglwu}/jobs/JGLWU_PREP
+
+if [ $? -ne 0 ]; then
+  ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
+  ecflow_client --abort
+  exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that runs the glwu wave model prep
+#          on the IBMSP
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
+
