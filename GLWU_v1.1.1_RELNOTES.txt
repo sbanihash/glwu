@@ -1,9 +1,9 @@
-Release Notes:  wave_glwu v1.1.1 - released to NCO on November 28, 2021
+Release Notes:  glwu v1.1.1 - released to NCO on December 13, 2021
 
-Transition from WCOSS Cray to WCOSS2 (update for run time optimization).
+Transition from WCOSS Cray to WCOSS2 (update for run time optimization, and name change from 'wave_glwu' to 'glwu').
 
 Where is the release tag on subversion/git/vlab?
-https://github.com/NOAA-EMC/wave_glwu.git Tag: IT-wave_glwu.v1.1.1-20211128
+https://github.com/NOAA-EMC/glwu.git Tag: IT-glwu.v1.1.1-20211213
 
 List of external software used (anything outside of your vertical structure), 
 including compilers and version numbers for everything. Software used must be 
@@ -68,23 +68,60 @@ wgrib2/2.0.8
 util_shared/1.4.0
 
 List of all code/scripts modified with this release (relative to v1.1.0)
+NOTE: Many files have been renamed, indicated with an ->
 
 versions/build.ver
 versions/run.ver
-modulefiles/build_wavewatch3.modules
-sorc/multiwavefcst.fd/w3triamd.F90
-sorc/multiwavefcst.fd/makefile
-ecf/jwave_glwu_prep.ecf
-ecf/jwave_glwu_forecast.ecf
-ecf/jwave_glwu_post.ecf
-ecf/jwave_glwu_pgen.ecf
 
-For development, please ignore:
-dev/lsf_scripts/JWAVE_GLWU_FORECAST.lsf
-dev/lsf_scripts/JWAVE_GLWU_POST.lsf
-dev/lsf_scripts/JWAVE_GLWU_PREP.lsf
+modulefiles/build_glwu.module
+modulefiles/build_wavewatch3.modules
+
+sorc/multiwavefcst.fd/makefile
+sorc/multiwavefcst.fd/w3triamd.F90
+
+def/prod00.def
+def/prod06.def
+def/prod12.def
+def/prod18.def
+def/wcoss_defs/prod00.out
+def/wcoss_defs/prod06.out
+def/wcoss_defs/prod12.out
+def/wcoss_defs/prod18.out
+
+ecf/jwave_glwu_prep.ecf  ->  ecf/jglwu_prep.ecf
+ecf/jwave_glwu_forecast.ecf  ->  ecf/jglwu_forecast.ecf
+ecf/jwave_glwu_post.ecf  ->  ecf/jglwu_post.ecf
+ecf/jwave_glwu_pgen.ecf  ->  ecf/jglwu_pgen.ecf
+
+jobs/JWAVE_GLWU_PREP  ->  jobs/JGLWU_PREP
+jobs/JWAVE_GLWU_FORECAST  ->  jobs/JGLWU_FORECAST
+jobs/JWAVE_GLWU_POST  ->  jobs/JGLWU_POST
+jobs/JWAVE_GLWU_PGEN  ->  jobs/JGLWU_PGEN
+
+scripts/exwave_glwu_prep.sh  ->  scripts/exglwu_prep.sh
+scripts/exwave_glwu_prep.sh.lookback_24h  ->  scripts/exglwu_prep.sh.lookback_24h
+scripts/exwave_glwu_forecast.sh  ->  scripts/exglwu_forecast.sh
+scripts/exwave_glwu_post.sh  ->  scripts/exglwu_post.sh
+scripts/exwave_glwu_pgen.sh  ->  scripts/exglwu_pgen.sh
+
+ush/multiwavegrib2.sh
+ush/multiwavegrid_interp.sh
+ush/multiwavespec2.sh
+ush/multiwavespec_bull.sh
+ush/multiwavespec_ts.sh
+ush/wave_fldn.sh
+ush/waveice_glw.sh
+ush/wavemod_def.sh
+ush/wavendfd_glwu_inc.sh
+ush/wavendfd_glwu.sh
+
+For development only (please ignore):
 dev/lsf_scripts/glwu.cron
 dev/lsf_scripts/glwu.boss.lsf
+dev/lsf_scripts/JWAVE_GLWU_PREP.lsf  ->  dev/lsf_scripts/JGLWU_PREP.lsf
+dev/lsf_scripts/JWAVE_GLWU_FORECAST.lsf  ->  dev/lsf_scripts/JGLWU_FORECAST.lsf
+dev/lsf_scripts/JWAVEGLWU_POST.lsf  ->  dev/lsf_scripts/JGLWU_POST.lsf
+dev/lsf_scripts/JWAVE_GLWU_PGEN.lsf  ->  dev/lsf_scripts/JGLWU_PGEN.lsf
 
 What changes were made to the above code/scripts to support the new architecture?
 Relative to v1.1.0, the forecast job was sped up by allocating more nodes, cores 
@@ -98,6 +135,20 @@ New:
 #PBS -l select=12:ncpus=128:mem=500GB
 export mpicmd='mpiexec -n 768 -ppn 64 --depth 2 --cpu-bind depth'
 
+In addition, many scripts and script names were updated to reflect a change in the application 
+name from 'wave_glwu' to 'glwu'. This includes changes to environment variables such as:
+
+NET=wave -> NET=glwu
+wave_glwu -> glwu
+wave_glwu_ver -> glwu_ver
+HOMEwave -> HOMEglwu
+HOMEwave_glwu -> HOMEglwu
+FIXwave -> FIXglwu
+PARMwave -> PARMglwu
+USHwave -> USHglwu
+EXECwave -> EXECglwu
+EXECcode -> EXECglwu
+
 Were any other changes made that aren’t directly related to the transition?
 No
 
@@ -110,7 +161,7 @@ N/A
 Compute resource information, for every job:
 *** Providing PBS and/or ecFlow submission scripts as part of release tag is preferred; 
 if they are provided then resource information is not needed in the release notes.
-See wave_glwu/ecf/
+See glwu/ecf/
 
 Runtime changes compared to current production (/gpfs/dell1/nco/ops/com/logs/runtime/daily/* for current stats)
 Long cycles (01z, 07z, 13z, 19z):
@@ -137,6 +188,6 @@ What are your up and downstream dependencies?
 Unchanged. Upstream: NDFD winds and NIC sea ice analysis from DCOM. Downstream: None.
 
 Provide a pointer to your COMOUT directory that was used during testing: 
-/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_dev/glwu.20211003
+/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/com/glwu/v1.1.1/glwu.20211003
 Canned data from WCOSS1 Cray for comparison:
 /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_wcoss1_prod/glwu.20211003
