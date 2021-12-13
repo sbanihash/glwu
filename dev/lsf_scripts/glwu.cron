@@ -25,8 +25,8 @@
 #PBS -q dev
 #PBS -N glwu.boss.lsf
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.1/glwu.cron.out
-#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/wave_glwu.v1.1.1/glwu.cron.out
+#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.cron.out
+#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.cron.out
 
 cd $PBS_O_WORKDIR
 
@@ -43,7 +43,7 @@ module load prod_envir/2.0.5
 
 # 0.a Set necessary variables
  set -xa
-  export sysver=wave_glwu.$1
+  export sysver=glwu.$1
   export pcode=GLWU-DEV
 
   if [ ! $1 ]
@@ -287,7 +287,7 @@ fi
   then
     out=$NWROOT/com/output                            # output directory
   else
-    out=$NWROOT/GLWU/com/output/${glwu_ver}              # output directory
+    out=$NWROOT/GLWU/com/output                       # output directory
   fi
 
 # 2.c Set file to check and check presence
