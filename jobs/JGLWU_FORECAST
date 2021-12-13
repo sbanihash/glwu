@@ -51,6 +51,7 @@ export wavelog=${COMOUTwave}/wave.log
 env
 
 ${HOMEglwu}/scripts/exglwu_forecast.sh
+
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
