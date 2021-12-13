@@ -56,6 +56,7 @@ env
 
 # Execute the Script  
 ${HOMEglwu}/scripts/exglwu_prep.sh
+
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
