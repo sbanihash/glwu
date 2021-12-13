@@ -1,0 +1,71 @@
+#PBS -N glwu_post_%CYC%
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l select=3:ncpus=104:mem=10GB
+#PBS -l place=excl
+#PBS -l debug=true
+
+export model=glwu
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+
+# specify X threads if using openmp
+export OMP_NUM_THREADS=1
+
+#Unlimit the stack size
+ulimit -s unlimited
+ 
+# Set global variables
+modID=glwu
+MODID=GLWU
+ 
+# EXPORT list here
+export cyc=%CYC%
+
+# Setup and load modules
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module list
+
+# CALL executable job script here
+${HOMEglwu}/jobs/JGLWU_POST
+
+if [ $? -ne 0 ]; then
+  ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
+  ecflow_client --abort
+  exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that runs the glwu wave model
+#          post on the IBMSP
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
