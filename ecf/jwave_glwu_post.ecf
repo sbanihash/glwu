@@ -1,4 +1,4 @@
-#PBS -N wave_glwu_post_%CYC%
+#PBS -N glwu_post_%CYC%
 #PBS -j oe
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
@@ -8,7 +8,7 @@
 #PBS -l place=excl
 #PBS -l debug=true
 
-export model=wave_glwu
+export model=glwu
 %include <head.h>
 %include <envir-p1.h>
 
@@ -46,7 +46,7 @@ module load netcdf/${netcdf_ver}
 module list
 
 # CALL executable job script here
-${HOMEwave_glwu}/jobs/JWAVE_GLWU_POST
+${HOMEglwu}/jobs/JGLWU_POST
 
 if [ $? -ne 0 ]; then
   ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
