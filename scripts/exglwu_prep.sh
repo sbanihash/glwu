@@ -161,7 +161,7 @@
         if [ ${vtimei} -le ${ymdh_beg} ]
         then
           cp ndfd_${tlatest}.grb2 ${ndfd_file}
-          echo "NDFD file used: ndfd_${tlatest}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
+          echo "NDFD file used: ndfd_${tlatest}.grb2" > $DATA/what_${runID}_used.t${cyc}z
         fi
       fi
 # If latest files failed try the second file if present
@@ -173,7 +173,7 @@
         if [ ${vtimei} -le ${ymdh_beg} ]
         then
           cp ndfd_${tsecond}.grb2 ${ndfd_file}
-          echo "NDFD file used: ndfd_${tsecond}.grb2" > $DATA/what_wave${runID}_used.t${cyc}z
+          echo "NDFD file used: ndfd_${tsecond}.grb2" > $DATA/what_${runID}_used.t${cyc}z
         fi
       fi
 
@@ -225,7 +225,7 @@
     err=1;export err;err_chk
   else
     export ndfd_file
-    #echo "NDFD files used: $filelist" > what_wave${runID}_used.t${cyc}z
+    #echo "NDFD files used: $filelist" > what_${runID}_used.t${cyc}z
     if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
     then
       lsth=149
@@ -872,8 +872,8 @@
    
         mail.py -s "Missing GLWU/GLW ice info for $PDY t${cyc}z" Xiaoxue.Wang@noaa.gov email.ice
     fi
-      sort -b what_wave${runID}_used.$cycle > $COMOUT/what_wave${runID}_used.$cycle
-      $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_wave${runID}_used.$cycle
+      sort -b what_${runID}_used.$cycle > $COMOUT/what_${runID}_used.$cycle
+      $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_${runID}_used.$cycle
   fi
 
 
