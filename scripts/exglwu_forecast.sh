@@ -382,7 +382,7 @@ pwd
     echo '---------------------'      
     set $seton  
     
-    echo "`hostname -s`" > $COMOUT/where_wave_${runID}_ran.$cycle  
+    echo "`hostname -s`" > $COMOUT/where_${runID}_ran.$cycle  
     
     if [ -f log.mww3 ] ; then         
       echo "   Copying log.mww3      to $COMOUT/$runID.$cycle.log" 
