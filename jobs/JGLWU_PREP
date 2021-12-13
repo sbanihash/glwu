@@ -31,14 +31,17 @@ export RUN=glwu
 #set for compath.py 
 export model_ver=${glwu_ver}
 
-export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}_${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}.${model_ver}}
 export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
 export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
 export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
 export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
 # Location of NDFD input files
-export DCOMIN=${DCOMIN:-${DCOMROOT}/prod} # serves ice and ndfd data
+#export DCOMIN=${DCOMIN:-${DCOMROOT}/prod} # serves ice and ndfd data
+
+export DCOMROOT=/lfs/h1/ops/canned/dcom
+export DCOMIN=${DCOMIN:-${DCOMROOT}} # serves ice and ndfd data
 
 export COMIN=${COMIN:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
 export COMINwave=${COMINwave:-$(compath.py -v -o ${NET}/${model_ver})}
