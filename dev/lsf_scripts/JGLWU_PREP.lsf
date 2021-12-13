@@ -69,7 +69,7 @@ export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
 #export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}}
-export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}.${glwu_ver}}
 
 # Check HOST file for where to run
 . ./HOST_${modID}
@@ -136,10 +136,6 @@ else
    export DCOMIN=${DCOMROOT}/prod
 fi
 
-# Location of WW3 code
-#export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
-#export CODEwave=${CODEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
-
 # Set COM paths
 export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
@@ -183,5 +179,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/wave_${modID}.${glwu_ver}/jobs/J${MODID}_PREP
+${NWROOT}/${modID}.${glwu_ver}/jobs/J${MODID}_PREP
 ############################################################################
