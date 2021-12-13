@@ -30,7 +30,7 @@ export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
 
-export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}_${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}.${model_ver}}
 export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
 export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
 export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
