@@ -104,7 +104,7 @@ fi
 export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
-export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/wave_${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}.${glwu_ver}}
 
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
@@ -132,5 +132,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/wave_${modID}.${glwu_ver}/jobs/J${MODID}_POST
+${NWROOT}/${modID}.${glwu_ver}/jobs/J${MODID}_POST
 ############################################################################
