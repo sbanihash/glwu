@@ -1,0 +1,169 @@
+Release Notes:  wave_glwu v1.1.0 - released to NCO on October 3, 2021
+
+Transition from WCOSS Cray to WCOSS2.
+
+Where is the release tag on subversion/git/vlab?
+https://github.com/NOAA-EMC/wave_glwu.git Tag: IT-wave_glwu.v1.1.0-20211003
+
+List of external software used (anything outside of your vertical structure), 
+including compilers and version numbers for everything. Software used must be 
+a minimal list of modules/versions specified per job:
+
+jwave_glwu_prep:
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+cfp/2.0.4
+wgrib2/2.0.8
+hdf5/1.10.6
+iobuf/2.0.10
+
+jwave_glwu_forecast:
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+hdf5/1.10.6
+netcdf/4.7.4
+jasper/2.0.25
+libpng/1.6.37
+zlib/1.2.11
+g2/3.4.5
+w3nco/2.4.1
+bacio/2.4.1
+iobuf/2.0.10
+
+jwave_glwu_post:
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cfp/2.0.4
+wgrib2/2.0.8
+grib_util/1.2.2
+libjpeg/9c
+hdf5/1.10.6
+netcdf/4.7.4
+iobuf/2.0.10
+
+jwave_glwu_pgen:
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+libjpeg/9c
+libpng/1.6.37
+grib_util/1.2.2
+wgrib2/2.0.8
+util_shared/1.4.0
+
+List of all code/scripts modified with this release
+
+The wave model codebase 'wave_code.v5.16.0' has been integrated into the 'wave_glwu.v1.1.0' codebase:
+modulefiles/build_wavewatch3.modules -> modulefiles/
+wave_code.v5.16.0/st4nc_nl3/sorc/make.codes.sh integrated into sorc/make.all.sh 
+wave_code.v5.16.0/st4nc_nl3/sorc/*.fd -> sorc/
+
+Large fix files were moved out of 'wave_glwu.v1.1.0' and stored on WCOSS2 (>50 MB Github limit). 
+These are now installed by running sorc/get_externals.sh (called by make.all.sh build script):
+fix/mesh.glwu
+fix/grint_weights.grlc_2p5km
+fix/grint_weights.grlr
+fix/grint_weights.grlr_500m
+
+New directory with dev testing scripts (please ignore):
+dev/
+
+New directory with production .ecf scripts:
+ecf/
+
+Files modified:
+versions/wave_glwu.ver replaced by versions/build.ver and versions/run.ver
+modulefiles/build_glwu.module
+modulefiles/build_wavewatch3.modules
+sorc/make.all.sh
+sorc/multiwavefcst.fd/makefile
+sorc/multiwavefcst_sbs.fd/makefile
+sorc/multiwavefldn.fd/makefile
+sorc/multiwaveprnc.fd/makefile
+sorc/multiwavespnc.fd/makefile
+sorc/wavesystrk.fd/makefile
+ecf/jwave_glwu_forecast.ecf
+ecf/jwave_glwu_pgen.ecf
+ecf/jwave_glwu_post.ecf
+ecf/jwave_glwu_prep.ecf
+jobs/JWAVE_GLWU_FORECAST
+jobs/JWAVE_GLWU_PGEN
+jobs/JWAVE_GLWU_POST
+jobs/JWAVE_GLWU_PREP
+scripts/exwave_glwu_forecast.sh.ecf -> scripts/exwave_glwu_forecast.sh
+scripts/exwave_glwu_pgen.sh.ecf -> scripts/exwave_glwu_pgen.sh
+scripts/exwave_glwu_post.sh.ecf -> scripts/exwave_glwu_post.sh
+scripts/exwave_glwu_post.sh.ecf -> scripts/exwave_glwu_prep.sh
+scripts/exwave_glwu_prep.sh.ecf.lookback_24h -> scripts/exwave_glwu_prep.sh.lookback_24h
+
+What changes were made to the above code/scripts to support the new architecture?
+Full use was made of the 128 cores/node and the larger RAM, so that the node count was 
+reduced significantly from 32 to 6 (forecast job). These changes are in the ecf files. 
+Changes to makefiles were needed due to changes in library path environment variables on 
+WCOSS2. Remaining changes were due to EE2 standards: (i) The use of build.ver and run.ver, 
+(ii) Writing AWIPS products to wmo/ instead of pcom, (iii) Removing .ecf extension from 
+ex-scripts. 
+
+Were any other changes made that aren’t directly related to the transition?
+No
+
+Are there any changes to incoming data needs or outgoing products? 
+No
+
+If output filenames are changing, list the current and new filename
+N/A
+
+Compute resource information, for every job:
+*** Providing PBS and/or ecFlow submission scripts as part of release tag is preferred; 
+if they are provided then resource information is not needed in the release notes.
+See wave_glwu/ecf/
+
+Runtime changes compared to current production (/gpfs/dell1/nco/ops/com/logs/runtime/daily/* for current stats)
+Note: Code optimization with GDIT is still under way. Current run time stats are:
+Long cycles (01z, 07z, 13z, 19z):
+jwave_glwu_prep:       00:02:40   (prod: 00:00:21)
+jwave_glwu_forecast:   00:40:57   (prod: 00:24:34)
+jwave_glwu_post:       00:13:44   (prod: 00:15:09)
+jwave_glwu_pgen:       00:00:10   (prod: 00:00:27)
+Short cycles (remaining hours: 00z, 02z, 03z, 04z, 05z, 06z, 08z, 09z, 10z, 11z, 12z, etc.):
+jwave_glwu_prep        00:01:52   (prod: 00:00:20)
+jwave_glwu_forecast    00:14:46   (prod: 00:08:31)
+jwave_glwu_post        00:08:41   (prod: 00:09:31)
+jwave_glwu_pgen        00:00:06   (prod: 00:00:11)
+
+Disk space required per day or per cycle; data retention on disk will remain the same unless otherwise requested.
+Unchanged at 118G/day.
+
+Dissemination will remain the same unless otherwise communicated to NCO and a PNS/SCN issued
+Unchanged.
+
+HPSS archive retention will remain the same unless approval granted by HPCRAC
+Unchanged.
+
+What are your up and downstream dependencies?
+Unchanged. Upstream: NDFD winds and NIC sea ice analysis from DCOM. Downstream: None.
+
+Provide a pointer to your COMOUT directory that was used during testing: 
+/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_dev/glwu.20211003
+Canned data from WCOSS1 Cray for comparison:
+/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/COM_wcoss1_prod/glwu.20211003
+
