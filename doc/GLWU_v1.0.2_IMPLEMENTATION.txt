@@ -1,0 +1,24 @@
+A) TITLE:
+ wave_glwu.v1.0.2: Eliminating risk of writing restart file to prod directory; fine-tuning ice concentrations to avoid unrealistic wave heights
+                   near areas of recently-melted ice.  
+                   
+
+B) SYSTEM DEPENDENCIES
+wave_code.v5.16.0
+- As currently installed, no changes required. 
+  
+C) INPUT FILE CHANGES
+ the fix file wave_glwu.inp has been changed.
+
+D) IMPLEMENTATION INSTRUCTIONS
+ 1) Check out wave_glwu.v1.0.2 from the git server
+    >> git clone gerrit:EMC_wave_glwu
+
+ 2) ***VERY IMPORTANT*** DELETE any wave_glwu*.moddef.* files in the fix directory,
+    these should be generated when the system is run for the first time.
+ 3) All restart files from the current operational runs should work seamlessly.
+ 4) Copy the file weights grint_weights.grlc_2p5km grint_weights.grlr grint_weights.grlr_500m
+    from the current operational fix directory (wave_glwu.v1.0.0/fix):
+   - **** ATTENTION **** 
+     Generating the weights files for the first time can take *VERY* long, up to 
+     a few hours.
