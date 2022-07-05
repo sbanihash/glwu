@@ -348,7 +348,7 @@
       if [ "$SENDDBN_NTC" = 'YES' ]
       then
         echo "      Sending $AWIPSGRB.$grdID to DBNET."
-        $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $COMOUTwmo/grib2.$cycle.awipsww3_${grdID}
+        $SIPHONROOT/bin/dbn_alert GRIB_LOW $NET $job $COMOUTwmo/grib2.$cycle.awipsww3_${grdID}
       fi
 
       rm -f $AWIPSGRB.$grdID tocgrib2.out
