@@ -25,8 +25,8 @@
 #PBS -q dev
 #PBS -N glwu.boss.lsf
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.cron.out
-#PBS -e /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.cron.out
+#PBS -o glwu.cron.out
+#PBS -e glwu.cron.out
 
 cd $PBS_O_WORKDIR
 
