@@ -33,6 +33,8 @@ module load intel/${inter_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
+module load libjpeg
+module load grib_util
 module load wgrib2/${wgrib2_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
@@ -69,7 +71,7 @@ export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
 #export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}}
-export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}/${modID}.${glwu_ver}}
 
 # Check HOST file for where to run
 . ./HOST_${modID}
@@ -118,7 +120,7 @@ PDY_file=$PDY
 cyc_file=$cyc
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
-export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${model_ver}/${job}
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
 rm -rf $DATA
 mkdir -p $DATA
 export jlogfile=/dev/null
@@ -132,8 +134,8 @@ if  [ "$RetroRun" = "YES" ]
 then
    export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
 else
-   DCOMROOT=/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom
-   export DCOMIN=${DCOMROOT}/prod
+   DCOMROOT=/lfs/h1/ops/prod/dcom
+   export DCOMIN=${DCOMROOT}
 fi
 
 # Set COM paths
@@ -179,5 +181,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/${modID}.${glwu_ver}/jobs/J${MODID}_PREP
+${NWROOT}/${modID}/${modID}.${glwu_ver}/jobs/J${MODID}_PREP
 ############################################################################
