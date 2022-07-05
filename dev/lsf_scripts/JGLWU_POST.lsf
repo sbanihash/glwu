@@ -12,8 +12,9 @@
 #PBS -S /bin/bash
 #PBS -q dev
 #PBS -A GLWU-DEV
-#PBS -l walltime=00:30:00
-#PBS -l select=3:ncpus=104:mem=10GB
+#PBS -l walltime=08:00:00
+##PBS -l select=3:ncpus=104:mem=10GB
+#PBS -l select=3:ncpus=104
 #PBS -l place=excl
 #PBS -l debug=true
 #PBS -V
@@ -104,11 +105,11 @@ fi
 export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
-export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}.${glwu_ver}}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}/${modID}.${glwu_ver}}
 
 # Set j-job parameters (extracted from j-job for DEV by new NCO standards)
 # the stmp file system is hugely slow
-export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${model_ver}/${job}
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
 rm -rf $DATA
 mkdir -p $DATA
 export jlogfile=/dev/null
@@ -132,5 +133,5 @@ export KEEPDATA='YES'
 
 # Execute the actual J job
 ############################################################################
-${NWROOT}/${modID}.${glwu_ver}/jobs/J${MODID}_POST
+${NWROOT}/${modID}/${modID}.${glwu_ver}/jobs/J${MODID}_POST
 ############################################################################
