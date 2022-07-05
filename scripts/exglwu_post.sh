@@ -1371,7 +1371,7 @@ export grint_OK='yes'
       cp -f $runID.$grdID.$cycle.nc $COMOUT/$runID.$grdID.$cycle.nc
 
       if [ $SENDDBN = YES ]; then
-        $DBNROOT/bin/dbn_alert MODEL WAVE_NC $job $COMOUT/$runID.$grdID.$cycle.nc 
+        $SIPHONROOT/bin/dbn_alert MODEL WAVE_NC $job $COMOUT/$runID.$grdID.$cycle.nc 
       fi
 # Save 4km regular outgrd for web plotting
       grdID=grlr
@@ -1423,7 +1423,7 @@ export grint_OK='yes'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         # add optional tag to dbn_alert subtyp (to distinguish from standard prod alerts)
-        $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/${file_name}
+        $SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/${file_name}
       fi
     done
   fi
