@@ -30,14 +30,14 @@ export NET=glwu
 export RUN=glwu
 export model_ver=${glwu_ver}
 
-export HOMEglwu=${HOMEglwu:-${NWROOT}/${NET}.${model_ver}}
+export HOMEglwu=${HOMEglwu:-${PACKAGEHOME}/${NET}.${model_ver}}
 export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
 export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
 export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
 export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
-export COMIN=${COMIN:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
-export COMINwave=${COMINwave:-$(compath.py -v -o ${NET}/${model_ver})}
+export COMIN=${COMIN:-$(compath.py -v ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMINwave=${COMINwave:-$(compath.py -v ${NET}/${model_ver})}
 export COMOUT=${COMOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
 export COMOUTwave=${COMOUTwave:-$(compath.py -v -o ${NET}/${model_ver})}
 export COMINOUT=${COMINOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
@@ -55,7 +55,7 @@ ${HOMEglwu}/scripts/exglwu_forecast.sh
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY."
-postmsg $jlogfile "$msg"
+postmsg "$msg"
 
 if [ -e "$pgmout" ]; then
   cat $pgmout
