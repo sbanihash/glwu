@@ -25,12 +25,12 @@
 #PBS -q dev
 #PBS -N glwu.boss.lsf
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.cron.out
-#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.cron.out
+#PBS -o /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.cron.out
+#PBS -e /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.cron.out
 
 cd $PBS_O_WORKDIR
 
-runuser=Andre.VanderWesthuysen
+export runuser=$(whoami)
 
 . /u/${runuser}/.bashrc
 # Setup and load modules 
@@ -70,7 +70,7 @@ envir=dev
 #fi
 
   NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system                      
-  LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}/dev/lsf_scripts
+  LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/glwu/${sysver}/dev/lsf_scripts
 
   modID=glwu                                           # model ID
   start_dir=${LSFDIR}                                  # start / work directory
@@ -97,8 +97,9 @@ then
   com_wind=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
   export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
 else
-  DCOMROOT=/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom
-  com_wind=${DCOMROOT}/prod/                     # operational wind com
+  # DCOMROOT=/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom  # Canned data for WCOSS2 testing
+  DCOMROOT=/lfs/h1/ops/prod/dcom
+  com_wind=${DCOMROOT}/                         # operational wind com
 fi
 
 
@@ -107,11 +108,15 @@ fi
   com_date=${LSFDIR}
 
   time_file=$com_date/PDY_${modID}                                       # file with time info
-  version_file=$NWROOT/${sysver}/versions/run.ver    # file with version info
+  version_file=$NWROOT/glwu/${sysver}/versions/run.ver    # file with version info
 
   key_on=wind                                 # key on wind or wave files
 
 # 0.b ID output
+
+  export script='glwu.cron'
+  export runon='BACKUPSYS'
+  export NET='glwu'
 
   cd $start_dir
 
@@ -131,57 +136,47 @@ fi
   echo "           output directory   : $out"
   echo "           time file          : $time_file"
   echo "           script to run      : $script"
+  echo "           running on         : $runon"
 
 # 0.c Host assessment
 
-  export host_s="`hostname | cut -c1-1`"
+  export host_s="`cat /etc/HOSTNAME | cut -c1-1`"
   case $host_s in
    'c' ) host='cactus' ;;
    'd' ) host='dogwood' ;;
-   *  ) echo ' '
+    *  ) echo ' '
          echo ' *****************************'
          echo " *** HOST $host_s NOT RECOGNIZED ***"
          echo ' *****************************'
          echo ' '
          date=`date -u +"%Y%m%d t%Hz"`
-         echo "rzdm.cron $date : host [$host] not recognized." >> $weblog
+         echo "glwu.cron $date : host [$host] not recognized." >> $weblog
          exit 1 ;;
   esac
 
   echo ' '
   echo "           host machine       : $host"
 
-  #AW prod=`cat /etc/prod | awk '{ print $1 }'`
-  prod=cactus
-  echo "           production  mach.  : $prod"
+  sec_profile=`cat /etc/wcoss.conf | grep sec_profile | cut -d ':' -f 2`
+  echo "           machine function   : $sec_profile"
 
-  if [ -f $start_dir/HOST_$modID ]
-  then
-    . $start_dir/HOST_$modID
-  else
-    echo ' '
-    echo ' **************************************************'
-    echo " *** FILE WITH TIME INFO NOT FOUND ($start_dir/HOST_$modID) ***"
-    echo ' **************************************************'
-    echo ' '
-    exit 10
-  fi
-
-  run_on=dev
-  if [ "$run_on" = 'none' ]
-  then
-    target='none'
-  else
-    #AW target=`cat /etc/$run_on | awk '{ print $1 }'`
-    target=dogwood
-  fi
-  echo "           running on         : $run_on [$target]"
-
-  if [ "$host" != "$target" ]
+  if [ "$sec_profile" != "$runon" ]
   then
     echo ' '
     echo " Time : `date`"
     echo ' '
+    echo ' '
+    echo '                        *** End of glwu.cron ***'
+    exit 0
+  fi
+
+  check_queue="$(qstat -q | grep -E 'dev |dev_shared|devmax|devhigh')"
+  if [ "$check_queue" == "" ]
+  then
+    echo ' '
+    echo " Time : `date`"
+    echo ' '
+    echo " glwu.cron $date : Dev run queues are closed. Exiting..."
     echo ' '
     echo '                        *** End of glwu.cron ***'
     exit 0
@@ -212,7 +207,6 @@ fi
     if  [ "$RetroRun" = "YES" ]
     then
       export lsth=6
-    #elif  [ "$RetroRun" = "NOT" ] && [ "$envir" = "dev" ]
     elif  [ "$RetroRun" = "NOT" ] && [ "$envir" = "dev" ]
     then
        if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
@@ -274,11 +268,9 @@ fi
     echo ' '
     exit 20
   fi
-
-  GlwuData=GLWU
    
 # Set TMP directories based on envir parameter
-  export TMP=/lfs/h2/emc/ptmp/${runuser}/${GlwuData}/dev
+  export TMP=/lfs/h2/emc/ptmp/${runuser}/${NET}
   mkdir -p ${TMP}
   export llst=${TMP}/ll.$modID.cron.out.$$   # work file for llsubmit
   export llse=${TMP}/ll.$modID.cron.err.$$   # work file for llsubmit
@@ -329,7 +321,8 @@ fi
   echo '        ------------------------------------------------------------'
 
   OK='yes'
-  nr_job=`qstat -as $batch 2> /dev/null | grep ${runuser} | wc -l | awk '{ print $1}'`
+  # nr_job=`qstat -as $batch 2> /dev/null | grep ${runuser} | wc -l | awk '{ print $1}'`
+  nr_job=`qstat -wu ${USER} | grep HO 2> /dev/null | wc -l | awk '{ print $1}'`
   echo "           number of jobs     : $nr_job"
 
   if [ "$nr_job" = '1' ]
@@ -345,14 +338,15 @@ fi
     echo "           something wrong, will attempt to kill all jobs ..."
     OK='no'
 
-    jobs=`qstat 2> /dev/null | grep ${runuser} | grep $batch | awk '{ print $1}'`
+    #jobs=`qstat 2> /dev/null | grep ${runuser} | grep $batch | awk '{ print $1}'`
+    jobs=`qstat -wu ${USER} | grep HO 2> /dev/null | awk '{ print $1}'`
 
     if [ -n "$jobs" ]
     then
       for job in $jobs
       do
         echo "              killing $job ..."
-        bkill $job > /dev/null 2>&1
+        qdel $job > /dev/null 2>&1
       done
     fi
   fi
@@ -376,7 +370,7 @@ fi
     echo " "                                                  >> $batch
     #echo "  mkdir -p $out/${modID}.$date"                     >> $batch
     echo "  mkdir -p $out/$date"                              >> $batch
-    echo " "                                                  >> $batch
+    -echo " "                                                  >> $batch
     echo "  $start_dir/$script > $out/$date/$script.$cycle.out 2>&1" >> $batch
     echo " "                                                  >> $batch
     #echo "  rm -f $start_dir/$batch.out"                      >> $batch
