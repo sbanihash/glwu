@@ -165,8 +165,8 @@
     echo "   Alerting GRIB index file as $COMOUT/$runID.$grdID.$cycle.grib2.idx"
     set -x
     [[ "$LOUD" = YES ]] && set -x
-    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/$runID.$grdID.$cycle.grib2
-    $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX $job $COMOUT/$runID.$grdID.$cycle.grib2.idx
+    $SIPHONROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/$runID.$grdID.$cycle.grib2
+    $SIPHONROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX $job $COMOUT/$runID.$grdID.$cycle.grib2.idx
   fi
  
 # --------------------------------------------------------------------------- #
