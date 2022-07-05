@@ -20,8 +20,8 @@
 #PBS -A GLWU-DEV
 #PBS -V
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.boss.out
-#PBS -e /lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/glwu/lsf_scripts/glwu.v1.1.1/glwu.boss.out
+#PBS -o /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.boss.out
+#PBS -e /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.boss.out
 
 cd $PBS_O_WORKDIR
 
@@ -36,7 +36,6 @@ module load cfp/2.0.4
 module load prod_util/2.0.8
 
 # Set runuser
-#runuser=Andre.VanderWesthuysen
 export runuser=$(whoami)
 envir=dev
 
@@ -45,11 +44,11 @@ envir=dev
 # sysver=`pwd | sed 's/\// /g' | awk '{print $NF}'`
 
 NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
-LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}/dev/lsf_scripts
+LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/glwu/${sysver}/dev/lsf_scripts
 
 cd ${LSFDIR}
 
-version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
+version_file=$NWROOT/glwu/${sysver}/versions/run.ver      # file with version info
 
  if ! [ ${glwu_ver} ]
  then
@@ -69,7 +68,7 @@ version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
 
 # 0.a Set necessary variables
 
-export NET=GLWU
+export NET=glwu
 
   host_s=`hostname | cut -c1-1`
   case $host_s in
@@ -114,7 +113,7 @@ export NET=GLWU
 
   export iceID=icean_5m                              # ice ID
   export wndID=glwu                              # wind ID (for the WW3 grid used for wind data)
-  export COMDATE=/lfs/h2/emc/couple/noscrub/${runuser}/${sysver}/dev/lsf_scripts      # directory where PDY date                                                      # stored
+  export COMDATE=/lfs/h2/emc/couple/noscrub/${runuser}/glwu/${sysver}/dev/lsf_scripts      # directory where PDY date                                                      # stored
 #JS="WEB PUBWEB ARC WEB"
 #JS="PREP FORECAST POST WEB PUBWEB"
 #JS="PREP FORECAST POST WEB"
@@ -122,7 +121,7 @@ JS="PREP FORECAST POST PGEN"
 
   for j in ${JS}
   do
-    export main_jobs="${main_jobs} J${NET}_${j}"                 # main jobs, to be run
+    export main_jobs="${main_jobs} J${NET^^}_${j}"                 # main jobs, to be run
   done                                                                  #   sequentially.
                                                      # SEE ALSO 0.c !!!
   export spin_jobs= # jobs to be spun off.
@@ -131,7 +130,7 @@ JS="PREP FORECAST POST PGEN"
 
   export cycle_PDY='yes'                             # update PDY file ?
 
-  export DATA=/lfs/h2/emc/ptmp/${runuser}/${GLWUdir}/${glwu_ver}                  # Temporary base directory
+  export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${glwu_ver}                  # Temporary base directory
   export lsfst=$DATA/lsf.$modID.${glwu_ver}.boss.out.$$            # work file for lsfsubmit
   export lsfse=$DATA/lsf.$modID.${glwu_ver}.boss.err.$$            # work file for lsfsubmit
 
@@ -199,14 +198,14 @@ JS="PREP FORECAST POST PGEN"
 
 # 0.d Set Check files
 
-  export J${NET}_PREP=${runID}.${wndID}.${cycle}.wind
-  export J${NET}_FORECAST=where_${runID}_ran.$cycle
-  export J${NET}_POST=${runID}.$cycle.postdone
-  export J${NET}_PGEN=${runID}.$cycle.awipsbull
-  export J${NET}_WEB=${runID}.$cycle.webdone
-  export J${NET}_ARC=${runID}.$cycle.arcdone
-  export J${NET}_PUBWEB=${runID}.$cycle.pubwebdone
-  export J${NET}_COPY=${runID}.$cycle.pushrestartdone
+  export J${NET^^}_PREP=${runID}.${wndID}.${cycle}.wind
+  export J${NET^^}_FORECAST=where_${runID}_ran.$cycle
+  export J${NET^^}_POST=${runID}.$cycle.postdone
+  export J${NET^^}_PGEN=${runID}.$cycle.awipsbull
+  export J${NET^^}_WEB=${runID}.$cycle.webdone
+  export J${NET^^}_ARC=${runID}.$cycle.arcdone
+  export J${NET^^}_PUBWEB=${runID}.$cycle.pubwebdone
+  export J${NET^^}_COPY=${runID}.$cycle.pushrestartdone
 
 # 0.e Run cleanup script
 
