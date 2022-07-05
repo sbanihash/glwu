@@ -5,7 +5,7 @@
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:10:00
 #PBS -l select=1:ncpus=1:mem=1000MB
-#PBS -l place=excl
+#PBS -l place=exclhost
 #PBS -l debug=true
 
 export model=glwu
@@ -22,9 +22,6 @@ export modID=glwu
 export MODID=GLWU
 
 # Setup and load modules 
-module load envvar/${envvar_ver}
-module load prod_envir/${prod_envir_ver}
-module load prod_util/${prod_util_ver}
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${inter_ver}
@@ -37,12 +34,6 @@ module list
 
 # CALL executable job script here
 ${HOMEglwu}/jobs/JGLWU_PGEN
-
-if [ $? -ne 0 ]; then
-  ecflow_client --msg="***JOB ${SMSNAME} ERROR RUNNING J-SCRIPT ***"
-  ecflow_client --abort
-  exit
-fi
 
 %include <tail.h>
 %manual
