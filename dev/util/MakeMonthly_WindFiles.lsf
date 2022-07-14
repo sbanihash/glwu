@@ -1,0 +1,247 @@
+#!/bin/bash --login
+#################################################
+#                                               #
+#                                               #
+#   Author: Roberto.Padilla@noaa.gov            #
+#                   June/2018                   #
+#################################################
+#
+# LSF options
+#BSUB -J MAKE_MONTHLY
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/Make_MonthlyWindFiles.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/Make_MonthlyWindFiles.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev"
+#BSUB -W 2:00
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util
+
+set -xa
+module load grib_util/1.0.3
+export runuser=$(whoami)
+DataDir=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+WorkDir=/gpfs/hps3/ptmp/${runuser}/data_ndfd
+if [ -d "$WorkDir" ]
+then
+   echo "Directory $  $WorkDir exists."
+   rm -r $WorkDir/*
+else
+   echo "Directory $WorkDir  DO NOT EXIST"
+   mkdir -p $WorkDir
+fi
+
+
+PDYbeg=20171116    # Initial Time
+PDYend=20171201   # END Time ADD ONE DAY To YOUR Final date
+PDY=$PDYbeg  
+PDYbeg_cyc=${PDYbeg}00
+PDYend_cyc=${PDYend}18
+
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+cycles="00 06 12 18"
+Outdir=${DataDir}/Monthly/$PDYbeg
+OutFile=glwind_2p5_$PDY.grib2
+ndfd_file=glwind_2p5_${PDY}_${PDYend}.grib2
+mkdir -p ${Outdir}
+rm ${Outdir}/${OutFile}
+until [ "$PDY" == "$PDYend" ]  
+do
+   YYYY=${PDY:0:4}
+   MM=${PDY:4:2}
+   DD=${PDY:6:2}
+
+   WindDir1=${DataDir}/${PDY}/wgrbbul/ndfd
+   if [ -d "$WindDir1" ] 
+   then
+      echo "Directory $NewDir/wgrbbul  exists."
+   else
+      echo "Directory $NewDir/wgrbbul  DO NOT EXIST"
+      exit
+   fi
+
+   for cycle in $cycles
+   do
+      PDY_epochm=$PDY_epoch
+      #The wind data for the CYCLE are in the files for that CYCLe minus 1 hour 
+      if [[ $cycle == "00" ]];then
+         ncycle=23      
+         #PDY minus 1 hour, is for the day before
+         PDY_epochm=$(( $PDY_epoch - 3600 ))    
+      elif [[ $cycle == "06" ]];then
+          ncycle=05
+      elif [[ $cycle == "12" ]];then
+         ncycle=11
+      elif [[ $cycle == "18" ]];then
+         ncycle=17
+      fi
+
+      PDYm=$(date -d @${PDY_epochm} +"%Y%m%d")    # 
+      WindDir2=${DataDir}/${PDYm}/wgrbbul/ndfd
+      cd $WindDir2
+      rm Wdir_all.grib2 Wspd_all.grb2 gen_file.out
+      files=glwind_2p5_${ncycle}*.grib2
+
+      # Send the filename to a file text
+      #ls $files | sort -n -t _ -k 3 > ListFiles
+      cp $files $WorkDir
+      if [ $? -eq 0 ]; then
+        echo "Files found"
+      else 
+        echo "ERROR FILES NOT FOUND"
+        exit 0  
+      fi
+      cd $WorkDir
+      #Sort them by time newest at the top
+      #ls $files | sort -n -t _ -k 3 > ListFiles
+      # Newest at the top
+      #ls -t $files > ListFiles
+      #ls  $files > ListFiles
+# Search for latest files and ensure only one file per variable is selected
+      ntimes=
+      for file in $files
+      do
+        file_vars="`$WGRIB2 -var $file | sed 's/:/ /g' | awk '{print $3}' | uniq`"
+        time_tag="`$WGRIB2 -vt $file | sed -e 's/:/ /g' -e 's/vt=/ /g' | awk '{print $3}' | head -1`"
+        ntimes="$ntimes $time_tag"
+        for nvar in $file_vars
+        do
+          $WGRIB2 -match $nvar $file -grib ndfd_${nvar}_${time_tag}.grb2 > gen_file.out 2>&1
+        done
+      done
+
+# Get latest time, second time (if present) and check if there are anough files
+      tlatest=`echo $ntimes | xargs -n1 | sort -ur | xargs | awk '{print $1}'`
+      tsecond=`echo $ntimes | xargs -n1 | sort -ur | xargs | awk '{print $2}'`
+
+      #WE ARE INTERESTED AT THE BOTTOM TIME 00, 06, 12, 18
+      echo "Saving the time $tsecond in a grib2 file Wspd6hours.grb2"
+      if [ -f ndfd_WIND_${tsecond}.grb2 ] && [ -f ndfd_WDIR_${tsecond}.grb2 ]
+      then
+        echo " Trying second ndfd files in selected time range: $tsecond "
+        $WGRIB2 ndfd_WIND_${tsecond}.grb2 -for_n 1:6 -grib Wspd6hours.grb2
+        $WGRIB2 ndfd_WDIR_${tsecond}.grb2 -for_n 1:6 -grib Wdir6hours.grb2
+        cat Wspd6hours.grb2 >> Wspd_all.grb2
+        cat Wdir6hours.grb2 >> Wdir_all.grb2
+
+      fi
+# If second files failed try the second file if present
+      if [ ! -f ndfd_WIND_${tsecond}.grb2 ] && [ ! -f ndfd_WDIR_${tsecond}.grb2 ] && [ -f ndfd_WIND_${tlatest}.grb2 ] && [ -f ndfd_WDIR_${tlatest}.grb2 ]
+      then
+        echo "Saving the time $tlatest in a grib2 file Wspd6hours.grb2"
+        echo " Reading latest ndfd files in selected time range: $tsecond "
+        $WGRIB2 ndfd_WIND_${tlatest}.grb2 -for_n 1:6 -grib Wspd6hours.grb2
+        $WGRIB2 ndfd_WDIR_${tlatest}.grb2 -for_n 1:6 -grib Wdir6hours.grb2
+        cat Wspd6hours.grb2 >> Wspd_all.grb2
+        cat Wdir6hours.grb2 >> Wdir_all.grb2
+       
+      fi
+
+      rm   Wspd6hours.grb2 Wdir6hours.grb2
+   done # END for cycle in $cycles
+   PDY_epoch=$(( $PDY_epoch + $secDay ))       # add 24 hours
+   PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+done  # END until [ "$PDY" == "$PDYend" ]  
+
+# If latest file has all needed variables, move ahead
+if [ -f Wspd_all.grb2 ] && [ -f Wdir_all.grb2 ]
+then
+  cat Wspd_all.grb2 Wdir_all.grb2 > ndfd_WspdWdir.grb2
+  vtimei=`$WGRIB2 ndfd_WspdWdir.grb2 -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+  cp ndfd_WspdWdir.grb2 ${ndfd_file}
+  echo "NDFD file used: ndfd_WspdWdir.grb2"
+fi
+# If latest files failed try the second file if present
+#if [ ! -f ${ndfd_file} ] && [ -f Wspd_${tsecond}.grb2 ] && [ -f Wdir_${tsecond}.grb2 ]
+#then
+#  echo " Trying second ndfd files in selected time range: $tsecond "
+#  cat Wspd_${second}.grb2 Wdir_${tsecond}.grb2 > ndfd_${tsecond}.grb2
+#  vtimei=`$WGRIB2 ndfd_${tsecond}.grb2 -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+#  cp ndfd_${tsecond}.grb2 ${ndfd_file}
+#  echo "NDFD file used: ndfd_${tsecond}.grb2"
+#fi
+
+# Create final NDFD file with found consistent WIND and WDIR data
+if [ -f ${ndfd_file} ]
+then
+  # Get first time slice of ndfd file
+  vtimei=`$WGRIB2 ${ndfd_file} -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
+  if [ ${vtimei} -le ${PDYbeg_cyc} ]
+  then
+  # Get inventory of time stamps in ndfd file
+    vtimes_wind=`$WGRIB2 ${ndfd_file} -match WIND -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+    vtimes_wdir=`$WGRIB2 ${ndfd_file} -match WDIR -vt | sed 's/:vt=/ /g' | awk '{print $2}' | sort | uniq`
+    nvt1=`echo $vtimes_wind | wc -w`  
+    nvt2=`echo $vtimes_wdir | wc -w`  
+    if [ $nvt1 -gt 36 ] && [ ${nvt1} -eq ${nvt2} ]
+    then
+      vtimes=$vtimes_wind
+      foundOK='yes'
+    else
+      echo " NDFD file has incongruent numbers of WIND and WDIR data (looking further)"
+    fi
+  else
+    echo " NDFD file does not extend back to starting time (Looking further)"
+    foundOK='no'
+  fi
+fi
+
+if [ "$foundOK" = 'no' ]
+then
+  echo ' '
+  echo '*****************************************************'
+  echo '*** FATAL ERROR: DID NOT FIND RELEVANT NDFD FILES ***'
+  echo '*****************************************************'
+  echo ' '
+  exit
+fi
+
+# 2.c ndfd winds
+ymdh=$PDYbeg_cyc
+hdr='T'
+incTime=1  # Wind data every inctime
+for ymdh in $vtimes
+do
+   if [ "$ymdh" -le "$PDYend_cyc" ]
+   then 
+     $WGRIB2 ${ndfd_file} -match "(WIND|WDIR)" -match ":vt=${ymdh}" -rpn alt_x_scan -set table_3.4 64 -grib_out glwnd.grb2
+     # Convert to UGRD/VGRD
+     $WGRIB2 glwnd.grb2 -match "(WIND|WDIR)" \
+        -if "WIND" -rpn "sto_1" -fi \
+        -if "WDIR" -rpn "sto_2" -fi \
+        -if_reg 1:2 \
+          -rpn "rcl_2:3.141592:*:180:/:sin:rcl_1:*:-1:*:clr_1:clr_2" \
+          -set_var UGRD \
+          -grib_out ugrd.grib2 > ugrib.out 2>&1
+
+     $WGRIB2 glwnd.grb2 -match "(WIND|WDIR)" \
+        -if "WIND" -rpn "sto_1" -fi \
+        -if "WDIR" -rpn "sto_2" -fi \
+        -if_reg 1:2 \
+          -rpn "rcl_2:3.141592:*:180:/:cos:rcl_1:*:-1:*:clr_1:clr_2" \
+          -set_var VGRD \
+          -grib_out vgrd.grib2 > vgrib.out 2>&1
+
+     # Unify UGRD/VGRD files
+     cat ugrd.grib2 vgrd.grib2 > gluv.grb2
+     #Interpolate to regular grid (NDFD grid at 2.5km, using about half that to avoid resolution cramp)
+     echo "Directory: "
+     pwd
+     echo " "
+     $WGRIB2 gluv.grb2 -new_grid_winds earth -new_grid_vectors UGRD:VGRD -new_grid latlon 267.28:1376:0.0125 41.1675:910:.009 gluv.grib2 > grib_interp.out 2>&1
+
+     # Final store on NetCDF file
+     $WGRIB2 gluv.grib2 -netcdf gluv.nc > grib2nc.out 2>&1
+     if [ -f gluv.nc ]
+     then
+       ndfdOK='yes'
+     else
+       ndfdOK='no'
+     fi
+     hdr='F'
+   else
+     break
+   fi
+done
+
+
