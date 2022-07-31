@@ -75,7 +75,7 @@ def plot_wnd(storm, datafile):
    culim = int(np.max( np.sqrt( np.square(np.double(uwnd)) + np.square(np.double(vwnd)) ) ))+1
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)):
+   for ind in range(0, plot_hours):
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -173,7 +173,7 @@ def plot_hs(storm, datafile):
    culim = int(np.max(hs))+1
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
@@ -271,7 +271,7 @@ def plot_fp(storm, datafile):
    culim = int(1/np.min(fp))+1
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -367,7 +367,7 @@ def plot_spr(storm, datafile):
    #wcc = np.where(wcc > 1., 0., wcc)
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -449,7 +449,7 @@ def plot_stp(storm, datafile):
    culim = np.max(stp)   # Default scale max of 0.10, but can be overriden by actual max
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
@@ -538,7 +538,7 @@ def plot_hmaxe(storm, datafile):
    culim = np.max(hmaxe)
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
@@ -642,7 +642,7 @@ def plot_wch(storm, datafile):
    culim = np.max(wch)
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -744,7 +744,7 @@ def plot_wcc(storm, datafile):
    wcc = np.where(wcc > 1., 0., wcc)
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -870,7 +870,7 @@ def plot_dsea(storm, datafile, tier, gate_hs_ft, thrsh_hs_ft, limit_hs_ft, thrsh
    wcc = np.where(wcc > 1., 0., wcc)
 
    # Loop through each time step and plot results
-   for ind in range(0, len(timeindays)): 
+   for ind in range(0, plot_hours): 
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
@@ -1009,6 +1009,9 @@ def plot_dsea(storm, datafile, tier, gate_hs_ft, thrsh_hs_ft, limit_hs_ft, thrsh
    plt.clf()
 
 if __name__ == "__main__":
+
+   plot_hours = 25   # Number of forecast hours to plot (out of the available 49/145 h)
+
    #---- DSea Tier 1 ----
    gate_hs_ft = 2
    thrsh_hs_ft = 4
@@ -1053,4 +1056,4 @@ if __name__ == "__main__":
    plot_wch(storm='GLWU', datafile=datafile)
    plot_wcc(storm='GLWU', datafile=datafile)
    plot_fp(storm='GLWU', datafile=datafile)
-   plot_hmaxe(storm='GLWU', datafile=datafile)
+   #plot_hmaxe(storm='GLWU', datafile=datafile)
