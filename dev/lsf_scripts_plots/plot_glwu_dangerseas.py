@@ -11,7 +11,6 @@ from matplotlib.tri import Triangulation, TriAnalyzer, LinearTriInterpolator
 import matplotlib.pyplot as plt
 import netCDF4
 import numpy as np
-#import pandas as pd
 import cartopy	
 import cartopy.crs as ccrs	
 import cartopy.feature as cfeature
@@ -47,14 +46,6 @@ def plot_wnd(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #reflon=np.linspace(-80.40, -74.75, 1000)
-   #reflat=np.linspace(32.50, 36.60, 1000)
-   #reflon=np.linspace(-75.70, -71.05, 1000)
-   #reflat=np.linspace(38.50, 41.40, 1000)
-   #reflon=np.linspace(-80.40, -73.35, 1000)
-   #reflat=np.linspace(32.50, 39.50, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -79,8 +70,6 @@ def plot_wnd(storm, datafile):
       plt.clf()
       ax = plt.axes(projection=ccrs.Mercator())
       #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #ax.set_extent([-80.40, -74.75, 32.50, 36.60], crs=ccrs.PlateCarree())  
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())   
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -150,10 +139,6 @@ def plot_hs(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -176,10 +161,7 @@ def plot_hs(storm, datafile):
    for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())     
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -256,8 +238,6 @@ def plot_fp(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #reflon=np.linspace(-80.40, -73.35, 1000)
-   #reflat=np.linspace(32.50, 39.50, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -273,9 +253,7 @@ def plot_fp(storm, datafile):
    # Loop through each time step and plot results
    for ind in range(0, plot_hours): 
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #ax.set_extent([-80.40, -73.35, 32.50, 39.50], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())    
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -349,10 +327,6 @@ def plot_spr(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -369,10 +343,7 @@ def plot_spr(storm, datafile):
    # Loop through each time step and plot results
    for ind in range(0, plot_hours): 
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())    
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -431,10 +402,6 @@ def plot_stp(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -452,10 +419,7 @@ def plot_stp(storm, datafile):
    for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())     
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -515,10 +479,6 @@ def plot_hmaxe(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -541,10 +501,7 @@ def plot_hmaxe(storm, datafile):
    for ind in range(0, plot_hours): 
       #besttrack = pd.read_csv(PARMnsem+'/storms/'+STORM+'/best_track.txt', header=None, skiprows=4, delim_whitespace=True)
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())    
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -619,10 +576,6 @@ def plot_wch(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -644,10 +597,7 @@ def plot_wch(storm, datafile):
    # Loop through each time step and plot results
    for ind in range(0, plot_hours): 
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())    
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -726,10 +676,6 @@ def plot_wcc(storm, datafile):
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -746,10 +692,7 @@ def plot_wcc(storm, datafile):
    # Loop through each time step and plot results
    for ind in range(0, plot_hours): 
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())     
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
@@ -852,10 +795,6 @@ def plot_dsea(storm, datafile, tier, gate_hs_ft, thrsh_hs_ft, limit_hs_ft, thrsh
 
    reflon=np.linspace(lon.min(),lon.max(),1000)
    reflat=np.linspace(lat.min(),lat.max(),1000)
-   #>reflon=np.linspace(-92.720, -75.545, 1000)
-   #>reflat=np.linspace(41.167500, 49.347000, 1000)
-   #reflon=np.linspace(-85.30, -78.50, 1000)
-   #reflat=np.linspace(23.00, 29.70, 1000)
    reflon,reflat=np.meshgrid(reflon,reflat)
 
    plt.figure(figsize = [6.4, 3.8])
@@ -872,10 +811,7 @@ def plot_dsea(storm, datafile, tier, gate_hs_ft, thrsh_hs_ft, limit_hs_ft, thrsh
    # Loop through each time step and plot results
    for ind in range(0, plot_hours): 
       plt.clf()
-      ax = plt.axes(projection=ccrs.Mercator())
-      #ax.set_extent([-100.00, -50.00, 4.00, 48.00], crs=ccrs.PlateCarree())
-      #>ax.set_extent([-92.720, -75.545, 41.167500, 49.347000], crs=ccrs.PlateCarree()) 
-      #ax.set_extent([-85.30, -78.50, 23.00, 29.70], crs=ccrs.PlateCarree())     
+      ax = plt.axes(projection=ccrs.Mercator())    
 
       dt = datetime.datetime.combine(datetime.date(1990, 1, 1), datetime.time(0, 0)) + datetime.timedelta(days=timeindays[ind])
       dstr = datetime.date.strftime(dt,'%Y%m%d%H:%M:%S')
