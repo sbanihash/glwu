@@ -1,3 +1,0 @@
-# export run_on=prod
-  export run_on=dev
-# export run_on=none
