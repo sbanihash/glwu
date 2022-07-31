@@ -233,8 +233,8 @@ then
   exit
 fi 
 
-    check_dir_wind=$com_wind/${date}/wgrbbul/${wndID}
-    check_file_wind=(`ls $check_dir_wind/glwind_2p5_????.grib2 2> /dev/null`)
+    check_dir_wind=/lfs/h2/emc/couple/noscrub/${USER}/GLWU/com/glwu/v2.0.0/glwu.${PDY}
+    check_file_wind=(`ls $check_dir_wind/glwu.glwu.t${cyc}z.nc 2> /dev/null`)
     OK=$?
 
     if [ $OK = 0 ]
