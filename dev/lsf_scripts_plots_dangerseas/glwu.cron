@@ -1,0 +1,414 @@
+#!/bin/bash -l
+# --------------------------------------------------------------------------- #
+#                                                                             #
+# glwu.cron  : This script manages the running of glw.boss, by setting         #
+#                the PHY file and by redirecting the output.                  #
+#                                                                             #
+# Remarks   - Can be run interactively, or from LL.                           #
+#           - Check file in 2.b needs to correspond to jobs to run in         #
+#             glw.boss.                                                       #
+#           - PDY file updated by glw.boss.                                   #
+#           - made a slight change to run on cirrus as this m/c does not      #
+#             as yet have a prod or dev status                                #
+#                                                                             #
+# Date            Addtion/Change/Deletion       By                            #
+# March   -2019   Runlength                     Roberto.Padilla@nooa.gov      #
+# June    -2018   Ice Resolution & RetroRuns    Roberto.Padilla@noaa.gov      #
+# February-2007                                                               #
+#                                                                             #
+# --------------------------------------------------------------------------- #
+# 0.  Initializations
+# 0.a LSF stuff
+#PBS -A GLWU-DEV
+#PBS -l select=1:ncpus=1:mem=100MB
+#PBS -l walltime=02:00:00
+#PBS -q dev
+#PBS -N glwu.boss.lsf
+#PBS -j oe
+#PBS -o glwu.cron.out
+#PBS -e glwu.cron.out
+
+cd $PBS_O_WORKDIR
+
+export runuser=$(whoami)
+
+. /u/${runuser}/.bashrc
+# Setup and load modules 
+module load PrgEnv-intel/8.1.0
+module load craype/2.7.8
+module load intel/19.1.3.304
+module load cfp/2.0.4
+module load prod_util/2.0.8
+module load prod_envir/2.0.5
+
+# 0.a Set necessary variables
+ set -xa
+  export sysver=glwu.$1
+  export pcode=GLWU-DEV
+
+  if [ ! $1 ]
+  then
+    echo ' '
+    echo ' ********* FATAL ERROR **********'
+    echo ' System version argument not set '
+    echo ' Usage: ${modID}.cron vX.Y.Z'
+    echo ' Exiting!'
+    echo ' '
+  fi
+
+#IceResol "LOW": Low resolution, "HIGH":High Resolution
+export IceResol=LOW
+#export IceResol=HIGH
+#IS this a retrospective run?
+#export RetroRun=YES
+export RetroRun=NOT
+envir=dev
+
+#if  [ "$RetroRun" = "NOT" ]
+#then
+#  export runLength=24
+#fi
+
+  NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system                      
+  LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/glwu/${sysver}/dev/lsf_scripts_plots_dangerseas
+
+  modID=glwu                                           # model ID
+  start_dir=${LSFDIR}                                  # start / work directory
+
+  wndID=ndfd                                # Wind ID for check file
+  wndXT=smartconus84.tm00.grib2             # Wind extension for check file
+  com_wave=${COMROOT}/wave/prod             # operational wave com (in parallel)
+  # com_wind=/com/nam/prod                  # operational wind com
+  
+# Temporary DCOM fix until paths are established (points to tide and gyre)
+# Check HOST file for where to run
+. ${start_dir}/HOST_${modID}
+
+# Set pref to point to matching CRAY machines
+pref=$( echo $COMROOTp1 | cut -c7 )
+export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
+export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
+
+#DCOMROOT=/gpfs/${pref}p1/nco/ops/dcom
+echo $DCOMROOT
+
+if  [ "$RetroRun" = "YES" ]
+then
+  com_wind=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+  export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+else
+  # DCOMROOT=/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom  # Canned data for WCOSS2 testing
+  DCOMROOT=/lfs/h1/ops/prod/dcom
+  com_wind=${DCOMROOT}/                         # operational wind com
+fi
+
+
+#  com_wind=/marine/noscrub/${runuser}/GLW_Q1FY15   # test wind com
+
+  com_date=${LSFDIR}
+
+  time_file=$com_date/PDY_${modID}                                       # file with time info
+  version_file=$NWROOT/glwu/${sysver}/versions/run.ver    # file with version info
+
+  key_on=wind                                 # key on wind or wave files
+
+# 0.b ID output
+
+  export script='glwu.cron'
+  export runon='BACKUPSYS'
+  export NET='glwu'
+
+  cd $start_dir
+
+  echo '                  ****************************************'
+  echo '                  *** NWW3 HOOK-IN SCRIPT glwu.cron ***'
+  echo '                  ****************************************'
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Script settings :'
+  echo '        ------------------------------------------------------------'
+  echo "           model ID           : $modID"
+  echo "           wave com directory : $com_wave"
+  echo "           wind com directory : $com_wind"
+  echo "           keying on          : $key_on"
+  echo "           start directory    : $start_dir"
+  echo "           output directory   : $out"
+  echo "           time file          : $time_file"
+  echo "           script to run      : $script"
+  echo "           running on         : $runon"
+
+# 0.c Host assessment
+
+  export host_s="`cat /etc/HOSTNAME | cut -c1-1`"
+  case $host_s in
+   'c' ) host='cactus' ;;
+   'd' ) host='dogwood' ;;
+    *  ) echo ' '
+         echo ' *****************************'
+         echo " *** HOST $host_s NOT RECOGNIZED ***"
+         echo ' *****************************'
+         echo ' '
+         date=`date -u +"%Y%m%d t%Hz"`
+         echo "glwu.cron $date : host [$host] not recognized." >> $weblog
+         exit 1 ;;
+  esac
+
+  echo ' '
+  echo "           host machine       : $host"
+
+  sec_profile=`cat /etc/wcoss.conf | grep sec_profile | cut -d ':' -f 2`
+  echo "           machine function   : $sec_profile"
+
+  if [ "$sec_profile" != "$runon" ]
+  then
+    echo ' '
+    echo " Time : `date`"
+    echo ' '
+    echo ' '
+    echo '                        *** End of glwu.cron ***'
+    exit 0
+  fi
+
+  check_queue="$(qstat -q | grep -E 'dev |dev_shared|devmax|devhigh')"
+  if [ "$check_queue" == "" ]
+  then
+    echo ' '
+    echo " Time : `date`"
+    echo ' '
+    echo " glwu.cron $date : Dev run queues are closed. Exiting..."
+    echo ' '
+    echo '                        *** End of glwu.cron ***'
+    exit 0
+  fi
+
+# --------------------------------------------------------------------------- #
+# 2.  Find date and cycle
+# 2.a Source PDY file
+
+  if [ -f $time_file ]
+  then
+    . $time_file
+  else
+    echo ' '
+    echo ' **************************************************'
+    echo ' *** FILE WITH TIME INFO NOT FOUND (PDY_$modID) ***'
+    echo ' **************************************************'
+    echo ' '
+    exit 20
+  fi
+
+  date=$PDY
+  cycle=t${cyc}z
+  YMDH=$date$cyc
+    echo "*******************************************"
+    echo " RetroRun: $RetroRun  envir: $envir"
+
+    if  [ "$RetroRun" = "YES" ]
+    then
+      export lsth=6
+    elif  [ "$RetroRun" = "NOT" ] && [ "$envir" = "dev" ]
+    then
+       if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
+       then
+         #export lsth=149
+         export lsth=6
+       else
+         #export lsth=48
+         export lsth=6
+       fi
+       export runLength=$lsth
+    fi
+    echo "lsth : $lsth   runLength: $runLength "
+    echo "*******************************************"
+# Condition that dev run is not performed after current date
+PDYNOW=`$NDATE`
+
+if [ $YMDH -gt $PDYNOW ]
+then
+  echo ' ' 
+  echo 'Trying to runaway into the future, halting'
+  echo '  Waiting until next cycle is current ' 
+  echo ' ' 
+  exit
+fi 
+
+    check_dir_wind=/lfs/h2/emc/couple/noscrub/${USER}/GLWU/com/glwu/v2.0.0/glwu.${PDY}
+    check_file_wind=(`ls $check_dir_wind/glwu.glwu.t${cyc}z.nc 2> /dev/null`)
+    OK=$?
+
+    if [ $OK = 0 ]
+    then
+      check_file_wind=${check_file_wind[1]}
+      echo $check_file_wind
+    else
+      check_file_wind=empty.ndfd 
+    fi
+#  fi
+
+  cycle=t${cyc}z
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Date and time :'
+  echo '        ------------------------------------------------------------'
+  echo "           date and cycle     : $date $cycle"
+
+# 2.b Version card
+
+  if [ -f $version_file ]
+  then
+    . $version_file
+  else
+    echo ' '
+    echo ' ***********************************************************'
+    echo ' *** FILE WITH VERSION INFO NOT FOUND (versions/run.ver) ***'
+    echo ' ***********************************************************'
+    echo ' '
+    exit 20
+  fi
+   
+# Set TMP directories based on envir parameter
+  export TMP=/lfs/h2/emc/ptmp/${runuser}/${NET}
+  mkdir -p ${TMP}
+  export llst=${TMP}/ll.$modID.cron.out.$$   # work file for llsubmit
+  export llse=${TMP}/ll.$modID.cron.err.$$   # work file for llsubmit
+
+  if [ "$envir" = "ops" ]
+  then
+    out=$NWROOT/com/output                            # output directory
+  else
+    out=$NWROOT/GLWU/com/output                       # output directory
+  fi
+
+# 2.c Set file to check and check presence
+
+  case $key_on in 
+    'wind' ) check_file=$check_file_wind ;;
+    'wave' ) check_dir=$com_wave/${modID}.$date
+             check_file=$check_dir/glwu.grlr_500m.$cycle.grib2.idx ;;
+      *    ) echo ' ' ; echo '              *** NOTHING TO KEY ON ***'
+             echo ' ' ; exit 21 ;;
+  esac
+
+  echo "           check file         : $check_file"
+
+  if [ -f $check_file ]
+  then
+    echo '                                File is present'
+  else
+    echo $check_file
+    echo '                                File is absent'
+    echo ' '
+    echo " Time : `date`"
+    echo ' '
+    echo ' '
+    echo '                        *** End of glwu.cron ***'
+    exit 0
+  fi
+
+# --------------------------------------------------------------------------- #
+# 3.  Manage batch job
+
+  script=${modID}.boss.lsf                      # script to run
+  batch=${modID}.${glwu_ver}.WEBHOOK            # batch job name (made here)
+
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '        Batch job :'
+  echo '        ------------------------------------------------------------'
+
+  OK='yes'
+  # nr_job=`qstat -as $batch 2> /dev/null | grep ${runuser} | wc -l | awk '{ print $1}'`
+  nr_job=`qstat -wu ${USER} | grep WE 2> /dev/null | wc -l | awk '{ print $1}'`
+  echo "           number of jobs     : $nr_job"
+
+  if [ "$nr_job" = '1' ]
+  then
+    echo ' '
+    echo "           no need to run $batch ..."
+    OK='no'
+  fi
+
+  if [ "$nr_job" -gt '1' ]
+  then
+    echo ' '
+    echo "           something wrong, will attempt to kill all jobs ..."
+    OK='no'
+
+    #jobs=`qstat 2> /dev/null | grep ${runuser} | grep $batch | awk '{ print $1}'`
+    jobs=`qstat -wu ${USER} | grep HO 2> /dev/null | awk '{ print $1}'`
+
+    if [ -n "$jobs" ]
+    then
+      for job in $jobs
+      do
+        echo "              killing $job ..."
+        qdel $job > /dev/null 2>&1
+      done
+    fi
+  fi
+
+  if [ "$OK" = 'yes' ]
+  then
+    echo "           Making new job     : $batch"
+    rm -f $batch
+
+    echo "#@!/bin/sh"                                         >  $batch
+    echo "#PBS -N ${batch}"                                   >> $batch
+    echo "#PBS -A ${pcode}"                                   >> $batch
+    echo "#PBS -l select=1:ncpus=1:mem=1000MB"                >> $batch
+    echo "#PBS -V"                                            >> $batch
+    echo "#PBS -j oe"                                         >> $batch
+    echo "#PBS -o ${start_dir}/${batch}.out"                  >> $batch
+    echo "#PBS -e ${start_dir}/${batch}.out"                  >> $batch
+    echo "#PBS -l walltime=02:00:00"                          >> $batch
+    echo "#PBS -q dev"                                        >> $batch
+    echo "cd $PBS_O_WORKDIR"                                  >> $batch
+    echo " "                                                  >> $batch
+    #echo "  mkdir -p $out/${modID}.$date"                     >> $batch
+    echo "  mkdir -p $out/$date"                              >> $batch
+    echo " "                                                  >> $batch
+    echo "  $start_dir/$script > $out/$date/$script.$cycle.out 2>&1" >> $batch
+    echo " "                                                  >> $batch
+    #echo "  rm -f $start_dir/$batch.out"                      >> $batch
+
+    echo "           output of script $script routed to"
+    echo "              $out/$date/$script.$cycle.out"
+
+    echo "           starting $batch at `date`"
+    qsub $batch  > $llst 2> $llse
+
+    OK=$?
+    if [ "$OK" != '0' ]
+    then
+      echo ' '
+      echo ' *************************************'
+      echo ' *** ERROR IN SUBMITTING BATCH JOB ***'
+      echo ' *************************************'
+      echo ' '
+      cat $llse
+      exit 30
+    fi
+
+    jobname="`sed 's/\"//g' $llst | sed 's/\.ncep\.noaa\.gov//g' \
+                                  | awk '{ print $4 }'`"
+    echo "              job name is $jobname"
+
+    rm -f $llst $llse
+    #XXX rm -f $batch
+
+  fi
+
+# --------------------------------------------------------------------------- #
+# 4.  End of all.
+
+  echo ' '
+  echo ' '
+  echo " Time : `date`"
+  echo ' '
+  echo '                        *** End of glwu.cron ***'
+
+# - end of glwu.cron ----------------------------------------------------- #
