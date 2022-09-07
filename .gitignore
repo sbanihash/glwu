@@ -11,4 +11,13 @@ fix/wave_glwu_glwu.moddef.v1.1.1
 fix/wave_glwu_grlc_2p5km.moddef.v1.1.1
 fix/wave_glwu_grlc_2p5km_sr.moddef.v1.1.1
 fix/wave_glwu_grlr.moddef.v1.1.1
-fix/wave_glwu_grlr_500m.moddef.v1.1.1
+fix/wave_glwu_grlc_2p5km.moddef.v2.0.0
+fix/wave_glwu_grlc_2p5km_sr.moddef.v2.0.0
+fix/wave_glwu_grlr.moddef.v2.0.0
+fix/wave_glwu_glwu.moddef.v2.0.0
+fix/wave_glwu_grlr_500m.moddef.v2.0.0
+#log files
+dev/lsf_scripts/PDY.TODAY
+dev/lsf_scripts/glwu.v2.0.0.HOOK
+dev/lsf_scripts/ncepdate
+
