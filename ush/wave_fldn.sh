@@ -94,7 +94,7 @@
   sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtnc/g" \
       -e "s/FLAGS/$ncflags/g" \
-                               ../multiwavefldn.inp.tmpl > multiwavefldn.inp
+                               ../multiwavefldn.inp.tmpl > ww3_ounf.inp
 
 # 1.b Run NCDF packing program
 

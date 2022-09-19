@@ -115,7 +115,7 @@
       -e "s/MODNR/$MODNR/g" \
       -e "s/GTMPLN/$GTMPLN/g" \
       -e "s/FLAGS/$gribflags/g" \
-                               ../multiwavegrib2.inp.tmpl > multiwavegrib2.inp
+                               ../multiwavegrib2.inp.tmpl > ww3_grib.inp
 
 # 1.b Run GRIB packing program
 

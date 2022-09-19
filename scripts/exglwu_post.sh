@@ -592,7 +592,7 @@ export grint_OK='yes'
         -e "s/POINT/1/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
-                               multiwavespec.inp.tmpl > multiwavespec.inp
+                               multiwavespec.inp.tmpl > ww3_outp.inp
    
     ln -s mod_def.$pntgrd mod_def.ww3
     $EXECglwu/multiwavespec > buoy_tmp.loc 

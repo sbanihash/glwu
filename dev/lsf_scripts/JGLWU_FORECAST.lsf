@@ -37,16 +37,19 @@ module load netcdf/${netcdf_ver}
 module load libfabric/${libfabric_ver}
 module load jasper/${jasper_ver}
 module load libpng/${libpng_ver}
+module load libjpeg/${libjpeg_ver}
 module load zlib/${zlib_ver}
 module load g2/${g2_ver}
 module load w3nco/${w3nco_ver}
+module load w3emc/${w3emc_ver}
 module load bacio/${bacio_ver}
+module load cmake/${camke_ver}
 module list
 
 # Set LSF variables
 export KMP_AFFINITY=disabled
 # specify X threads if using openmp
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=2
 
 ulimit -s unlimited
 
@@ -142,7 +145,7 @@ export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${mod
 export KEEPDATA='YES'
 
 # Set aprun options consistent with resource allocation
-export mpicmd='mpiexec -n 768 -ppn 64 --depth 2 --cpu-bind depth'
+export mpicmd='mpiexec -n 768 -ppn 64 -depth 2 --cpu-bind depth'
 
 # Execute the actual J job
 ############################################################################

@@ -153,7 +153,7 @@
       -e "s/DT/$dtbull/g" \
       -e "s/POINT/$point/g" \
       -e "s/REFT/$truntime/g" \
-                               ../multiwavespec_bull.inp.tmpl > multiwavespec.inp
+                               ../multiwavespec_bull.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 

@@ -122,7 +122,7 @@
 
   sed -e "s/TIME/$time/g" \
       -e "s/DT/$dt/g" \
-      -e "s/NSTEPS/$nst/g" ${grdID}_interp.inp.tmpl > multiwavegrid_interp.inp
+      -e "s/NSTEPS/$nst/g" ${grdID}_interp.inp.tmpl > ww3_gint.inp
 
 # 1.b Run interpolation code
 

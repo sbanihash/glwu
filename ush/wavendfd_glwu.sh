@@ -137,7 +137,7 @@
 
 # 2.a Prepare the input file
 
-    sed -e "s/HDR/$hdr/g" ../multiwaveprnc.ndfd_glwu.tmpl > multiwaveprnc.inp
+    sed -e "s/HDR/$hdr/g" ../multiwaveprnc.ndfd_glwu.tmpl > ww3_prnc.inp
 
 # 2.b Execute code
 

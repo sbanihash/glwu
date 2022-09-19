@@ -717,7 +717,7 @@
   echo ' '
   echo '   Running ice field through preprocessor.'
   [[ "$LOUD" = YES ]] && set -x
-  sed "s/GRIDLAYOUT/$GRID/g" multiwaveprep.ice.tmpl > multiwaveprep.inp
+  sed "s/GRIDLAYOUT/$GRID/g" multiwaveprep.ice.tmpl > ww3_prep.inp
   rm -f multiwaveprep.ice.tmpl
 
 # Here using igrids (the regular grid for ice grlr)

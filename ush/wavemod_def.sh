@@ -90,8 +90,8 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
  
-  rm -f multiwavegrid.inp 
-  ln -sf ../$grdID.inp multiwavegrid.inp
+  rm -f ww3_grid.inp 
+  ln -sf ../$grdID.inp ww3_grid.inp
   if [ -f ../mesh.${grdID} ]
   then
     ln -fs ../mesh.$grdID .

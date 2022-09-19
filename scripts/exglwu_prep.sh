@@ -716,7 +716,7 @@
   echo ' '
   echo '   Running ice field through preprocessor.'
   [[ "$LOUD" = YES ]] && set -x
-  sed "s/GRIDLAYOUT/$GRID/g" multiwaveprep.ice.tmpl > multiwaveprep.inp
+  sed "s/GRIDLAYOUT/$GRID/g" multiwaveprep.ice.tmpl > ww3_prep.inp
   rm -f multiwaveprep.ice.tmpl
 
 # Here using igrids (the regular grid for ice grlr)
@@ -766,7 +766,7 @@
   done
   rm -f eice.*
   rm -f ice.new
-  rm -f multiwaveprep.inp
+  rm -f ww3_prep.inp
 # --------------------------------------------------------------------------- #
 # 5.  NDFD fields: Check for errors and pack onto input file
 

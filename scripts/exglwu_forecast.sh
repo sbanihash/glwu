@@ -319,7 +319,7 @@
       -e "s/RST_TMES/$time_rsts/g" \
       -e "s/RST_TMEE/$time_rste/g" \
                                      multiwavefcst.inp.tmpl | \
-  sed -n "/DUMMY/!p"               > multiwavefcst.inp
+  sed -n "/DUMMY/!p"               > ww3_multi.inp
  
 #  rm -f multiwavefcst.inp.tmpl        
    

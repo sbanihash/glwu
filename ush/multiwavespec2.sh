@@ -152,7 +152,7 @@
       -e "s/POINT/$point/g" \
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
-                               ../multiwavespec.inp.tmpl > multiwavespec.inp
+                               ../multiwavespec.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 
