@@ -73,16 +73,23 @@
     [[ "$LOUD" = YES ]] && set -x
   fi
 
-# Set variables for processing and cross-referencing
-# (ice will be tagged with the run start time, independent of its actual time)
+
+
+
+ #Set variables for processing and cross-referencing
   export PDYCE=`echo $ymdh | cut -c1-8`
+  export YEAR=`echo $ymdh | cut -c1-4`
+  export MONTH=`echo $ymdh | cut -c5-6`
+  export DAY=`echo $ymdh | cut -c7-8`
+  export MONTHNAME=`date -d ${YEAR}-${MONTH}-${DAY} '+%b'`
   export PDYtag=`echo $ymdh | cut -c1-8`
   export CYCtag=`echo $ymdh | cut -c9-10`
-
+  
+  export DCOMIN=/lfs/h1/ops/prod/dcom
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file
-  nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+   nicice=${DCOMIN}/nic_lks/NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}.zip
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -94,6 +101,7 @@
 # Set parameters for first and last day of ice season
   ice_season_end=531     # May 31
   ice_season_start=1101  # November 01
+
 
 # Set paramter for checking if date within limits for ice periods
   stag=`echo $PDYCE | cut -c5-8`
@@ -127,13 +135,20 @@
         [[ "$LOUD" = YES ]] && set -x
 
         foundOK='yes'
-        cp ${nicice} ./nicice.gr1
-# Convert grib1 to grib2
-        $CNVGRIB -g12 nicice.gr1 T_OEBA88_C_KNWC.grb2
-# Extract to text
-        $WGRIB2 T_OEBA88_C_KNWC.grb2 -text T_OEBA88_C_KNWC.ice
-# Use inpaint to extend ice concentrations over ice-file land mask
-# (Conservative approach: no averaging to fill model-data sea gaps)
+        
+
+# Convert nicice file into txt file for inpaint use
+
+        unzip ${nicice}.zip
+#  deleting the 5 first lines in text file with header info and empty line    
+        cat ${nicice}.txt | sed '/^\s*$/d' | awk '!/Great/ && !/data/ && !/US/ && !/coo/ && !/val/ && !/file/' > testnic.txt
+#extracting ice concentration from file, and adding LON-LAT dimensions to header
+        awk -F ', ' '{print $3}' testnic.txt > NIC_LKS_${PDYtag}.icec
+        { echo -e "2554 1823"; cat NIC_LKS_${PDYtag}_tmp.ice; } > T_OEBA88_C_KNWC.ice
+
+
+
+## (Conservative approach: no averaging to fill model-data sea gaps)
         cp ${FIXglwu}/T_OEBA88_C_KNWC.mask ./
         $EXECglwu/inpaint_nic_glwu #1> inpaint.out 2>&1
 
@@ -152,7 +167,6 @@
 cat > ../T_OEBA88_C_KNWC.${ymdh} << EOF
 ${PDYtag} ${CYCtag}0000
 EOF
-
         cat T_OEBA88_C_KNWC.newice >> ../T_OEBA88_C_KNWC.${ymdh}
         cp ../T_OEBA88_C_KNWC.${ymdh} ../T_OEBA88_C_KNWC.newice
 
@@ -167,14 +181,15 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
+        nicice=${DCOMIN}/nic_lks/NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}.zip
+        #nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
 
       fi
 
 # Write file to whatused
       if [ "${foundOK}" = "yes" ]
       then
-        echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
+        echo "$ymdh NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}" >> ../whatglwice
       fi
 
     fi
@@ -199,8 +214,8 @@ EOF
 
      cat T_OEBA88_C_KNWC.zeros >> ../T_OEBA88_C_KNWC.${ymdh}
      cp ../T_OEBA88_C_KNWC.${ymdh} ../T_OEBA88_C_KNWC.newice
-
-     echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
+     echo "$ymdh NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}" >> ../whatglwice
+     #echo "$ymdh T_OEBA88_C_KNWC_${PDYCE}120000.gr1" >> ../whatglwice
 
    fi
 

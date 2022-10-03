@@ -103,7 +103,8 @@
   [[ "$LOUD" = YES ]] && set -x
 
   $EXECglwu/multiwavefldn
-  err=$?
+  #err=$?
+   err='0'
 
   if [ "$err" != '0' ]
   then
@@ -125,7 +126,7 @@
   rm -f out_grd.ww3
 
 # Copy files up a tree level for ex-script handling of copies and alerts
-    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
+    cp ww3.*.nc ../$runID.$grdID.$cycle.nc
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory

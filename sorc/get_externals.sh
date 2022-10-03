@@ -9,5 +9,8 @@
 echo 'Fetching externals...'
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/mesh.glwu ../fix/
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km ../fix/
-cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
+#this was for the Great Lakes Regular grid, ommiting since we have an unstructured grid for GLWU
+#cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/mesh.glwu_chmp ../fix/
+
