@@ -96,6 +96,8 @@
   if [ "$grdID" == "grlc_2p5km_sr" ]
   then
     ln -s ../out_grd.grlc_2p5km  out_grd.ww3
+  elif  [ "$grdID" == "grlc_2p5km_lc_sr" ] #added line for champlain
+    ln -s ../out_grd.grlc_2p5km_lc  out_grd.ww3
   else
     ln -s ../out_grd.$grdID  out_grd.ww3 
   fi

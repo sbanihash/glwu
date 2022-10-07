@@ -1,10 +1,11 @@
 # Mesh files and grid interpolation weights
-mesh.glwu
-grint_weights.grlc_2p5km
-grint_weights.grlr
-grint_weights.grlr_500m
-
-#
+fix/mesh.glwu
+fix/grint_weights.grlc_2p5km
+fix/grint_weights.grlr
+fix/grint_weights.grlr_500m
+fix/mesh.glwu_lc
+fix/grint_weights.grlc_2p5km_lc
+fix/grint_weights.grlr_500m_lc
 exec/
 *.out
 fix/wave_glwu_glwu.moddef.v1.1.1
@@ -16,8 +17,8 @@ fix/wave_glwu_grlc_2p5km_sr.moddef.v2.0.0
 fix/wave_glwu_grlr.moddef.v2.0.0
 fix/wave_glwu_glwu.moddef.v2.0.0
 fix/wave_glwu_grlr_500m.moddef.v2.0.0
+fix/wave_glwu_glwu_lc.moddef.v2.0.0
 #log files
 dev/lsf_scripts/PDY.TODAY
 dev/lsf_scripts/glwu.v2.0.0.HOOK
 dev/lsf_scripts/ncepdate
-

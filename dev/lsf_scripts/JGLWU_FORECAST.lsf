@@ -49,7 +49,7 @@ module list
 # Set LSF variables
 export KMP_AFFINITY=disabled
 # specify X threads if using openmp
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=1
 
 ulimit -s unlimited
 
@@ -145,7 +145,7 @@ export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${mod
 export KEEPDATA='YES'
 
 # Set aprun options consistent with resource allocation
-export mpicmd='mpiexec -n 768 -ppn 64 -depth 2 --cpu-bind depth'
+export mpicmd='mpiexec -n 768 -ppn 32 -depth 4 --cpu-bind depth'
 
 # Execute the actual J job
 ############################################################################

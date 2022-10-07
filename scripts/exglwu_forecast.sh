@@ -225,7 +225,7 @@
   rdate=`echo $ymdh | cut -c 1-8`     
   rcycle=t`echo $ymdh | cut -c 9-10`z   
 
-  COMINrst=${COMINwave}/${RUN}.${rdate}  
+  COMINrst=${COMOUTwave}/${RUN}.${rdate}  
    
   echo "Attempting to copy restart file from $dir"
 
@@ -417,7 +417,7 @@ pwd
         ymdh=`$NDATE $stp_hour $ymdh`
         ndate=`echo $ymdh | cut -c 1-8`
         ncycle=t`echo $ymdh | cut -c 9-10`z
-        COMOUTrst=${COMINwave}/${RUN}.${ndate}
+        COMOUTrst=${COMOUTwave}/${RUN}.${ndate}
         if [ ! -d $COMOUTrst ]; then
           mkdir -p $COMOUTrst
         fi
