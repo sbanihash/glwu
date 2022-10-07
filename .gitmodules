@@ -1,4 +1,0 @@
-[submodule "sorc/WW3.fd"]
-	path = sorc/WW3.fd
-	url = https://github.com/noaa-emc/ww3
-	branch = production/GLWUv2
