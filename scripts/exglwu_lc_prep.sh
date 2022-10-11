@@ -103,7 +103,13 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  inc=0
+   if [ "$RetroRun" = "YES" ]
+   then
+     inc=2 #this is to make it consistent with real time forecast based on available wind data
+   else 
+     inc=0   
+   fi
+
   foundOK='no'
   lookback=12 # hours to look back for wind files
   

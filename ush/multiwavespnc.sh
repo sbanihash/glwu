@@ -169,11 +169,11 @@
 # 3.  Clean up
 # 3.a Move data to directory for station ascii files
 
-  outfile=ww3.$grid.spnc
+  outfile=ww3.$grid.nc
 
   if [ -f $outfile ]
   then
-    mv $outfile  ${STA_DIR}/spnc/$gridID.spnc
+    mv $outfile  ${STA_DIR}/spnc/$gridID.nc
   else
     set +x
     echo ' '
@@ -189,7 +189,7 @@
 # 3.b Clean up the rest
 
   cd ..
-  rm -rf spnc_$grid
+  #rm -rf spnc_$grid
 
   set +x
   echo ' '

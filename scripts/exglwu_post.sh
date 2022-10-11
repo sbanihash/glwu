@@ -858,13 +858,15 @@ export grint_OK='yes'
 #retro run ounp
 
 
- #if [ "$RetroRun" = 'yes' ]
- # then
- #   export dtspec=3600.   # time step for spectra
- #   ymdh=`$NDATE -9 $YMDH` # start time for spectra output
- #     echo "$USHglwu/multiwavespnc.sh  $ymdh > spnc.out 2>&1" >> cmdfile
- # fi
-
+ for grdID in $grids
+ do	 
+  if [ "$RetroRun" = "YES" ]
+  then
+    export dtspec=3600.   # time step for spectra
+    ymdh=`$NDATE -9 $YMDH` # start time for spectra output
+    echo "$USHglwu/multiwavespnc.sh $grdID $ymdh > spnc.out 2>&1" >> cmdfile
+  fi
+ done
 
 
 
