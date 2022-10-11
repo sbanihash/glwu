@@ -459,30 +459,6 @@
 
 # 1.d copy the wave model mask file
 
-# Ice data uses the regular 2km grid grlr
-  file=$FIXglwu/wave_grlr.mask
-
-  if [ -f $file ]
-  then
-    cp $file mask.ww3
-  fi
-
-  if [ -f mask.ww3 ]
-  then
-    set +x
-    echo "   mask.ww3 copied ($file)."
-    [[ "$LOUD" = YES ]] && set -x
-  else
-    set +x
-    echo ' '
-    echo '*************************************** '
-    echo '*** ERROR : NO WAVE MODEL MASK FILE *** '
-    echo '*************************************** '
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR - NO WAVE MODEL MASK FILE"
-    err=6;export err;err_chk
-  fi
 
 # 1.e Copy the ice template files
 #

@@ -24,6 +24,15 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
+   if [ "RetroRun" = "yes" ]
+   then
+     export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+   else
+     export DCOMIN=/lfs/h1/ops/prod/dcom
+   fi
+
+
+
   cd $DATA
 
    rm -rf eice_$1
@@ -85,7 +94,6 @@
   export PDYtag=`echo $ymdh | cut -c1-8`
   export CYCtag=`echo $ymdh | cut -c9-10`
   
-  export DCOMIN=/lfs/h1/ops/prod/dcom
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file
@@ -114,6 +122,7 @@
       echo " "
       echo "  Date outside ice window, setting ice fields to zero"
       echo " "
+      #foundOK='summer'
       [[ "$LOUD" = YES ]] && set -x
       break
     else

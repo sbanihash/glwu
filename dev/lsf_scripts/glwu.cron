@@ -57,8 +57,8 @@ module load prod_envir/2.0.5
   fi
 
 #IS this a retrospective run?
-#export RetroRun=YES
-export RetroRun=NOT
+export RetroRun=YES
+#export RetroRun=NOT
 envir=dev
 
 
@@ -85,8 +85,8 @@ echo $DCOMROOT
 
 if  [ "$RetroRun" = "YES" ]
 then
-  com_wind=/lfs/h2/emc/ptmp/saeideh.banihashemi/dcom
-  export DCOMIN=/lfs/h2/emc/ptmp/saeideh.banihashemi/dcom
+  com_wind=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+  export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
 else
   # DCOMROOT=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/dcom  # Canned data for WCOSS2 testing
   DCOMROOT=/lfs/h1/ops/prod/dcom
@@ -321,7 +321,7 @@ fi
   nr_job=`qstat -wu ${USER} | grep HO 2> /dev/null | wc -l | awk '{ print $1}'`
   echo "           number of jobs     : $nr_job"
 
-  if [ "$nr_job" = '2' ]
+  if [ "$nr_job" ge '1' ]
   then
     echo ' '
     echo "           no need to run $batch ..."

@@ -107,7 +107,7 @@
    spec_OK='yes'
    bull_OK='yes'
      ts_OK='yes'
-  ripin_OK='yes'
+  ripin_OK='no'
 export grint_OK='yes'
 #
   exit_code=0
@@ -1130,12 +1130,12 @@ export grint_OK='yes'
 
   if [ "$spec_OK" = 'yes' ]
   then
-    echo "$USHglwu/multiwavetar.sh $runID spec $Nb > ${runID}_spec_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh ${runID} spec $Nb > ${runID}_spec_tar.out 2>&1 "   >> cmdfile
   fi
 
   if [ "$ts_OK" = 'yes' ]
   then
-    echo "$USHglwu/multiwavetar.sh $runID ts $Nb > ${runID}_ts_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh ${runID} ts $Nb > ${runID}_ts_tar.out 2>&1 "   >> cmdfile
   fi
 
   if [ "$ripin_OK" = 'yes' ]
@@ -1152,28 +1152,28 @@ export grint_OK='yes'
       Nrip=`expr $Nrip + 1`
     done
     cd $DATA
-    echo "$USHglwu/multiwavetar.sh $runID ripin $Nrip > ${runID}_ripin_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh ${runID} ripin $Nrip > ${runID}_ripin_tar.out 2>&1 "   >> cmdfile
   fi
 
 # 7.b Bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-    echo "$USHglwu/multiwavetar.sh $runID bull $Nb > ${runID}_bull_tar.out 2>&1 "   >> cmdfile
+    echo "$USHglwu/multiwavetar.sh ${runID} bull $Nb > ${runID}_bull_tar.out 2>&1 "   >> cmdfile
   fi
 
 # 7.c Compressed bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-     echo "$USHglwu/multiwavetar.sh $runID cbull $Nb > ${runID}_cbull_tar.out 2>&1 " >> cmdfile
+     echo "$USHglwu/multiwavetar.sh ${runID} cbull $Nb > ${runID}_cbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # 7.d CSV bulletins
 
   if [ "$bull_OK" = 'yes' ]
   then
-    echo "$USHglwu/multiwavetar.sh $runID csbull $Nb > ${runID}_csbull_tar.out 2>&1 " >> cmdfile
+    echo "$USHglwu/multiwavetar.sh ${runID} csbull $Nb > ${runID}_csbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # --------------------------------------------------------------------------- #
@@ -1377,16 +1377,16 @@ export grint_OK='yes'
     echo "   Moving tar file ${file_name} to $COMOUT ..."
     [[ "$LOUD" = YES ]] && set -x
    
-    for type in spec ripin ts bull cbull csbull
+    for type in spec ts bull cbull csbull
     do
       grdID=glwu_lc
-      file_name=$grdID.$cycle.${type}_tar
+      file_name=$runID.$cycle.${type}_tar
       if [ "$type" = 'spec' ] || [ "$type" = 'ts' ]
       then
         file_name=${file_name}.gz
       fi
 
-      cp ${file_name} $COMOUT/.
+      cp ${file_name} $COMOUT/$grdID.$cycle.${type}_tar
       exit=$?
 
       if  [ "$exit" != '0' ]

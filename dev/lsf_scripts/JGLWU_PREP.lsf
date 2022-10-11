@@ -132,7 +132,7 @@ export SENDCOM=YES
 #  and ice from noscrub
 if  [ "$RetroRun" = "YES" ]
 then
-   export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+   export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
 else
    DCOMROOT=/lfs/h1/ops/prod/dcom
    export DCOMIN=${DCOMROOT}

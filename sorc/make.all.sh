@@ -157,6 +157,13 @@ if [[ $rc -ne 0 ]] ; then
   exit $rc
 fi
 
+cp $path_build/install/bin/ww3_ounp $finalexecdir/multiwavespnc
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+  echo "FATAL: Unable to copy $path_build/ww3_ounp to $finalexecdir (Error code $rc)"
+  exit $rc
+fi
+
 cp $path_build/install/bin/ww3_grib $finalexecdir/multiwavegrib2
 rc=$?
 if [[ $rc -ne 0 ]] ; then

@@ -83,9 +83,14 @@
   ymdh_newtres_ice=`$NDATE ${ttime13} $YMDH_ICE`  
   time_beg_ice="`echo $ymdh_beg_ice | cut -c1-8` `echo $ymdh_beg_ice | cut -c9-10`0000"    
 
-  export COMINwind_HRRR=/lfs/h1/ops/prod/com/hrrr/v4.1
-  export COMINwind_GFS=/lfs/h1/ops/prod/com/gfs/v16.2
-
+  if  [ "$RetroRun" = "YES" ]
+  then
+    export COMINwind_HRRR=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/HRRR
+    export COMINwind_GFS=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/GFS
+  else    
+    export COMINwind_HRRR=/lfs/h1/ops/prod/com/hrrr/v4.1
+    export COMINwind_GFS=/lfs/h1/ops/prod/com/gfs/v16.2
+  fi
 
   ymdh=$ymdh_beg
   hrrr_ok='yes'
@@ -161,8 +166,8 @@
       else
       #both 18 and 48 hours are in the same directory
         extb2=$extb
-	ymbd2=$ymbd
-	hrrr_time48=${hrrr_time18}
+	ymbd2=$ymdb
+	time_hrrr48=${time_hrrr18}
       fi
       #  copy 48 hour forecasts
         
@@ -199,7 +204,7 @@
       if [ ${vtimei} -le ${ymdh_beg} ]
       then
         cp hrrr_t${extb}z.grb2 ${hrrr_file}
-        echo "HRRR file used: hrrr_t${extb}z.grb2 " > $DATA/what_tmp_${runID_lc}_used.t${cyc}z
+        echo "HRRR file used: hrrr_t${extb}z.grb2 " > $DATA/what_${runID_lc}_used_hrrr.t${cyc}z
       fi
 
 
@@ -348,10 +353,9 @@
 
 	vtimei=`$WGRIB2 gfs_t${extb}z.grb2 -var -vt | head -1 | sed 's/:vt=/ /g' | awk '{print $2}'`
 	cp gfs_t${extb}z.grb2 ${gfs_file}
-	{ echo -e "GFS file used: gfs_t${extb}z.grb2 " ; cat ${DATA}/what_tmp_${runID_lc}_used.t${cyc}z ; } > ${DATA}/what_${runID_lc}_used.t${cyc}
+	 echo  "GFS file used: gfs_t${extb}z.grb2 " > ${DATA}/what_${runID_lc}_used_gfs.t${cyc}z
 	#echo "GFS file used: gfs_t${extb}z.grb2 " > $DATA/what_${runID}_used.t${cyc}z
   
-
 # create final HRRR file with found consistent UGRD and VGRD data
         if [ -f ${gfs_file} ]
         then
@@ -655,32 +659,6 @@
     err=5;export err;err_chk
   fi
 
-# 1.d copy the wave model mask file
-
-# Ice data uses the regular 2km grid grlr
-  file=$FIXglwu/wave_grlr.mask
-
-  if [ -f $file ]
-  then
-    cp $file mask.ww3
-  fi
-
-  if [ -f mask.ww3 ]
-  then
-    set +x
-    echo "   mask.ww3 copied ($file)."
-    [[ "$LOUD" = YES ]] && set -x
-  else
-    set +x
-    echo ' '
-    echo '*************************************** '
-    echo '*** ERROR : NO WAVE MODEL MASK FILE *** '
-    echo '*************************************** '
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR - NO WAVE MODEL MASK FILE"
-    err=6;export err;err_chk
-  fi
 
 # 1.e Copy the ice template files
 #
@@ -1154,8 +1132,9 @@
    
         mail.py -s "Missing GLWU_LC ice info for $PDY t${cyc}z" email.ice
     fi
-      sort -b what_${runID_lc}_used.$cycle > $COMOUT/what_${runID_lc}_used.$cycle
-      $SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_${runID_lc}_used.$cycle
+      sort -b what_${runID_lc}_used_hrrr.$cycle > $COMOUT/what_${runID_lc}_used_hrrr.$cycle
+      sort -b what_${runID_lc}_used_gfs.$cycle > $COMOUT/what_${runID_lc}_used_gfs.$cycle
+      #$SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/what_${runID_lc}_used.$cycle
   fi
 
 

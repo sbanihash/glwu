@@ -37,7 +37,8 @@ module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load libjpeg/${libjpeg_ver}
 module list
-
+# Set netcdf for ICE PREP
+export NETCDF_CONFIG=${INTLMPCH}/netcdf/4.7.4/bin/nc-config
 # Set LSF variables
 export MP_EAGER_LIMIT=165536
 export MP_COREFILE_FORMAT=core.txt
@@ -117,7 +118,7 @@ cyc_file=$cyc
 #
 if  [ "$RetroRun" = "YES" ]
 then
-   export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+   export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
 else
   # these were for ndfd field
   # DCOMROOT=/lfs/h1/ops/prod/dcom

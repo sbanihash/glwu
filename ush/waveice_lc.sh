@@ -24,7 +24,13 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  export RETROdir=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+  if [ "RetroRun" = "yes" ]
+  then
+    export DCOMINice=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/LC_BVT_ICE
+  else
+    export DCOMINice=/lfs/h1/ops/dev/dcom  
+  fi
+  
   cd $DATA
 
    rm -rf eice_$1
@@ -86,11 +92,10 @@
   export PDYtag=`echo $ymdh | cut -c1-8`
   export CYCtag=`echo $ymdh | cut -c9-10`
   
-  export DCOMIN=/lfs/h1/ops/prod/dcom
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file test for now
-   nicice=${RETROdir}/LC_BVT_ICE/IceCoverage4.nc
+   nicice=${DCOMINice}/${PDYCE}/wtxtbul/IceCoverage4.nc
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -131,7 +136,7 @@
 
         set +x
         echo " "
-        echo " NIC ice file found in ${DCOMIN}: ${nicice}" 
+        echo " NIC ice file found in ${DCOMINice}: ${nicice}" 
         echo " "
         [[ "$LOUD" = YES ]] && set -x
 
@@ -166,7 +171,7 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${DCOMIN}/LC_BVT_ICE/IceCoverage4.nc
+        nicice=${DCOMINice}/${PDYCE}/wtxtbul/IceCoverage4.nc
 
       fi
 

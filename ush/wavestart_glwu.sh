@@ -21,7 +21,7 @@
 #     Check necessary export variables.
 
   if [ -z "$YMDH" ] || [ -z "${COMINwave}" ] || [ -z "$modID" ] ||\
-     [ -z "$nback" ] || [ -z "$RUN" ]
+     [ -z "$nback" ] || [ -z "$RUN" ] || [-z "runID"] || [-z "grdID"]
   then
     echo ' '
     echo '*******************************************************'
@@ -52,7 +52,7 @@
     if [ -d "$dir" ]
     then
       set +e
-      nr=`ls ${dir}/${modID}.*.${cycle}.restart 2> /dev/null | wc -l | awk '{print $1}'`
+      nr=`ls ${dir}/${runID}.${grdID}.${cycle}.restart 2> /dev/null | wc -l | awk '{print $1}'`
       set -e
       if [ "$nr" -gt '0' ]
       then

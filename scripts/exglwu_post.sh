@@ -855,6 +855,20 @@ export grint_OK='yes'
     done
   fi
 
+#retro run ounp
+
+
+ #if [ "$RetroRun" = 'yes' ]
+ # then
+ #   export dtspec=3600.   # time step for spectra
+ #   ymdh=`$NDATE -9 $YMDH` # start time for spectra output
+ #     echo "$USHglwu/multiwavespnc.sh  $ymdh > spnc.out 2>&1" >> cmdfile
+ # fi
+
+
+
+
+
 # 2.e Bulletins
 
 #  set +x; [ "$LOUD" = YES -a "$bull_OK" = 'yes' ] && set -v
