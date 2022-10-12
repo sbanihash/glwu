@@ -21,7 +21,8 @@
 #     Check necessary export variables.
 
   if [ -z "$YMDH" ] || [ -z "${COMINwave}" ] || [ -z "$modID" ] ||\
-     [ -z "$nback" ] || [ -z "$RUN" ] || [-z "runID"] || [-z "grdID"]
+     [ -z "$nback" ] || [ -z "$RUN" ] || [ -z "$runID" ] || [ -z "$grdID" ]
+ 
   then
     echo ' '
     echo '*******************************************************'
@@ -34,7 +35,13 @@
 
   off_hour=0
 
-  stp_hour=1 # Hourly GLWU runs
+  if [ "$RetroRun" = "YES" ]
+  then
+    stp_hour=6 # Retro runs are for long cycles only
+  else
+    stp_hour=1 # Hourly GLWU runs
+  fi
+
 # --------------------------------------------------------------------------- #
 # 1.  Loop to find file
 
