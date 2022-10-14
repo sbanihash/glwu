@@ -79,6 +79,11 @@
 
   . ./time_info ; rm -f time_info
 
+    if [ "$RetroRun" = "YES" ]
+    then
+     stp_hour=6 # Retro runs are for long cycles only
+    fi
+
   ymdh=`$NDATE $off_hour $YMDH`
   time_beg="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
 

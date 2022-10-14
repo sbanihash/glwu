@@ -85,6 +85,8 @@
   mkdir -p ${STA_DIR}/csbull
   mkdir -p ${STA_DIR}/ts
   mkdir -p ${STA_DIR}/ripin
+  mkdir -p ${STA_DIR}/spnc
+
 
   set +x
   echo ' '
@@ -832,12 +834,17 @@ export grint_OK='yes'
   fi
 
 
+
  for grdID in $grids
  do
   if [ "$RetroRun" = "YES" ]
+    if [ -f $FIXglwu/multiwavespnc.inp.tmpl ]
+    then      
+       cp $FIXglwu/multiwavespnc.inp.tmpl multiwavespnc.inp.tmpl
+    fi
   then
     export dtspec=3600.   # time step for spectra
-    ymdh=`$NDATE -9 $YMDH` # start time for spectra output
+    ymdh=$YMDH # start time for spectra output
     echo "$USHglwu/multiwavespnc.sh $grdID $ymdh > spnc.out 2>&1" >> cmdfile
   fi
  done

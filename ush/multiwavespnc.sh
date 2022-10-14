@@ -94,7 +94,7 @@
 #     The tested variables should be exported by the postprocessor script.
 
   if [ -z "$YMDH" ] || [ -z "$dtspec" ] || [ -z "$EXECglwu" ] || \
-     [ -z "$runID" ] || [ -z "${STA_DIR}" ]
+     [ -z "$runID" ] || [ -z "${STA_DIR}" ] ||  [ -z "$COMOUT" ]
   then
     set +x
     echo ' '
@@ -140,8 +140,7 @@
   sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtspec/g" \
       -e "s/FNAME/$fname/g" \
-      -e "s/FORMAT/F/g" \
-                               ../multiwavespnc.inp.tmpl > ww3_ounp.inp
+        		  ../multiwavespnc.inp.tmpl > ww3_ounp.inp
 
 # 2.b Run the postprocessor
 
@@ -169,11 +168,13 @@
 # 3.  Clean up
 # 3.a Move data to directory for station ascii files
 
-  outfile=ww3.$grid.nc
+
+  outfile=ww3.${grid}.tab.nc
 
   if [ -f $outfile ]
   then
-    mv $outfile  ${STA_DIR}/spnc/$gridID.nc
+    cp $outfile  $COMOUT/point.${grid}.${cycle}.nc
+    mv $outfile  ${STA_DIR}/spnc/point.${grid}.${cycle}.nc
   else
     set +x
     echo ' '

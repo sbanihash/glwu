@@ -304,7 +304,7 @@
     if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ] # glwu long cycle
     then
       flen=144
-      gfsfile=$COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f156
+      gfsfile=$COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f153
     else
       flen=48
       gfsfile=$COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f060
