@@ -227,7 +227,7 @@
   rdate=`echo $ymdh | cut -c 1-8`     
   rcycle=t`echo $ymdh | cut -c 9-10`z   
 
-  COMINrst=${COMOUTwave}/${RUN}.${rdate}  
+  INrst=${COMINrst}/${RUN}.${rdate}  
    
   echo "Attempting to copy restart file from $dir"
 
@@ -235,11 +235,11 @@
   do
     
     file=$runID.$grdID.${rcycle}.restart
-    if [ -d $COMINrst ]        
+    if [ -d $INrst ]        
     then      
-      if [ -f $COMINrst/$file ]  
+      if [ -f $INrst/$file ]  
       then    
-        cp  $COMINrst/$file restart.$grdID   
+        cp  $INrst/$file restart.$grdID   
       fi      
     fi        
     
@@ -419,16 +419,16 @@ pwd
         ymdh=`$NDATE $stp_hour $ymdh`
         ndate=`echo $ymdh | cut -c 1-8`
         ncycle=t`echo $ymdh | cut -c 9-10`z
-        COMOUTrst=${COMOUTwave}/${RUN}.${ndate}
-        if [ ! -d $COMOUTrst ]; then
-          mkdir -p $COMOUTrst
+        OUTrst=${COMOUTrst}/${RUN}.${ndate}
+        if [ ! -d $OUTrst ]; then
+          mkdir -p $OUTrst
         fi
         srst="00${irst}"
         for grdID in $grids
         do
           if [ -f restart${srst}.$grdID ] ; then
-            echo "   Copying restart${srst}.$grdID to $COMOUTrst/$runID.$grdID.$ncycle.restart"
-            cp               restart${srst}.$grdID    $COMOUTrst/$runID.$grdID.$ncycle.restart
+            echo "   Copying restart${srst}.$grdID to $OUTrst/$runID.$grdID.$ncycle.restart"
+            cp               restart${srst}.$grdID    $OUTrst/$runID.$grdID.$ncycle.restart
           fi
         done
 

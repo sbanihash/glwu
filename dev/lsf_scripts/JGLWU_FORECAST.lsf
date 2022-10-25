@@ -8,7 +8,7 @@
 #PBS -N JGLWU_FORECAST
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -q dev
+#PBS -q devhigh
 #PBS -A GLWU-DEV
 #PBS -l walltime=01:00:00
 #PBS -l select=12:ncpus=128:mem=500GB
@@ -71,17 +71,6 @@ pref=$( echo $COMROOTp1 | cut -c7 )
 export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
 export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
 
-# Set pref to point to matching CRAY machines
-#if [ "${pref}" == "l" ]
-#then
-#  pref='t'
-#else
-# pref='g'
-#fi
-
-# Lines below for retrospective testing using data in noscrub
-# export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
-# export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
 
 export job=JGLWU_FORECAST
 export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
@@ -133,10 +122,15 @@ export SENDCOM=YES
 # Set COM paths
 export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for restart files
+export COMINrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 
 export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 export COMINOUT=$COMOUT
+#added for restart files
+export COMOUTrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+
 
 export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 #export DCOMROOT=/gpfs/${pref}p1/nco/GLWU_Danger_Seas/dcom

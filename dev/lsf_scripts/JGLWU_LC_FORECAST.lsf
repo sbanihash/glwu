@@ -8,7 +8,7 @@
 #PBS -N JGLWU_LC_FORECAST
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -q dev
+#PBS -q devhigh
 #PBS -A GLWU-DEV
 #PBS -l walltime=01:00:00
 #PBS -l select=12:ncpus=128:mem=500GB
@@ -133,9 +133,14 @@ export SENDCOM=YES
 # Set COM paths
 export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for restart files
+export COMINrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 
 export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for restart files
+export COMOUTrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+
 export COMINOUT=$COMOUT
 
 export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}

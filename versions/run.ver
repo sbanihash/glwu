@@ -20,4 +20,5 @@ export w3nco_ver=2.4.1
 export cmake_ver=3.20.2
 export bacio_ver=2.4.1
 export util_shared_ver=1.4.0
-
+export hrrr_ver=v4.1
+export gfs_ver=v16.2

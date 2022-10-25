@@ -24,12 +24,6 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  if [ "RetroRun" = "yes" ]
-  then
-    export DCOMINice=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/LC_BVT_ICE
-  else
-    export DCOMINice=/lfs/h1/ops/dev/dcom  
-  fi
   
   cd $DATA
 
@@ -94,12 +88,19 @@
   
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
+    if [ "$RetroRun" = "YES" ]
+    then
+      export dcominice=${DCOMIN}
+    else
+      export dcominice=/lfs/h1/ops/dev/dcom
+    fi
+
 # Initial NIC ice concentration file test for now
-   nicice=${DCOMINice}/${PDYCE}/wtxtbul/IceCoverage4.nc
+   nicice=${dcominice}/${PDYCE}/wtxtbul/OpenWater.nc
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
-  ndaylim=5
+  ndaylim=10
 
 # Set find parameter
   foundOK='no'
@@ -136,16 +137,16 @@
 
         set +x
         echo " "
-        echo " NIC ice file found in ${DCOMINice}: ${nicice}" 
+        echo " NIC ice file found in ${dcominice}: ${nicice}" 
         echo " "
         [[ "$LOUD" = YES ]] && set -x
 
         foundOK='yes'
-        
+        #copy file here
+        cp ${nicice} .
+# Convert nicice netcdf file into txt file for ww3_prep use
 
-# Convert nicice netcdf file into txt file for inpaint use
-
-   $NCDUMP -v IceCoverage_SFC IceCoverage4.nc | sed -e '1,/data:/d' -e '$d' | sed 's/,//g' | sed -e 's/IceCoverage_SFC =//' > LC.ice
+   $NCDUMP -v IceCoverage_SFC OpenWater.nc | sed -e '1,/data:/d' -e '$d' | sed 's/,//g' | sed -e 's/IceCoverage_SFC =//' > LC.ice
 
 # (ice will be tagged with the run start time, independent of its actual time)
 
@@ -171,7 +172,7 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${DCOMINice}/${PDYCE}/wtxtbul/IceCoverage4.nc
+        nicice=${dcominice}/${PDYCE}/wtxtbul/OpenWater.nc
 
       fi
 

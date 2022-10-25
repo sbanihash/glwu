@@ -22,7 +22,7 @@
 #PBS -A GLWU-DEV
 #PBS -l select=1:ncpus=1:mem=100MB
 #PBS -l walltime=02:00:00
-#PBS -q dev
+#PBS -q devhigh
 #PBS -N glwu.boss.lsf
 #PBS -j oe
 #PBS -o glwu.cron.out
@@ -321,7 +321,7 @@ fi
   nr_job=`qstat -wu ${USER} | grep HO 2> /dev/null | wc -l | awk '{ print $1}'`
   echo "           number of jobs     : $nr_job"
 
-  if [ "$nr_job" ge '1' ]
+  if [ "$nr_job" -ge '1' ]
   then
     echo ' '
     echo "           no need to run $batch ..."
@@ -361,7 +361,7 @@ fi
     echo "#PBS -o ${start_dir}/${batch}.out"                  >> $batch
     echo "#PBS -e ${start_dir}/${batch}.out"                  >> $batch
     echo "#PBS -l walltime=02:00:00"                          >> $batch
-    echo "#PBS -q dev"                                        >> $batch
+    echo "#PBS -q devhigh"                                        >> $batch
     echo "cd $PBS_O_WORKDIR"                                  >> $batch
     echo " "                                                  >> $batch
     #echo "  mkdir -p $out/${modID}.$date"                     >> $batch
@@ -409,7 +409,7 @@ fi
     echo "#PBS -o ${start_dir}/${batch_lc}.out"                  >> $batch_lc
     echo "#PBS -e ${start_dir}/${batch_lc}.out"                  >> $batch_lc
     echo "#PBS -l walltime=02:00:00"                          >> $batch_lc
-    echo "#PBS -q dev"                                        >> $batch_lc
+    echo "#PBS -q devhigh"                                        >> $batch_lc
     echo "cd $PBS_O_WORKDIR"                                  >> $batch_lc
     echo " "                                                  >> $batch_lc
     #echo "  mkdir -p $out/${modID}.$date"                     >> $batch_lc
@@ -437,7 +437,7 @@ fi
       exit 30
     fi
 
-    jobname="`sed 's/\"//g' $llst | sed 's/\.ncep\.noaa\.gov//g' \
+    jobname="`sed 's/\"//g' $llst_lc | sed 's/\.ncep\.noaa\.gov//g' \
                                   | awk '{ print $4 }'`"
     echo "              job name is $jobname"
 

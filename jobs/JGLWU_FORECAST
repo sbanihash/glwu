@@ -38,9 +38,14 @@ export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
 export COMIN=${COMIN:-$(compath.py -v ${NET}/${model_ver}/${RUN}.${PDY})}
 export COMINwave=${COMINwave:-$(compath.py -v ${NET}/${model_ver})}
+#added for restart files
+export COMINrst=${COMINrst:-$(compath.py -v ${NET}/${model_ver})}
 export COMOUT=${COMOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
 export COMOUTwave=${COMOUTwave:-$(compath.py -v -o ${NET}/${model_ver})}
+#added for restart files
+export COMOUTrst=${COMOUTrst:-$(compath.py -v ${NET}/${model_ver})}
 export COMINOUT=${COMINOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+
 
 if [ "$SENDCOM" = YES ]; then
   mkdir -p $COMOUT

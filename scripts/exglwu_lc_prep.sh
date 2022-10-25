@@ -85,11 +85,8 @@
 
   if  [ "$RetroRun" = "YES" ]
   then
-    export COMINwind_HRRR=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/HRRR
-    export COMINwind_GFS=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/GFS
-  else    
-    export COMINwind_HRRR=/lfs/h1/ops/prod/com/hrrr/v4.1
-    export COMINwind_GFS=/lfs/h1/ops/prod/com/gfs/v16.2
+    export COMINhrrr=${DCOMIN}/HRRR
+    export COMINgfs=${DCOMIN}/GFS
   fi
 
   ymdh=$ymdh_beg
@@ -123,8 +120,8 @@
     ymdb=`echo $ymdhb | cut -c1-8`
     extb=`echo $ymdhb | cut -c9-10`
     
-    hrrrfile18=$COMINwind_HRRR/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf18.grib2
-    hrrrfile48=$COMINwind_HRRR/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf48.grib2
+    hrrrfile18=$COMINhrrr/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf18.grib2
+    hrrrfile48=$COMINhrrr/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf48.grib2
     
     if [ ! -f $hrrrfile18 ] 
     then
@@ -135,7 +132,7 @@
       # 18 hour forecast is available	    
       export hrrr_file="${DATA}/hrrr_${extb}.grib2"
       time_hrrr18="`$WGRIB2 -vt $hrrrfile18 | sed -e 's/:/ /g' -e 's/vt=/ /g' | awk '{print $3}' | head -1`"
-      hrrr18_files=`find  $COMINwind_HRRR/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf??.grib2`
+      hrrr18_files=`find  $COMINhrrr/hrrr.${ymdb}/conus/hrrr.t${extb}z.wrfprsf??.grib2`
       
       mkdir ./hrrr_tmp
       cd ./hrrr_tmp
@@ -166,7 +163,7 @@
           ymdhb2=`$NDATE -$inc $ymdh`
           ymdb2=`echo $ymdhb2 | cut -c1-8`
           extb2=`echo $ymdhb2 | cut -c9-10`
-          hrrrfile48=$COMINwind_HRRR/hrrr.${ymdb2}/conus/hrrr.t${extb2}z.wrfprsf48.grib2
+          hrrrfile48=$COMINhrrr/hrrr.${ymdb2}/conus/hrrr.t${extb2}z.wrfprsf48.grib2
 	done
 	time_hrrr48="`$WGRIB2 -vt $hrrrfile48 | sed -e 's/:/ /g' -e 's/vt=/ /g' | awk '{print $3}' | head -1`"
       else
@@ -177,7 +174,7 @@
       fi
       #  copy 48 hour forecasts
         
-      hrrr48_files=`find  $COMINwind_HRRR/hrrr.${ymdb2}/conus/hrrr.t${extb2}z.wrfprsf??.grib2`
+      hrrr48_files=`find  $COMINhrrr/hrrr.${ymdb2}/conus/hrrr.t${extb2}z.wrfprsf??.grib2`
 
       cp ${hrrr48_files} ./.
 
@@ -304,10 +301,10 @@
     if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ] # glwu long cycle
     then
       flen=144
-      gfsfile=$COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f153
+      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f153
     else
       flen=48
-      gfsfile=$COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f060
+      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f060
     fi
     time_gfs_end=`$NDATE $flen $YMDH`
     
@@ -326,9 +323,9 @@
         
 	if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ] # if long cycle we need 144 hours
 	then
-	   gfs_files=`find  $COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0-1]??`
+	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0-1]??`
    	else   # if short cycle, we need 48 hours
-	   gfs_files=`find  $COMINwind_GFS/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0][4-6]?`
+	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0][4-6]?`
 	fi
 	
 	mkdir ./gfs_tmp

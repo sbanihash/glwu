@@ -39,6 +39,9 @@ export USHglwu=${USHglwu:-${HOMEglwu}/ush}
 
 # Location of NDFD input files
 export DCOMIN=${DCOMIN:-${DCOMROOT}} # serves ice and ndfd data
+# Location of HRRR and GFS input files
+export COMINhrrr=/lfs/h1/ops/prod/com/hrrr/${hrrr_ver}
+export COMINgfs=/lfs/h1/ops/prod/com/gfs/${gfs_ver}
 
 export COMIN=${COMIN:-$(compath.py -v ${NET}/${model_ver}/${RUN}.${PDY})}
 export COMINwave=${COMINwave:-$(compath.py -v ${NET}/${model_ver})}

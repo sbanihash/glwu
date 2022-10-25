@@ -813,7 +813,7 @@ export grint_OK='yes'
   if [ "$ncdf_OK" = 'yes' ]
   then
     dtnc=1800.
-    ncdfFL=\''WND HS FP DP PHS PTP PDIR CHA'\'
+    ncdfFL=\''WND HS FP DP ICE PHS PTP PDIR CHA'\'
     for grdID in $ngrids
     do
       echo "$USHglwu/wave_fldn.sh $grdID $dtnc $ncdfFL > ncdf_$grdID.out 2>&1"               >> cmdfile

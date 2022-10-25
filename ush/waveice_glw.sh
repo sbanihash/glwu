@@ -24,14 +24,6 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-   if [ "RetroRun" = "yes" ]
-   then
-     export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
-   else
-     export DCOMIN=/lfs/h1/ops/prod/dcom
-   fi
-
-
 
   cd $DATA
 
@@ -97,6 +89,7 @@
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
 # Initial NIC ice concentration file
+   fnice="NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}"
    nicice=${DCOMIN}/nic_lks/NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}.zip
 
 # Set search windows for older ice files, and search cutoff
@@ -122,7 +115,6 @@
       echo " "
       echo "  Date outside ice window, setting ice fields to zero"
       echo " "
-      #foundOK='summer'
       [[ "$LOUD" = YES ]] && set -x
       break
     else
@@ -148,14 +140,13 @@
 
 # Convert nicice file into txt file for inpaint use
 
-        unzip ${nicice}.zip
+        unzip ${nicice}
 #  deleting the 5 first lines in text file with header info and empty line    
-        cat ${nicice}.txt | sed '/^\s*$/d' | awk '!/Great/ && !/data/ && !/US/ && !/coo/ && !/val/ && !/file/' > testnic.txt
+        cat ${fnice}.txt | sed '/^\s*$/d' | awk '!/Great/ && !/data/ && !/US/ && !/coo/ && !/val/ && !/file/' > testnic.txt
 #extracting ice concentration from file, and adding LON-LAT dimensions to header
         awk -F ', ' '{print $3}' testnic.txt > NIC_LKS_${PDYtag}.icec
+	cat NIC_LKS_${PDYtag}.icec |sed 's/-1/1000/g' | awk -v m=100 '{print $1/m}' > NIC_LKS_${PDYtag}_tmp.ice
         { echo -e "2554 1823"; cat NIC_LKS_${PDYtag}_tmp.ice; } > T_OEBA88_C_KNWC.ice
-
-
 
 ## (Conservative approach: no averaging to fill model-data sea gaps)
         cp ${FIXglwu}/T_OEBA88_C_KNWC.mask ./
@@ -190,8 +181,12 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
+	export YEAR=`echo $PDYCE | cut -c1-4`
+	export MONTH=`echo $PDYCE | cut -c5-6`
+	export DAY=`echo $PDYCE | cut -c7-8`
+	export MONTHNAME=`date -d ${YEAR}-${MONTH}-${DAY} '+%b'`
+        fnice="NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}"
         nicice=${DCOMIN}/nic_lks/NIC_LKS_${YEAR}_${MONTHNAME}_${DAY}.zip
-        #nicice=${DCOMIN}/${PDYCE}/wgrbbul/T_OEBA88_C_KNWC_${PDYCE}120000.gr1
 
       fi
 
