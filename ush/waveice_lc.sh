@@ -179,7 +179,7 @@ EOF
 # Write file to whatused
       if [ "${foundOK}" = "yes" ]
       then
-        echo "$ymdh LC_BVT_ICE_${YEAR}_${MONTHNAME}_${DAY}" >> ../whatglwice_lc
+        echo "$ymdh LC_BVT_ICE_${PDYCE}" >> ../whatglwice_lc
       fi
 
     fi

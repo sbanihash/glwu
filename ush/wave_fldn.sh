@@ -103,8 +103,8 @@
   [[ "$LOUD" = YES ]] && set -x
 
   $EXECglwu/multiwavefldn
-  #err=$?
-   err='0'
+  err=$?
+ #  err='0'
 
   if [ "$err" != '0' ]
   then
