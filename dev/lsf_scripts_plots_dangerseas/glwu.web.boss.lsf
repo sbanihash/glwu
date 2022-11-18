@@ -15,13 +15,13 @@
 # LSF options
 #PBS -l walltime=06:00:00
 #PBS -q dev
-#PBS -N glwu.boss.lsf
+#PBS -N glwu.web.boss.lsf
 #PBS -l select=1:ncpus=1:mem=1000MB
 #PBS -A GLWU-DEV
 #PBS -V
 #PBS -j oe
-#PBS -o glwu.boss.out
-#PBS -e glwu.boss.out
+#PBS -o glwu.web.boss.out
+#PBS -e glwu.web.boss.out
 
 cd $PBS_O_WORKDIR
 
@@ -94,16 +94,16 @@ export NET=glwu
   export com=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${modID}/${glwu_ver}
 
   #export wavelog=${com}/${modID}.log                     # log for wave com
-  export wavelog=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/output/${modID}.log      # log for wave com
+  export wavelog=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/output/${modID}.web.log      # log for wave com
 
   if [ -f $wavelog ]
   then
     rm $wavelog
   fi
 
-  if [ -f ${com}/wave.log ]
+  if [ -f ${com}/wave.web.log ]
   then
-    rm ${com}/wave.log
+    rm ${com}/wave.web.log
   fi
 
   touch $wavelog
@@ -131,8 +131,8 @@ JS="WEB2 WEB3"
   export cycle_PDY='yes'                             # update PDY file ?
 
   export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${glwu_ver}                  # Temporary base directory
-  export lsfst=$DATA/lsf.$modID.${glwu_ver}.boss.out.$$            # work file for lsfsubmit
-  export lsfse=$DATA/lsf.$modID.${glwu_ver}.boss.err.$$            # work file for lsfsubmit
+  export lsfst=$DATA/lsf.$modID.${glwu_ver}.boss.web.out.$$            # work file for lsfsubmit
+  export lsfse=$DATA/lsf.$modID.${glwu_ver}.boss.web.err.$$            # work file for lsfsubmit
 
   if [ ! -d "$DATA" ]
   then
@@ -183,7 +183,7 @@ JS="WEB2 WEB3"
     echo ' ***************************************************'
     echo ' '
     date=`date -u +"%Y%m%d t%Hz"`
-    echo "$modID.boss $date : PDY file not found." >> $wavelog
+    echo "$modID.web.boss $date : PDY file not found." >> $wavelog
     exit 1
   fi
 
@@ -290,7 +290,7 @@ JS="WEB2 WEB3"
       if [ "$OK" != '0' ]
       then
         cat $lsfse
-        echo "$modID.boss $date $cycle : Error in lsf (main)." >> $wavelog
+        echo "$modID.web.boss $date $cycle : Error in lsf (main)." >> $wavelog
         exit 2
       fi
 
@@ -318,7 +318,7 @@ JS="WEB2 WEB3"
         echo " ***********************************************"
         echo "                     Directory : $com/${modID}.$date"
         echo "                     File      : $check"
-        echo "$modID.boss $date $cycle : check file ${check} not found." >> $wavelog
+        echo "$modID.web.boss $date $cycle : check file ${check} not found." >> $wavelog
         exit 3
       fi
 
@@ -350,7 +350,7 @@ JS="WEB2 WEB3"
       if [ "$OK" != '0' ]
       then
         cat $lsfse
-        echo "$modID.boss $date $cycle : Error in bsub (spin)." >> $wavelog
+        echo "$modID.web.boss $date $cycle : Error in bsub (spin)." >> $wavelog
         exit 4
       fi
  
@@ -473,4 +473,4 @@ JS="WEB2 WEB3"
   echo ' '
   echo '                        *** End of glwu.boss ***'
 
-# - end of glwu.boss ----------------------------------------------------- #
+# - end of glwu.web.boss ----------------------------------------------------- #

@@ -50,7 +50,7 @@ export modID=glwu
 export MODID=GLWU
 export RUN=$modID
 
-runuser=andre.vanderwesthuysen
+runuser=saeideh.banihashemi
 
 # envir now set by version card
 # Check HOST file for where to run

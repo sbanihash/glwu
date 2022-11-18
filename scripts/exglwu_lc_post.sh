@@ -813,7 +813,7 @@ export grint_OK='yes'
   if [ "$ncdf_OK" = 'yes' ]
   then
     dtnc=1800.
-    ncdfFL=\''WND HS FP DP ICE PHS PTP PDIR CHA'\'
+    ncdfFL=\''WND HS FP DP ICE PHS PTP PDIR '\'
     for grdID in $ngrids
     do
       echo "$USHglwu/wave_fldn.sh $grdID $dtnc $ncdfFL > ncdf_$grdID.out 2>&1"               >> cmdfile
@@ -838,11 +838,11 @@ export grint_OK='yes'
  for grdID in $grids
  do
   if [ "$RetroRun" = "YES" ]
+  then
     if [ -f $FIXglwu/multiwavespnc.inp.tmpl ]
     then      
        cp $FIXglwu/multiwavespnc.inp.tmpl multiwavespnc.inp.tmpl
     fi
-  then
     export dtspec=3600.   # time step for spectra
     ymdh=$YMDH # start time for spectra output
     echo "$USHglwu/multiwavespnc.sh $grdID $ymdh > spnc.out 2>&1" >> cmdfile

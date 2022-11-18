@@ -65,7 +65,7 @@
   export pntgrd="glwu"
   export grids='glwu'
   export isgrids='grlr_500m' # Compute 500m as source grid for other interpolations
-  export itgrids='grlc_2p5km grlr' # Target grids for distributions 
+  export itgrids='grlc_2p5km ' # Target grids for distributions 
   export ggrids='grlc_2p5km grlc_2p5km_sr' # grids that require grib output
   export addggrids='grlr_500m' # additional grids that require grib output
   export ngrids='glwu' # Grids with netcdf output
@@ -825,7 +825,7 @@ export grint_OK='yes'
   if [ "$ncdf_OK" = 'yes' ]
   then
     dtnc=1800.
-    ncdfFL=\''WND HS FP DP ICE PHS PTP PDIR CHA'\'
+    ncdfFL=\''WND HS FP DP ICE LM SPR MXH WBT WCC WCH PHS PTP PDIR'\'
     for grdID in $ngrids
     do
       echo "$USHglwu/wave_fldn.sh $grdID $dtnc $ncdfFL > ncdf_$grdID.out 2>&1"               >> cmdfile
@@ -861,16 +861,16 @@ export grint_OK='yes'
 
  for grdID in $grids
  do	 
-  if [ "$RetroRun" = "YES" ]
+  #if [ "$RetroRun" = "YES" ] 
+  #then
     if [ -f $FIXglwu/multiwavespnc.inp.tmpl ]
     then     
        cp $FIXglwu/multiwavespnc.inp.tmpl multiwavespnc.inp.tmpl
     fi
-  then
     export dtspec=3600.   # time step for spectra
     ymdh=$YMDH # start time for spectra output
     echo "$USHglwu/multiwavespnc.sh $grdID $ymdh > spnc.out 2>&1" >> cmdfile
-  fi
+  #fi
  done
 
 
@@ -1396,7 +1396,7 @@ export grint_OK='yes'
       fi
 # Save 4km regular outgrd for web plotting
       grdID=grlr
-      cp -f out_grd.$grdID $COMOUT/$runID.$grdID.$cycle.outgrd
+      #cp -f out_grd.$grdID $COMOUT/$runID.$grdID.$cycle.outgrd
 
 # Save 500m regular grid files
       grdID=grlr_500m

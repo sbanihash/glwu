@@ -18,6 +18,9 @@ fix/wave_glwu_grlr.moddef.v2.0.0
 fix/wave_glwu_glwu.moddef.v2.0.0
 fix/wave_glwu_grlr_500m.moddef.v2.0.0
 fix/wave_glwu_glwu_lc.moddef.v2.0.0
+fix/wave_glwu_grlc_2p5km_lc.moddef.v2.0.0
+fix/wave_glwu_grlc_2p5km_lc_sr.moddef.v2.0.0
+fix/wave_glwu_grlr_500m_lc.moddef.v2.0.0
 #log files
 dev/lsf_scripts/PDY.TODAY
 dev/lsf_scripts/glwu.v2.0.0.HOOK

@@ -57,8 +57,8 @@ module load prod_envir/2.0.5
   fi
 
 #IS this a retrospective run?
-export RetroRun=YES
-#export RetroRun=NOT
+#export RetroRun=YES
+export RetroRun=NOT
 envir=dev
 
 

@@ -317,7 +317,7 @@
       -e "s/OUT_BEG/$time_beg/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ 3600/g" \
-      -e "s/FIELDS/N \n WND HS FP DP PHS PTP PDIR CHA/g" \
+      -e "s/FIELDS/N \n WND HS FP DP ICE LM SPR MXH WBT WCC WCH PHS PTP PDIR/g" \
       -e "s/DTPNT/ 3600/g" \
       -e "/BUOY_FILE/r buoy.loc" \
       -e "s/BUOY_FILE/DUMMY/g" \

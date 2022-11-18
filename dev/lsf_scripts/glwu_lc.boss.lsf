@@ -117,7 +117,7 @@ export NET=glwu
 #JS="WEB PUBWEB ARC WEB"
 #JS="PREP FORECAST POST WEB PUBWEB"
 #JS="PREP FORECAST POST WEB"
-JS="LC_PREP LC_FORECAST LC_POST"
+JS="LC_PREP LC_FORECAST LC_POST LC_PGEN"
 #LC_PGEN"
 #JS="LC_PREP"
 
@@ -203,7 +203,7 @@ JS="LC_PREP LC_FORECAST LC_POST"
   export J${NET^^}_LC_PREP=${runID}.${wndID_lc}.${cycle}.wind
   export J${NET^^}_LC_FORECAST=where_${runID_lc}_ran.$cycle
   export J${NET^^}_LC_POST=${runID_lc}.$cycle.postdone
-  export J${NET^^}_LC_PGEN=${runID_lc}.$cycle.awipsbull
+  export J${NET^^}_LC_PGEN=grib2.$cycle.awipsww3_grlc_2p5km_lc_sr
   export J${NET^^}_WEB=${runID}.$cycle.webdone
   export J${NET^^}_ARC=${runID}.$cycle.arcdone
   export J${NET^^}_PUBWEB=${runID}.$cycle.pubwebdone

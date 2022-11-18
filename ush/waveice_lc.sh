@@ -204,7 +204,7 @@ EOF
 
      cat LC_BVT_ICE.zeros >> ../LC_BVT_ICE.${ymdh}
      cp ../LC_BVT_ICE.${ymdh} ../LC_BVT_ICE.newice
-     echo "$ymdh LC_BVT_ICE_${YEAR}_${MONTHNAME}_${DAY}" >> ../whatglwice_lc
+     echo "$ymdh zero ice" >> ../whatglwice_lc
 
    fi
 
