@@ -43,7 +43,7 @@
   ymdh=$2
   dt=$3
   nst=$4
-  postmsg "$jlogfile" "Making GRID Interpolation Files for $grdID."
+  postmsg   "Making GRID Interpolation Files for $grdID."
   rm -rf grint_${grdID}_${ymdh}
   mkdir grint_${grdID}_${ymdh}
   err=$?
@@ -56,7 +56,7 @@
     echo '************************************************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp (Could not create temp directory)"
+    postmsg   "FATAL ERROR : ERROR IN multiwavegrid_interp (Could not create temp directory)"
     exit 1
   fi
 
@@ -85,7 +85,7 @@
     echo ' '
     echo "$YMDH $cycle $EXECglwu $COMOUT $runID $SENDCOM $SENDDBN $grids"
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg   "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
   fi
 
@@ -149,7 +149,7 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid_interp"
+    postmsg   "FATAL ERROR : ERROR IN multiwavegrid_interp"
     exit 3
   fi
 

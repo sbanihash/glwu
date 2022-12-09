@@ -60,7 +60,7 @@
     echo '***************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " TIME IN wavegfs_glwu.sh NOT SET"
+    postmsg   " TIME IN wavegfs_glwu.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -80,7 +80,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg   " EXPORTED VARIABLES NOT SET."
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -136,7 +136,7 @@ $WGRIB2 ${gfs_file} -match ":vt=${ymdh}" -match "UGRD:10 m above ground:|VGRD:10
         echo '*** FATAL ERROR IN EXECUTING WAVEPREP ***'
         echo '*****************************************'
         echo ' '
-        postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+        postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
         [[ "$LOUD" = YES ]] && set -x
         gfsOK='no'
       else
@@ -148,7 +148,7 @@ $WGRIB2 ${gfs_file} -match ":vt=${ymdh}" -match "UGRD:10 m above ground:|VGRD:10
           echo '*** FATAL ERROR : wind.ww3 NOT FOUND ***'
           echo '****************************************'
           echo ' '
-          postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+          postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
           [[ "$LOUD" = YES ]] && set -x
           gfs_ok='no'
         else
@@ -172,7 +172,7 @@ $WGRIB2 ${gfs_file} -match ":vt=${ymdh}" -match "UGRD:10 m above ground:|VGRD:10
     echo '*** FATAL ERROR : COULD NOT GENERATE wind file ***'
     echo '**************************************************'
     echo ' '
-    postmsg "$jlogfile" "COULD NOT EXTRACT WIND FOR $ymdh."
+    postmsg   "COULD NOT EXTRACT WIND FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
    gfsOK='no'
   fi

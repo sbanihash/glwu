@@ -23,10 +23,10 @@
   seton='-xa'
   setoff='+xa'
   set $seton
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  postmsg   "HAS BEGUN on `hostname`"
 
   msg="Starting GLWU PRODUCTS SCRIPT"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
   if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ]
   then
@@ -81,7 +81,7 @@
       echo "   gribfile.$grdID exists."
     else
       msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $grdID"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set $setoff
       echo ' '
       echo '**************************** '
@@ -105,7 +105,7 @@
   if [ ! -f cbull.tar ]
   then
     msg="ABNORMAL EXIT: NO BULLETIN TAR FILE"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set $setoff
     echo ' '
     echo '************************************ '
@@ -129,7 +129,7 @@
     rm -f cbull.tar
   else
     msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set $setoff
     echo ' '
     echo '****************************************** '
@@ -167,7 +167,7 @@
    if [ "$ext" = 'null' ]
    then
      msg="ABNORMAL EXIT: WIND INFORMATION NOT RECOGNIZED" 
-     postmsg "$jlogfile" "$msg" 
+     postmsg   "$msg" 
      set $setoff 
      echo ' ' 
      echo '*********************************************** '
@@ -193,7 +193,7 @@
       echo "   awipsgrb.$grdID copied."
     else
       msg="ABNORMAL EXIT: NO AWIPS GRIB HEADER DATA FILE FOR GRID $grdID"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set $setoff
       echo ' '
       echo '*************************************** '
@@ -220,7 +220,7 @@
       echo "   awipsbull.data copied."
     else
       msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set $setoff
       echo ' '
       echo '******************************************* '
@@ -285,7 +285,7 @@
       if [ "$OK" != '0' ]
       then
         msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set $setoff
         echo ' '
         echo '******************************************** '
@@ -319,7 +319,7 @@
       then
         cat tocgrib2.out
         msg="ABNORMAL EXIT: ERROR IN tocgrib2"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set $setoff
         echo ' '
         echo '*************************************** '
@@ -401,7 +401,7 @@
       if [ -z "$headr" ] || [ ! -s $fname ]
       then
         msg="ABNORMAL EXIT: MISSING BULLETING INFO"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set $setoff
         echo ' '
         echo '******************************************** '
@@ -428,7 +428,7 @@
       then
         cat formbul.out
         msg="ABNORMAL EXIT: ERROR IN formbul"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set $setoff
         echo ' '
         echo '************************************** '
@@ -475,6 +475,6 @@
   echo ' '
 
   msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
 # End of GLWU product generation script -------------------------------------- #

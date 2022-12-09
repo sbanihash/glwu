@@ -49,7 +49,7 @@
     echo '*******************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " TIME IN waveice_glw.sh NOT SET"
+    postmsg   " TIME IN waveice_glw.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -69,7 +69,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg   " EXPORTED VARIABLES NOT SET."
     exit 2
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -159,7 +159,7 @@
           echo '*** ERROR RUNNNING inpaint_nic_glwu ***'
           echo '***************************************'
           echo ' '
-          postmsg "$jlogfile" " INPAINT FAILED."
+          postmsg   " INPAINT FAILED."
           exit 3
         fi 
 
@@ -233,7 +233,7 @@ EOF
     echo '*** FATAL ERROR IN ICE CONCENTRATION FILE **'
     echo '********************************************'
     echo ' '
-    postmsg "$jlogfile" "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
+    postmsg   "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     exit 4
   else

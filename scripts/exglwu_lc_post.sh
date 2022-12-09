@@ -39,10 +39,10 @@
 
   cd $DATA
 
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  postmsg   "HAS BEGUN on `hostname`"
 
   msg="Starting GLW POSTPROCESSOR SCRIPT for ${runID_lc}"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
   set +x
   echo ' '
@@ -208,7 +208,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $grdID $date $cycle : field output missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE"
+      postmsg   "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE"
       exit_code=1
       field_OK='no'
       grib_OK='no'
@@ -249,7 +249,7 @@ export grint_OK='yes'
         [[ "$LOUD" = YES ]] && set -x
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set +x
         echo ' '
         echo '*********************************************************** '
@@ -279,7 +279,7 @@ export grint_OK='yes'
       $FSYNC mod_def.$grdID
     else
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       echo '********************************************** '
@@ -321,7 +321,7 @@ export grint_OK='yes'
       [[ "$LOUD" = YES ]] && set -x
     else
       msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       echo '*********************************************************** '
@@ -351,7 +351,7 @@ export grint_OK='yes'
     $FSYNC mod_def.$pntgrd
   else
     msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '********************************************** '
@@ -395,7 +395,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : point output missing." >> $wavelog
-    postmsg "$jlogfile" "NON-FATAL ERROR NO RAW POINT OUTPUT FILE"
+    postmsg   "NON-FATAL ERROR NO RAW POINT OUTPUT FILE"
     exit_code=12
     point_OK='no'
     spec_OK='no'
@@ -428,7 +428,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : buoy location file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOCATION FILE"
+      postmsg   "NON-FATAL ERROR : NO BUOY LOCATION FILE"
       exit_code=13
       point_OK='no'
       spec_OK='no'
@@ -461,7 +461,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : GRIB2 template file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
+      postmsg   "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
       exit_code=16
       grib_OK='no'
     fi
@@ -489,7 +489,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : GRIB2 template file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
+      postmsg   "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
       exit_code=16
       grib_OK='no'
     fi
@@ -515,7 +515,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : specra template file missing." >> $wavelog
-    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
+    postmsg   "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=18
     spec_OK='no'
     bull_OK='no'
@@ -543,7 +543,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : time series template file missing." >> $wavelog
-    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR TIME SERIES INPUT FILE"
+    postmsg   "NON-FATAL ERROR : NO TEMPLATE FOR TIME SERIES INPUT FILE"
     exit_code=18
     ts_OK='no'
     ripin_OK='no'
@@ -569,7 +569,7 @@ export grint_OK='yes'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     echo "$runID post $date $cycle : bulletin template file missing." >> $wavelog
-    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
+    postmsg   "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=19
     bull_OK='no'
     Obull_OK='no'
@@ -597,7 +597,7 @@ export grint_OK='yes'
     then
       pgm=wave_post
       msg="ABNORMAL EXIT: ERROR IN multiwavespec"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       echo '******************************************** '
@@ -636,7 +636,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : buoy log file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+      postmsg   "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       exit_code=19
       spec_OK='no'
       bull_OK='no'
@@ -715,7 +715,7 @@ export grint_OK='yes'
         set +x
         echo "      Error in grid interpolation for $igrdID."
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR in GRID interpolation for $igrdID."
+        postmsg   "FATAL ERROR in GRID interpolation for $igrdID."
         err=1 ; export err ; err_chk
         mv -f grint_$igrdID.out grint_$igrdID.err
       else
@@ -928,7 +928,7 @@ export grint_OK='yes'
         set +x
         echo "      Error in GRIB encoding for $grdID."
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in GRIB encoding for $grdID."
+        postmsg   "NON-FATAL ERROR in GRIB encoding for $grdID."
         mv -f grib_$grdID.out grib_$grdID.err
       else
         set +x
@@ -948,7 +948,7 @@ export grint_OK='yes'
         set +x
         echo "      Error in NCDF encoding for $grdID."
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in NCDF encoding for $grdID."
+        postmsg   "NON-FATAL ERROR in NCDF encoding for $grdID."
         mv -f ncdf_$grdID.out ncdf_$grdID.err
       else
         set +x
@@ -971,7 +971,7 @@ export grint_OK='yes'
         set +x
         echo "      Error in GRIB encoding for $igrdID."
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in GRIB encoding for $igrdID."
+        postmsg   "NON-FATAL ERROR in GRIB encoding for $igrdID."
         mv -f grib_$igrdID.out grib_$igrdID.err
       else
         set +x
@@ -998,7 +998,7 @@ export grint_OK='yes'
       if [ -d spec_$buoy ]
       then
         specstring='Error in spectra.'
-        postmsg "$jlogfile" "NON-FATAL ERROR in spectra."
+        postmsg   "NON-FATAL ERROR in spectra."
         mv -f spec_$buoy.out spec_$buoy.err
       else
         specstring='Spectra OK.'
@@ -1010,7 +1010,7 @@ export grint_OK='yes'
       if [ -d ts_$buoy ]
       then
         tsstring='Error in time series.'
-        postmsg "$jlogfile" "NON-FATAL ERROR in Time Series."
+        postmsg   "NON-FATAL ERROR in Time Series."
         mv -f ts_$buoy.out ts_$buoy.err
       else
         tsstring='Time Series OK.'
@@ -1022,7 +1022,7 @@ export grint_OK='yes'
       if [ -d bull_$buoy ]
       then
         bullstring='Error in bulletins.'
-        postmsg "$jlogfile" "NON-FATAL ERROR in bulletins."
+        postmsg   "NON-FATAL ERROR in bulletins."
         mv -f bull_$buoy.out bull_$buoy.err
       else
         bullstring='Bulletins OK.'
@@ -1050,7 +1050,7 @@ export grint_OK='yes'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$runID post $date $cycle : error in GRIB." >> $wavelog
-        postmsg "$jlogfile" "NON-FATAL ERROR in multiwavegrib2.sh"
+        postmsg   "NON-FATAL ERROR in multiwavegrib2.sh"
         exit_code=22
         sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
       fi
@@ -1067,7 +1067,7 @@ export grint_OK='yes'
       echo '            Possibly in multiple calls'
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in spectra." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in multiwavespec.sh, possibly in multiple calls."
+      postmsg   "NON-FATAL ERROR in multiwavespec.sh, possibly in multiple calls."
       exit_code=24
       for file in spec_*.err
       do
@@ -1087,7 +1087,7 @@ export grint_OK='yes'
       echo '            Possibly in multiple calls'
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in time series." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in multiwavespec_ts.sh, possibly in multiple calls."
+      postmsg   "NON-FATAL ERROR in multiwavespec_ts.sh, possibly in multiple calls."
       exit_code=24
       for file in ts_*.err
       do
@@ -1109,7 +1109,7 @@ export grint_OK='yes'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in bulletins." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in multiwavebull.sh, possibly in multiple calls."
+      postmsg   "NON-FATAL ERROR in multiwavebull.sh, possibly in multiple calls."
       exit_code=25
       for file in bull_*.err
       do
@@ -1249,7 +1249,7 @@ export grint_OK='yes'
       echo "      Error in $runID spectral tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in spectral tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID spectral tar file."
+      postmsg   "NON-FATAL ERROR in $runID spectral tar file."
       mv -f ${runID}_spec_tar.out ${runID}_spec_tar.err
     else
       set +x
@@ -1266,7 +1266,7 @@ export grint_OK='yes'
       echo "      Error in $runID time series tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in time series tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID time series tar file."
+      postmsg   "NON-FATAL ERROR in $runID time series tar file."
       mv -f ${runID}_ts_tar.out ${runID}_ts_tar.err
     else
       set +x
@@ -1283,7 +1283,7 @@ export grint_OK='yes'
       echo "      Error in $runID rip input tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in rip input tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID rip input tar file."
+      postmsg   "NON-FATAL ERROR in $runID rip input tar file."
       mv -f ${runID}_ripin_tar.out ${runID}_ripin_tar.err
     else
       set +x
@@ -1302,7 +1302,7 @@ export grint_OK='yes'
       echo "      Error in $runID bulletin tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID bulletin tar file."
+      postmsg   "NON-FATAL ERROR in $runID bulletin tar file."
       mv -f ${runID}_bull_tar.out ${runID}_bull_tar.err
     else
       set +x
@@ -1316,7 +1316,7 @@ export grint_OK='yes'
       echo "      Error in $runID compressed bulletin tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in compressed bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID compressed bulletin tar file."
+      postmsg   "NON-FATAL ERROR in $runID compressed bulletin tar file."
       mv -f ${runID}_cbull_tar.out ${runID}_cbull_tar.err
     else
       set +x
@@ -1330,7 +1330,7 @@ export grint_OK='yes'
       echo "      Error in $runID csv bulletin tar file."
       [[ "$LOUD" = YES ]] && set -x
       echo "$runID post $date $cycle : error in csv bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $runID csv bulletin tar file."
+      postmsg   "NON-FATAL ERROR in $runID csv bulletin tar file."
       mv -f ${runID}_csbull_tar.out ${runID}_csbull_tar.err
     else
       set +x
@@ -1417,7 +1417,7 @@ export grint_OK='yes'
         echo '************************************* '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : TAR COPY FAILED"
+        postmsg   "FATAL ERROR : TAR COPY FAILED"
         err=2 ; export err; err_chk
       fi
 
@@ -1442,7 +1442,7 @@ export grint_OK='yes'
     for grdID in $addggrids
     do
       case $grdID in
-        grlr_500m_lc) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=49 ; GTMPLN=0 ;;
+        grlr_500m_lc) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=0 ;;
         grlc_2p5km_lc) GRIDNR=255  ; MODNR=131  ; dtgrib=3600. ; ngrib=148 ; GTMPLN=30 ;;
         grlc_2p5km_lc_sr) GRIDNR=255  ; MODNR=133  ; dtgrib=3600. ; ngrib=49 ; GTMPLN=30 ;;
       esac
@@ -1483,7 +1483,7 @@ export grint_OK='yes'
   if [ "$exit_code" -ne '0' ]
   then
      msg="ABNORMAL EXIT: Problem in GLW POST"
-     postmsg "$jlogfile" "$msg"
+     postmsg   "$msg"
      echo $msg
      err=$exit_code ; export err ; err_chk
   else
@@ -1491,6 +1491,6 @@ export grint_OK='yes'
   fi
 
   msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
 # End of GLW prostprocessor script ---------------------------------------- #

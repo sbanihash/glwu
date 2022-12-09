@@ -35,10 +35,10 @@
 
   seton='-xa'
   setoff='+xa'
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  postmsg   "HAS BEGUN on `hostname`"
 
   msg="Starting GLW WAVE MODEL SCRIPT"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
   set $setoff
   echo ' '
@@ -132,7 +132,7 @@
       echo "   mod_def.$grdID exists."  
     else      
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE" 
-      postmsg "$jlogfile" "$msg"      
+      postmsg   "$msg"      
       set $setoff         
       echo ' '  
       echo '********************************************** '  
@@ -163,7 +163,7 @@
       echo "   wind.$grdID exists."   
     else      
       msg="ABNORMAL EXIT: NO WIND FILE" 
-      postmsg "$jlogfile" "$msg"      
+      postmsg   "$msg"      
       set $setoff         
       echo ' '  
       echo '********************************** '  
@@ -203,7 +203,7 @@
       echo "   ice.$grdID not found.   **** WARNING **** "       
       ice_flag=F
       echo "$runID $grdID fcst $date $cycle : no ice file." >> $wavelog      
-      postmsg "$jlogfile" "NON-FATAL ERROR - ice.$grdID NOT FOUND."
+      postmsg   "NON-FATAL ERROR - ice.$grdID NOT FOUND."
     fi        
     
   done        
@@ -249,7 +249,7 @@
     if [ ! -f restart.$grdID ]        
     then      
       msg="   restart.$grdID not found (COLD START).      **** WARNING **** "  
-      postmsg "$jlogfile" "$msg"      
+      postmsg   "$msg"      
       echo "   restart.$grdID not found (COLD START).     **** WARNING **** "  
       echo "$runID $gridID fcst $date $cycle : cold start." >> $wavelog      
       cold_start=yes      
@@ -265,7 +265,7 @@
         echo ' '
         set $seton        
         echo "$runID fcst $date $cycle : older restart used (${rdate} ${rcycle})." >> $wavelog
-        postmsg "$jlogfile" "OLDER RESTART USED (${rdate} ${rcycle})." 
+        postmsg   "OLDER RESTART USED (${rdate} ${rcycle})." 
       fi      
       cold_start=no       
     fi        
@@ -284,7 +284,7 @@
     echo "   buoy.loc copied ($FIXglwu/wave_$modID.buoys)."   
   else        
     echo "   buoy.loc not found.   **** WARNING **** " 
-    postmsg "$jlogfile" " **** WARNING **** buoy.loc NOT FOUND"  
+    postmsg   " **** WARNING **** buoy.loc NOT FOUND"  
     touch buoy.loc        
     echo "$runID fcst $date $cycle : no buoy locations file." >> $wavelog    
   fi
@@ -299,7 +299,7 @@
   if [ ! -f multiwavefcst.inp.tmpl ]  
   then        
     msg="ABNORMAL EXIT: NO TEMPLATE FOR INPUT FILE" 
-    postmsg "$jlogfile" "$msg"        
+    postmsg   "$msg"        
     set $setoff 
     echo ' '    
     echo '************************************************ '  
@@ -341,7 +341,7 @@ pwd
   echo "  GLWU is using $wndID winds "
   echo ' '
   set $seton    
-  postmsg "$jlogfile" "Start the wave model."     
+  postmsg   "Start the wave model."     
 
 # Link to ww3 extensions
   ln -fs mod_def.${grids} mod_def.ww3
@@ -354,7 +354,7 @@ pwd
   then        
     pgm=wave_fcst         
     msg="ABNORMAL EXIT: ERROR IN multiwavefcst"   
-    postmsg "$jlogfile" "$msg"        
+    postmsg   "$msg"        
     set $setoff 
     echo ' '    
     echo '******************************************** '      
@@ -366,13 +366,13 @@ pwd
     set $seton  
     err=4;export err pgm;err_chk      
   fi
-  postmsg "$jlogfile" "Wave Model completed."     
+  postmsg   "Wave Model completed."     
     
   if [ "$cold_start" = 'no' ] && [ -n "`grep 'old start' log.ww3`" ]         
   then        
     echo "$runID fcst $date $cycle : cold start (not found until section 3)." \
        >> $wavelog 
-    postmsg "$jlogfile" "COLD START (not found until section 3)."  
+    postmsg   "COLD START (not found until section 3)."  
   fi
     
 # --------------------------------------------------------------------------- #
@@ -455,6 +455,6 @@ pwd
   echo '        *** End of GLWU forecast script ***'  
   echo ' '    
   msg="End of GLWU WAVE MODEL SCRIPT"  
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
     
 # End of script ------------------------------------------------------------- #

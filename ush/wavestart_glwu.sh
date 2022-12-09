@@ -29,7 +29,7 @@
     echo '*** EXPORTED VARIABLES IN wavestart.sh NOT SET ***'
     echo '*******************************************************'
     echo ' '
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN wavestart.sh NOT SET"
+    postmsg   "EXPORTED VARIABLES IN wavestart.sh NOT SET"
     exit 1
   fi
 

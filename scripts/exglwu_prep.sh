@@ -35,9 +35,9 @@
   cd $DATA
 
   msg="HAS BEGUN on `hostname`"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
     msg="Starting GLWU PREPROCESSOR SCRIPT"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
   set +x
   echo ' '
@@ -212,7 +212,7 @@
   if [ "$foundOK" = 'no' ]
   then
     msg="FATAL ERROR: COULD NOT FIND RELEVANT NDFD FILES"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '*****************************************************'
@@ -325,7 +325,7 @@
         [[ "$LOUD" = YES ]] && set -x
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-        postmsg "$jlogfile" "$msg"
+        postmsg   "$msg"
         set +x
         echo ' '
         echo '*********************************************************** '
@@ -383,7 +383,7 @@
       [[ "$LOUD" = YES ]] && set -x
     else
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       echo '********************************************** '
@@ -416,7 +416,7 @@
     echo "   multiwaveprnc."${wndTAG}".tmpl copied ($FIXglwu/multiwaveprnc."${wndTAG}".tmpl)."
   else
     msg="ABNORMAL EXIT: NO FILE multiwaveprnc."${wndTAG}".tmpl"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '************************************** '
@@ -444,7 +444,7 @@
     echo "   multiwaveprep.ice.tmpl copied ($FIXglwu/multiwaveprep.ice_glw.tmpl)."
   else
     msg="ABNORMAL EXIT: NO FILE multiwaveprep.ice.tmpl"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '************************************** '
@@ -487,7 +487,7 @@
       echo '************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR - NO ICE FIELD ${ftype} FILE"
+      postmsg   "FATAL ERROR - NO ICE FIELD ${ftype} FILE"
       err=7;export err;err_chk
     fi
 
@@ -563,7 +563,7 @@
   if [ "$exit" != '0' ]
   then
     msg="ABNORMAL EXIT: ERROR IN $cmdtype"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '*********************************************** '
@@ -611,7 +611,7 @@
   do
     if [ -d eice_${ymdh} ]
     then
-      postmsg "$jlogfile" "    File for $ymdh : error in waveice_glw.sh"
+      postmsg   "    File for $ymdh : error in waveice_glw.sh"
       set +x
       echo "         File for $ymdh : error in waveice_glw.sh"
       [[ "$LOUD" = YES ]] && set -x       
@@ -667,12 +667,12 @@
       sed "s/^/$file : /g" $file
     done
      # rm -f ice_*.out
-    postmsg "$jlogfile" "NON-FATAL ERROR in waveice_glw.sh, possibly in multiple calls."
+    postmsg   "NON-FATAL ERROR in waveice_glw.sh, possibly in multiple calls."
   fi
   if [ "$nr_err" -gt "$err_max" ]
   then
     msg="ABNORMAL EXIT: ERROR(S) IN NAM-ICE FILES"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     set +x
     echo ' '
     echo '*********************************************** '
@@ -706,7 +706,7 @@
     if [ "$err" != '0' ]
     then
       msg="ABNORMAL EXIT: ERROR IN multiwaveprep"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       echo '******************************************** '
@@ -721,7 +721,7 @@
     if [ ! -f ice.ww3 ]
     then
       msg="ABNORMAL EXIT: FILE ice.ww3 MISSING"
-      postmsg "$jlogfile" "$msg"
+      postmsg   "$msg"
       set +x
       echo ' '
       cat multiwaveprep.out
@@ -796,7 +796,7 @@
   if [ "$ndfd_ok" = 'no' ]
   then
     msg="ERROR IN EXTRACTING DATA FROM NDFD GRIDS"
-    postmsg "$jlogfile" "$msg"
+    postmsg   "$msg"
     echo ' ' > warning
     echo '***********************************************************' >> warning
     echo '*** WARNING !! ERROR IN EXTRACTING DATA FROM NDFD GRIDS ***' >> warning
@@ -865,6 +865,6 @@
   [[ "$LOUD" = YES ]] && set -x
 
   msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  postmsg   "$msg"
 
 # End of GLW preprocessor script -------- ----------------------------------- #

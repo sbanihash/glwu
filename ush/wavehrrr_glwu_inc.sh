@@ -60,7 +60,7 @@
     echo '***************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " TIME IN wavehrrr_glwu.sh NOT SET"
+    postmsg   " TIME IN wavehrrr_glwu.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -80,7 +80,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg   " EXPORTED VARIABLES NOT SET."
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -137,7 +137,7 @@
         echo '*** FATAL ERROR IN EXECUTING WAVEPREP ***'
         echo '*****************************************'
         echo ' '
-        postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+        postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
         [[ "$LOUD" = YES ]] && set -x
         hrrrOK='no'
       else
@@ -149,7 +149,7 @@
           echo '*** FATAL ERROR : wind.ww3 NOT FOUND ***'
           echo '****************************************'
           echo ' '
-          postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+          postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
           [[ "$LOUD" = YES ]] && set -x
           hrrr_ok='no'
         else
@@ -173,7 +173,7 @@
     echo '*** FATAL ERROR : COULD NOT GENERATE wind file ***'
     echo '**************************************************'
     echo ' '
-    postmsg "$jlogfile" "COULD NOT EXTRACT WIND FOR $ymdh."
+    postmsg   "COULD NOT EXTRACT WIND FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     hrrrOK='no'
   fi
