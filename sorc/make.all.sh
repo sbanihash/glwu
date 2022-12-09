@@ -8,8 +8,6 @@
 ###############################################################################
 #
 
-# 0. Install large external fix files
-./get_externals.sh
 
 # 1. Build ice field processor
 
