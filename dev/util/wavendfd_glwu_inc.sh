@@ -128,7 +128,7 @@
         echo '*** FATAL ERROR IN EXECUTING WAVEPREP ***'
         echo '*****************************************'
         echo ' '
-        postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+        postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
         [[ "$LOUD" = YES ]] && set -x
         ndfdOK='no'
       else
@@ -140,7 +140,7 @@
           echo '*** FATAL ERROR : wind.ww3 NOT FOUND ***'
           echo '****************************************'
           echo ' '
-          postmsg "$jlogfile" "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
+          postmsg   "ERROR IN EXECUTING WAVEPREP FOR $ymdh."
           [[ "$LOUD" = YES ]] && set -x
           ndfd_ok='no'
         else
@@ -164,7 +164,7 @@
     echo '*** FATAL ERROR : COULD NOT GENERATE wind file ***'
     echo '**************************************************'
     echo ' '
-    postmsg "$jlogfile" "COULD NOT EXTRACT WIND FOR $ymdh."
+    postmsg   "COULD NOT EXTRACT WIND FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     ndfdOK='no'
   fi
