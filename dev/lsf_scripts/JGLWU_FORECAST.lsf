@@ -8,7 +8,7 @@
 #PBS -N JGLWU_FORECAST
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -q devhigh
+#PBS -q dev
 #PBS -A GLWU-DEV
 #PBS -l walltime=01:00:00
 #PBS -l select=16:ncpus=120:mem=500GB

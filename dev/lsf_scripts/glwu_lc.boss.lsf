@@ -15,7 +15,7 @@
 
 # LSF options
 #PBS -l walltime=06:00:00
-#PBS -q devhigh
+#PBS -q dev
 #PBS -N glwu_lc.boss.lsf
 #PBS -l select=1:ncpus=1:mem=1000MB
 #PBS -A GLWU-DEV

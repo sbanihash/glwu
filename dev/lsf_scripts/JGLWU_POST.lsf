@@ -10,7 +10,7 @@
 #PBS -N JGLWU_POST
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -q devhigh
+#PBS -q dev
 #PBS -A GLWU-DEV
 #PBS -l walltime=08:00:00
 ##PBS -l select=3:ncpus=104:mem=10GB
