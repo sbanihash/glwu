@@ -49,7 +49,7 @@
     echo '*******************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " TIME IN waveice_glw.sh NOT SET"
+    postmsg   " TIME IN waveice_glw.sh NOT SET"
     exit 1
   else
     ymdh=$1
@@ -69,7 +69,7 @@
     echo '*** EXPORTED VARIABLES NOT SET ***'
     echo '**********************************'
     echo ' '
-    postmsg "$jlogfile" " EXPORTED VARIABLES NOT SET."
+    postmsg   " EXPORTED VARIABLES NOT SET."
     exit 2
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -88,12 +88,6 @@
   
   fcsth=`${NHOUR} $ymdh $YMDH_ICE`
 
-    if [ "$RetroRun" = "YES" ]
-    then
-      export dcominice=${DCOMIN}
-    else
-      export dcominice=/lfs/h1/ops/dev/dcom
-    fi
 
 # Initial NIC ice concentration file test for now
    nicice=${dcominice}/${PDYCE}/wtxtbul/OpenWater.nc
@@ -218,7 +212,7 @@ EOF
     echo '*** FATAL ERROR IN ICE CONCENTRATION FILE **'
     echo '********************************************'
     echo ' '
-    postmsg "$jlogfile" "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
+    postmsg   "ERROR IN COPYING SPECTRAL FILE FOR $ymdh."
     [[ "$LOUD" = YES ]] && set -x
     exit 4
   else
