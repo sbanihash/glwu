@@ -121,6 +121,7 @@ cyc_file=$cyc
 if  [ "$RetroRun" = "YES" ]
 then
    export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+   export dcominice=${DCOMIN}
 else
   # these were for ndfd field
   # DCOMROOT=/lfs/h1/ops/prod/dcom
@@ -128,6 +129,7 @@ else
   #
    DCOMROOT=/lfs/h1/ops
    export DCOMIN=${DCOMROOT}/prod/dcom
+   export dcominice=${DCOMROOT}/dev/dcom
 fi
 
 
