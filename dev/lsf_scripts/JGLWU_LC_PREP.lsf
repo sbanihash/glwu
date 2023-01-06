@@ -118,10 +118,13 @@ cyc_file=$cyc
  export SENDCOM=YES
 
 #
+
 if  [ "$RetroRun" = "YES" ]
 then
    export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
    export dcominice=${DCOMIN}
+   export COMINhrrr=${DCOMIN}/HRRR
+   export COMINgfs=${DCOMIN}/GFS
 else
   # these were for ndfd field
   # DCOMROOT=/lfs/h1/ops/prod/dcom

@@ -83,11 +83,6 @@
   ymdh_newtres_ice=`$NDATE ${ttime13} $YMDH_ICE`  
   time_beg_ice="`echo $ymdh_beg_ice | cut -c1-8` `echo $ymdh_beg_ice | cut -c9-10`0000"    
 
-  if  [ "$RetroRun" = "YES" ]
-  then
-    export COMINhrrr=${DCOMIN}/HRRR
-    export COMINgfs=${DCOMIN}/GFS
-  fi
 
   ymdh=$ymdh_beg
   hrrr_ok='yes'
