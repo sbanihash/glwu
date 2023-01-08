@@ -26,3 +26,4 @@ dev/lsf_scripts/PDY.TODAY
 dev/lsf_scripts/glwu.v2.0.0.HOOK
 dev/lsf_scripts/glwu_lc.v2.0.0.HOOK
 dev/lsf_scripts/ncepdate
+sorc/glwu.compile.log

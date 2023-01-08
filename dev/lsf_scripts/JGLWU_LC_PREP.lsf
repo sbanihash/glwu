@@ -133,6 +133,8 @@ else
    DCOMROOT=/lfs/h1/ops
    export DCOMIN=${DCOMROOT}/prod/dcom
    export dcominice=${DCOMROOT}/dev/dcom
+   export COMINhrrr=/lfs/h1/ops/prod/com/hrrr/${hrrr_ver}
+   export COMINgfs=/lfs/h1/ops/prod/com/gfs/${gfs_ver}
 fi
 
 
@@ -140,9 +142,6 @@ fi
 export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 #added for champlain
-export COMINhrrr=/lfs/h1/ops/prod/com/hrrr/${hrrr_ver}
-export COMINgfs=/lfs/h1/ops/prod/com/gfs/${gfs_ver}
-
 export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
 export COMINOUT=$COMOUT
