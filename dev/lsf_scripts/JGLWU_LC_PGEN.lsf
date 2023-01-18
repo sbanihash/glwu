@@ -1,0 +1,139 @@
+
+
+############################################
+###   JGLWU_PGEN: Great Lakes Wave Sys   ###
+###      LSF card for development        ###
+############################################
+#
+# LSF options
+#
+#PBS -N JGLWU_LC_PGEN
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q dev
+#PBS -A GLWU-DEV
+#PBS -l walltime=00:10:00
+#PBS -l select=1:ncpus=1:mem=1000MB
+#PBS -l place=excl
+#PBS -l debug=true
+#PBS -V
+#PBS -o JGLWU_LC_PGEN.out
+#PBS -e JGLWU_LC_PGEN.out
+
+cd $PBS_O_WORKDIR
+
+# Setup the modules
+source ../../versions/run.ver
+module purge
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${inter_ver}
+module load libjpeg/${libjpeg_ver}
+module load libpng/${libpng_ver}
+module load wgrib2/${wgrib2_ver}
+module load grib_util/${grib_util_ver}
+module load util_shared/${util_shared_ver}
+module list
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+# specify X threads if using openmp
+export OMP_NUM_THREADS=1
+
+ulimit -s unlimited
+
+export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
+
+# Set global variables
+export modID=glwu
+export MODID=GLWU
+
+runuser=$USER
+NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
+
+# envir now set by version card
+# Check HOST file for where to run
+. ./HOST_${modID}
+
+# Set pref to point to matching IBM machines
+pref=`cat /etc/${run_on} | cut -c1-1`
+if [ "${pref}" == "l" ]
+then
+  pref='t'
+else
+ pref='g'
+fi
+
+# Lines below for retrospective testing using data in noscrub
+# export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
+# export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
+
+export job=JGLWU_LC_PGEN
+export SMSBIN=/gpfs/${pref}p1/emc/marine/save/wavepa/sms_fake
+
+# #Set Version numbers
+#version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
+#if [ -f $version_file ]
+#then
+#  source $version_file
+#else
+#  echo '##############################################'
+#  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
+#  echo '##############################################'
+#  exit 1
+#fi
+
+# Set PDY and cycle here
+export COMDATE=`pwd`
+
+echo $COMDATE
+ls $COMDATE
+
+if [ -f $COMDATE/PDY_${modID} ]
+then
+   source $COMDATE/PDY_${modID}
+else
+  echo '##################################################'
+  echo '### ERROR !! : COULD NOT SET THE PDY AND CYCLE ###'
+  echo '##################################################'
+  exit 1
+fi
+
+# Set paths to home etc
+export NET=glwu
+export RUN=glwu
+export model_ver=${glwu_ver}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}/${modID}.${glwu_ver}}
+
+# Set j-job parameters (extracted from j-job for DEV by new NCO standards)
+# the stmp file system is hugely slow
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
+rm -rf $DATA
+mkdir -p $DATA
+export jlogfile=/dev/null
+export SENDECF=NO 
+export SENDDBN=NO
+export SENDCOM=YES 
+
+# Set COM paths
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+export COMINOUT=$COMOUT
+export COMOUTwmo=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}/wmo
+
+export DBNROOT=/dev/null
+
+# Choose to keep temporary directory
+export KEEPDATA='YES'
+
+# Execute the actual J job
+############################################################################
+${NWROOT}/${modID}/${modID}.${glwu_ver}/jobs/J${MODID}_LC_PGEN
+############################################################################

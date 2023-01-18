@@ -31,7 +31,7 @@
   [[ "$LOUD" != YES ]] && set +x
 
   cd $DATA
-  postmsg "$jlogfile" "Generating mod_def file"
+  postmsg   "Generating mod_def file"
 
   mkdir -p moddef_${1}
   cd moddef_${1}
@@ -58,7 +58,7 @@
     echo '**************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "GRID IN wavemod_def.sh NOT SET"
+    postmsg   "GRID IN wavemod_def.sh NOT SET"
     exit 1
   else
     grdID=$1
@@ -76,7 +76,7 @@
     echo '*********************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN wavemod_def.sh NOT SET"
+    postmsg   "EXPORTED VARIABLES IN wavemod_def.sh NOT SET"
     exit 2
   fi
 
@@ -90,8 +90,8 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
  
-  rm -f multiwavegrid.inp 
-  ln -sf ../$grdID.inp multiwavegrid.inp
+  rm -f ww3_grid.inp 
+  ln -sf ../$grdID.inp ww3_grid.inp
   if [ -f ../mesh.${grdID} ]
   then
     ln -fs ../mesh.$grdID .
@@ -109,7 +109,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrid"
+    postmsg   "FATAL ERROR : ERROR IN multiwavegrid"
     exit 3
   fi
  
@@ -125,7 +125,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : Mod def File creation FAILED"
+    postmsg   "FATAL ERROR : Mod def File creation FAILED"
     exit 4
   fi
 

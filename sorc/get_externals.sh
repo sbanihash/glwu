@@ -7,7 +7,11 @@
 # --------------------------------------------------------------------------- #
 
 echo 'Fetching externals...'
-cp -p /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/git/fv3gfs/fix/fix_glwu/mesh.glwu ../fix/
-cp -p /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km ../fix/
-cp -p /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
-cp -p /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/mesh.glwu ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/mesh.glwu_lc ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km_lc ../fix/
+cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m_lc ../fix/
+

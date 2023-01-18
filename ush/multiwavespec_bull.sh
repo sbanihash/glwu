@@ -54,7 +54,7 @@
     echo '************************************************************************************ '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec_bull (Could not create temp directory)"
+    postmsg   "FATAL ERROR : ERROR IN multiwavespec_bull (Could not create temp directory)"
     exit 1
   fi
 
@@ -80,7 +80,7 @@
     echo '****************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "Error LOCATION ID IN multiwavespec_bull.sh NOT SET"
+    postmsg   "Error LOCATION ID IN multiwavespec_bull.sh NOT SET"
     exit 1
   else
     buoy=$1
@@ -97,7 +97,7 @@
       echo '***********************************************************'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "Error LOCATION ID IN multiwavespec_bull.sh NOT RECOGNIZED"
+      postmsg   "Error LOCATION ID IN multiwavespec_bull.sh NOT RECOGNIZED"
       exit 2
     fi
   fi
@@ -116,7 +116,7 @@
     echo '***********************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "Error EXPORTED VARIABLES IN multiwavespec_bull.sh NOT SET"
+    postmsg   "Error EXPORTED VARIABLES IN multiwavespec_bull.sh NOT SET"
     exit 3
   fi
 
@@ -153,7 +153,7 @@
       -e "s/DT/$dtbull/g" \
       -e "s/POINT/$point/g" \
       -e "s/REFT/$truntime/g" \
-                               ../multiwavespec_bull.inp.tmpl > multiwavespec.inp
+                               ../multiwavespec_bull.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 
@@ -173,7 +173,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec."
+    postmsg   "FATAL ERROR : ERROR IN multiwavespec."
     exit 4
   fi
 
@@ -190,7 +190,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : BULLETIN FILE NOT FOUND"
+    postmsg   "FATAL ERROR : BULLETIN FILE NOT FOUND"
     exit 7
   fi
 
@@ -206,7 +206,7 @@
       echo ' '
       echo " file $runID.$buoy.$ext not found !!"
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : BULLETIN FILE $runID.$buoy.$ext NOT FOUND"
+      postmsg   "FATAL ERROR : BULLETIN FILE $runID.$buoy.$ext NOT FOUND"
       exit 8
     fi
   done
