@@ -27,3 +27,6 @@ dev/lsf_scripts/glwu.v2.0.0.HOOK
 dev/lsf_scripts/glwu_lc.v2.0.0.HOOK
 dev/lsf_scripts/ncepdate
 sorc/glwu.compile.log
+#Dangerous Seas
+dev/lsf_scripts_plots_dangerseas
+sorc/glwu.compile.log
