@@ -1,0 +1,249 @@
+Release Notes:  glwu.v2.0.0 
+
+Released January 24, 2023
+
+Model upgrade to v2.0.0
+
+Where is the release tag on subversion/git/vlab?
+
+https://github.com/NOAA-EMC/glwu.git branch feature_v2.0 Tag: IT-glwu.v2.0.0-20230124
+
+This upgrade will:
+Update GLWU Wave model core (WAVEWATCH III) from 5.16 to latest public release.
+Increase ice concentration analysis resolution from 5 km to 500 m.
+Add a new lake to the Great Lakes forecast System  (Lake Champlain).
+With the addition of the new lake the workflow has been redesigned to run two sets of parallel jobs one for the Great Lakes and one for Lake Champlain. New ecf scripts, job cards, and utility scripts have been added to address this change. The ecf scripts and job cards have the same name structure as the existing ones with a _LC at the end of the names to indicate Lake Champlain domain. The OD Brief presentation for this upgrade can be found here.
+
+
+List of external software used (anything outside of your vertical structure), 
+including compilers and version numbers for everything. Software used must be a minimal list of modules/versions specified per job:
+
+jwave_glwu_prep & jwave_glwu_lc_prep:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+cfp/2.0.4
+wgrib2/2.0.8
+hdf5/1.10.6
+
+jwave_glwu_forecast & jwave_glwu_lc_forecast:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+hdf5/1.10.6
+netcdf/4.7.4
+libfabric/1.11.0.4.75
+jasper/2.0.25
+libpng/1.6.37
+libjpeg/9c
+zlib/1.2.11
+g2/3.4.5
+w3nco/2.4.1
+w3emc/2.9.2
+bacio/2.4.1
+cmake/3.20.2
+
+jwave_glwu_post & jwave_glwu_lc_post
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cfp/2.0.4
+wgrib2/2.0.8
+grib_util/1.2.2
+hdf5/1.10.6
+netcdf/4.7.4
+
+jwave_glwu_pgen& jwave_glwu_lc_pgen:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+libpng/1.6.37
+grib_util/1.2.2
+wgrib2/2.0.8
+util_shared/1.4.0
+
+List of all code/scripts modified with this release (relative to v1.1.1)
+
+Added version updates and modules for the WAVEWATCH III model core:
+
+versions/build.ver
+versions/run.ver
+
+modulefiles/build_glwu.module
+modulefiles/build_wavewatch3.modules
+
+
+Redesigned the model core make and build with cmake. WAVEWATCH III has also been added as a submodule, therefore all the multiwave*.fd directories have been omitted. Took get externals.sh out of make_all.sh and added the execution step to implementation instructions.
+
+sorc/make_all.sh
+sorc/get_externals.sh 
+
+Added ecf/jnwps_glwu_lc_prep  ecf/jnwps_glwu_lc_forecast  ecf/jnwps_glwu_lc_post ecf/jnwps_glwu_lc_pgen for Lake Champlain domain
+
+Edited ecf/jglwu_forecast.ecf to reflect the change in node distribution from 12 nodes to 16. 
+
+Added jobs/JNWPS_GLWU_LC_PREP, jobs/JNWPS_GLWU_LC_FORECAST,  jobs/JNWPS_GLWU_LC_POST,  jobs/JNWPS_GLWU_LC_PGEN for Lake Champlain domain.
+
+Added scripts/exglwu_lc_prep.sh, scripts/exglwu_lc_forecast.sh, scripts/exglwu_lc_post.sh, scripts/exglwu_lc_pgen.sh for Lake Champlain domain.
+
+Edited scripts/* to delete jlog references.
+
+Edited scripts/exnwps_prep, scripts/exnwps_forecast and scripts/exnwps_post to account for WAVEWATCH III update.
+
+Added mask files and longitude latitude files for new high resolution ice and Burlington Ice in fix directory
+LC_BVT_ICE.ll, LC_BVT_ICE.mask, LC_BVT_ICE.mask0, LC_BVT_ICE.zeros, T_OEBA88_C_KNWC.ll, T_OEBA88_C_KNWC.mask, T_OEBA88_C_KNWC.mask0, T_OEBA88_C_KNWC.zeros
+
+Added  fix/grlc_2p5km_interp.inp.tmpl and fix/grlr_500m_lc_interp.inp.tmpl for new Lake Champlain domain.
+
+Added fix/multiwavefcst.glwu_lc.tmpl for Lake Champlain forecast 
+
+Updated netcdf version and file output saving in fix/multiwavefldn.inp.tmpl to be compatible with the new upgraded WAVEWATCH III model core.
+
+Changed fix/multiwaveprep.ice_glw.tmpl to account for change in ice concentration input change. 
+
+Added fix/multiwaveprep.ice_lc.tmpl to account for new Lake Champlain ice preprocessing step.
+
+Added fix/multiwaveprnc.gfs_glwu.tmpl and fix/multiwaveprnc.hrrr_glwu.tmpl for Lake Champlain wind preprocessing
+
+Added fix/multiwavespnc.inp.tmpl to create netcdf point outputs.
+
+Updated fix/*.inp files to account for WAVEWATCH III update.
+
+Added parm/grib2_awips_glwu.grlc_2p5km_lc and parm/grib2_awips_glwu.grlc_2p5km_lc_sr for Lake Champlain wmo header files.
+
+Edited ush/multiwave* , ush/wavemod_def.sh, ush/wavendfd_glwu_inc.sh  files to omit jlogfile reference and also account for WAVEWATCH III model update.(new exec file names)
+
+Added ush/wavehrrr_glwu_inc.sh & ush/wavegfs_glwu_inc.sh for Lake Champlain domain preprocessing job.
+
+Edited ush/waveice_glw.sh to work with the new ice files with new format coming in from NIC for Great Lakes Domain preprocessing.
+
+Added ush/waveice_lc.sh for Lake Champlain Domain ice files preprocessing job.
+Added ush/wavestart_glwu_lc.sh for Lake Champlain restart files.
+
+
+
+
+For development only (please ignore):
+Were any other changes made that arent directly related to the transition?
+No
+
+Are there any changes to incoming data needs or outgoing products? 
+Yes, Adding a new Lake into the system has added dependencies to HRRR, GFS and Burlington WFO Ice fields. HRRR and GFS would be coming through com. And the Ice concentrations are coming through Burlington WFO, LDM upload through ERH). The data is currently in dev/dcom. Data flow ticket has been submitted to promote the data to prod/dcom.( RITM0241060)
+
+
+If output filenames are changing, list the current and new filename:
+
+NOMADS:
+Current:
+
+glwu.grlc_2p5km.tCCz.grib2 
+glwu.grlc_2p5km_sr.tCCz.grib2 
+glwu.grlr_500m.tCCz.grib2  
+glwu.glwu.tCCz.nc
+point.glwu.tCCz.nc
+glwu.tCCz.bull_tar 
+glwu.tCCz.spec_tar.gz
+glwu.tCCz.cbull_tar
+glwu.tCCz.csbull_tar
+glwu.tCCz.ripin_tar  
+glwu.tCCz.ts_tar
+
+New:
+
+glwu.grlc_2p5km_lc.tCCz.grib2 
+glwu.grlc_2p5km_lc_sr.tCCz.grib2 
+glwu.grlr_500m_lc.tCCz.grib2  
+glwu.glwu_lc.tCCz.nc
+
+AWIPS:
+
+Current:
+glwu.tCCz.awipsbull 
+grib2.tCCz.awipsww3_grlc_2p5km_sr  
+grib2.tCCz.awipsww3_grlc_2p5km
+
+
+
+New:
+grib2.tCCz.awipsww3_grlc_2p5km_lc_sr
+grib2.t01z.awipsww3_grlc_2p5km_lc
+
+
+
+
+
+
+Compute resource information, for every job: (More details in this presentation Slide #40 onward )
+*** Providing PBS and/or ecFlow submission scripts as part of release tag is preferred; 
+if they are provided then resource information is not needed in the release notes.
+See glwu/ecf/
+
+Runtime changes compared to current production (/lfs/h1/ops/prod/com/logs/runtime/prod/daily/* for current stats)
+Long cycles (01z, 07z, 13z, 19z):
+jwave_glwu_prep:       00:04:00   (prod: 00:03:36)
+jwave_glwu_forecast:   00:24:00   (prod: 00:22:20)
+jwave_glwu_post:       00:22:00   (prod: 00:20:00)
+jwave_glwu_pgen:       00:00:15   (prod: 00:00:12)
+Short cycles (remaining hours: 00z, 02z, 03z, 04z, 05z, 06z, 08z, 09z, 10z, 11z, 12z, etc.):
+jwave_glwu_prep        00:03:00   (prod: 00:02:12)
+jwave_glwu_forecast    00:09:00   (prod: 00:08:36)
+jwave_glwu_post        00:12:00   (prod: 00:10:50)
+jwave_glwu_pgen        00:00:11  (prod: 00:00:06)
+
+New 
+jwave_glwu)_lc_prep:       00:13:00   
+jwave_glwu_lc_forecast:   00:10:00   
+jwave_glwu_lc_post:       00:03:00   
+jwave_glwu_lc_pgen:       00:01:00   
+Short cycles (remaining hours: 00z, 02z, 03z, 04z, 05z, 06z, 08z, 09z, 10z, 11z, 12z, etc.):
+jwave_glwu_lc_prep        00:08:00   
+jwave_glwu_lc_forecast    00:05:00   
+jwave_glwu_lc_post        00:03:00   
+jwave_glwu_lc_pgen        00:01:11  
+
+
+Disk space required per day or per cycle; data retention on disk will remain the same unless otherwise requested.
+Changed to 127G/day.
+
+Dissemination will remain the same unless otherwise communicated to NCO and a PNS/SCN issued
+
+
+HPSS archive retention will remain the same unless approval granted by HPCRAC
+
+
+What are your up and downstream dependencies?
+Changed due to addition of Lake Champlain and utilizing higher resolution ICE from NIC.
+
+Current:
+Upstream: NDFD winds and NIC high resolution sea ice analysis from DCOM. 
+Downstream: URMA and Blend,
+
+New:
+HRRR and GFS winds and ice from BTV WFO comin into dcom.
+ Downstream: Dangerous Seas Project.
+
+Provide a pointer to your COMOUT directory that was used during testing: 
+/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/com/glwu/v2.0.0/glwu.20220101
+
+
+
+

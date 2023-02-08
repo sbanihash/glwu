@@ -24,6 +24,7 @@ export KEEPDATA=${KEEPDATA:-NO}
 
 # Set runID (Until modID becomes glwn and glw is dumped) 
 export runID=glwu
+export runID_lc=glwu_lc
 export modID=glwu
 
 export NET=glwu

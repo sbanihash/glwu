@@ -1391,50 +1391,9 @@ export grint_OK='yes'
 
 # grib2 files are DBN-alerted within multiwavegrib2.sh
     fi 
-    
-    echo ' '
-    echo "   Moving tar file ${file_name} to $COMOUT ..."
-    [[ "$LOUD" = YES ]] && set -x
-   
-    for type in spec ts bull cbull csbull
-    do
-      grdID=glwu_lc
-      file_name=$runID.$cycle.${type}_tar
-      if [ "$type" = 'spec' ] || [ "$type" = 'ts' ]
-      then
-        file_name=${file_name}.gz
-      fi
-
-      cp ${file_name} $COMOUT/$grdID.$cycle.${type}_tar
-      exit=$?
-
-      if  [ "$exit" != '0' ]
-      then
-        set +x
-        echo ' '
-        echo '************************************* '
-        echo '*** FATAL ERROR : TAR COPY FAILED *** '
-        echo '************************************* '
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg   "FATAL ERROR : TAR COPY FAILED"
-        err=2 ; export err; err_chk
-      fi
-
-      if [ "$SENDDBN" = 'YES' ]
-      then
-        set +x
-        echo ' '
-        echo "   Alerting TAR file as $COMOUT/${file_name}"
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        # add optional tag to dbn_alert subtyp (to distinguish from standard prod alerts)
-        $SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/${file_name}
-      fi
-    done
   fi
 
-  ecflow_client --event release_pgen
+  ecflow_client --event release_lc_pgen
 # --------------------------------------------------------------------------- #
 # 11. Additional grib2 files
   if [ "$grib_OK" = 'yes' ]
