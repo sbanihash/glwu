@@ -97,9 +97,66 @@
 
   done
 
-# 1.b Bulletin files ( AWIPS )-- deleted for lc
+# 1.b Bulletin files ( AWIPS )
 
-# 1.c Output locations from bulletin files -- deleted for lc
+  echo "   Copying bulletins from $COMIN"
+  cp $COMIN/${modID}_lc.$cycle.cbull_tar cbull.tar
+
+  if [ ! -f cbull.tar ]
+  then
+    msg="ABNORMAL EXIT: NO BULLETIN TAR FILE"
+    postmsg   "$msg"
+    set $setoff
+    echo ' '
+    echo '************************************ '
+    echo '*** ERROR : NO BULLETIN TAR FILE *** '
+    echo '************************************ '
+    echo ' '
+    echo "$modID pgen $date $cycle : bulletin tar missing." >> $wavelog
+    echo $msg
+    set $seton
+    awipsbull='no'
+    err=2;export err;err_chk
+  fi
+
+  echo "   Untarring bulletins ..."
+  tar -xf cbull.tar
+  OK=$?
+
+  if [ "$OK" = '0' ]
+  then
+    echo "      Unpacking successfull ..."
+    rm -f cbull.tar
+  else
+    msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
+    postmsg   "$msg"
+    set $setoff
+    echo ' '
+    echo '****************************************** '
+    echo '*** ERROR : ERROR IN BULLETIN TAR FILE *** '
+    echo '****************************************** '
+    echo ' '
+    echo "$modID pgen $date $cycle : bulletin untar error." >> $wavelog
+    echo $msg
+    set $seton
+    awipsbull='no'
+    err=3;export err;err_chk
+  fi
+
+# 1.c Output locations from bulletin files
+
+  Nb=0
+  for fld in `ls -1 *.cbull`
+  do
+    buoy=`echo $fld | cut -d. -f2`
+    if [ "$Nb" -eq '0' ]
+    then
+      bulls=$buoy
+    else
+      bulls=`echo $bulls $buoy`
+    fi
+    Nb=`expr $Nb + 1`
+  done
 
 
 # 1.d Input template files
