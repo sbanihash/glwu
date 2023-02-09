@@ -1399,7 +1399,7 @@ export grint_OK='yes'
     for type in spec ts bull cbull csbull
     do
       grdID=glwu_lc
-      file_name=$grdID.$cycle.${type}_tar
+      file_name=$runID.$cycle.${type}_tar
       if [ "$type" = 'spec' ] || [ "$type" = 'ts' ]
       then
         file_name=${file_name}.gz
@@ -1429,7 +1429,7 @@ export grint_OK='yes'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         # add optional tag to dbn_alert subtyp (to distinguish from standard prod alerts)
-        $SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/${file_name}
+        $SIPHONROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/$grdID.$cycle.${type}_tar
       fi
     done
   fi
