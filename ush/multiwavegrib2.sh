@@ -126,7 +126,7 @@
   echo "   Run multiwavegrib2"
   [[ "$LOUD" = YES ]] && set -x
 
-  ln -sf ../$runID.$grdID.$cycle.grib2 gribfile
+  ln -sf ../$runID.$grdID.$cycle.grib2 gribfile_cmplx
   $EXECglwu/multiwavegrib2
   err=$?
 
@@ -155,9 +155,12 @@
   err=$?
   echo "err from grb2index = $err"
 
+# Change grib2 packing to avoid warning "g2lib/g2clib jpeg encode/deocde may differ from WMO standard, use -g2clib 0 for WMO standard" 
+  $WGRIB2 gribfile -set_grib_type complex2 -grib_out gribfile_cmplx
+
 # Copy files to $COMOUT
   echo "   Saving GRIB file as $COMOUT/$runID.$grdID.$cycle.grib2"
-  cp gribfile $COMOUT/$runID.$grdID.$cycle.grib2
+  cp gribfile_cmplx $COMOUT/$runID.$grdID.$cycle.grib2
   echo "   Creating wgrib index of $COMOUT/$runID.$grdID.$cycle.grib2"
   $WGRIB2 -s ../$runID.$grdID.$cycle.grib2 > $COMOUT/$runID.$grdID.$cycle.grib2.idx
 
