@@ -72,7 +72,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg   "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -96,6 +96,9 @@
   if [ "$grdID" == "grlc_2p5km_sr" ]
   then
     ln -s ../out_grd.grlc_2p5km  out_grd.ww3
+  elif  [ "$grdID" == "grlc_2p5km_lc_sr" ] #added line for champlain
+    then
+    ln -s ../out_grd.grlc_2p5km_lc  out_grd.ww3
   else
     ln -s ../out_grd.$grdID  out_grd.ww3 
   fi
@@ -115,7 +118,7 @@
       -e "s/MODNR/$MODNR/g" \
       -e "s/GTMPLN/$GTMPLN/g" \
       -e "s/FLAGS/$gribflags/g" \
-                               ../multiwavegrib2.inp.tmpl > multiwavegrib2.inp
+                               ../multiwavegrib2.inp.tmpl > ww3_grib.inp
 
 # 1.b Run GRIB packing program
 
@@ -123,7 +126,7 @@
   echo "   Run multiwavegrib2"
   [[ "$LOUD" = YES ]] && set -x
 
-  ln -sf ../$runID.$grdID.$cycle.grib2 gribfile
+  ln -sf ../$runID.$grdID.$cycle.grib2 gribfile_cmplx
   $EXECglwu/multiwavegrib2
   err=$?
 
@@ -136,7 +139,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavegrib2"
+    postmsg   "FATAL ERROR : ERROR IN multiwavegrib2"
     exit 3
   fi
 
@@ -152,9 +155,12 @@
   err=$?
   echo "err from grb2index = $err"
 
+# Change grib2 packing to avoid warning "g2lib/g2clib jpeg encode/deocde may differ from WMO standard, use -g2clib 0 for WMO standard" 
+  $WGRIB2 gribfile -set_grib_type complex2 -grib_out gribfile_cmplx
+
 # Copy files to $COMOUT
   echo "   Saving GRIB file as $COMOUT/$runID.$grdID.$cycle.grib2"
-  cp gribfile $COMOUT/$runID.$grdID.$cycle.grib2
+  cp gribfile_cmplx $COMOUT/$runID.$grdID.$cycle.grib2
   echo "   Creating wgrib index of $COMOUT/$runID.$grdID.$cycle.grib2"
   $WGRIB2 -s ../$runID.$grdID.$cycle.grib2 > $COMOUT/$runID.$grdID.$cycle.grib2.idx
 

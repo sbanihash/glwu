@@ -1,0 +1,77 @@
+#!/bin/bash
+
+date
+
+set -xa
+
+export PS4='$SECONDS + '
+ 
+# PATH for working directory
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
+mkdir -p $DATA
+cd $DATA
+
+# Set cycle parameters
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. PDY
+
+# NCO alerts and outputs 
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export KEEPDATA=${KEEPDATA:-NO}
+
+# Set runID (Until modID becomes glwn and glw is dumped) 
+export runID=glwu
+export runID_lc=glwu_lc
+export modID=glwu
+
+export NET=glwu
+export RUN=glwu
+#set for compath.py 
+export model_ver=${glwu_ver}
+
+export HOMEglwu=${HOMEglwu:-${PACKAGEHOME}/${NET}.${model_ver}}
+export EXECglwu=${EXECglwu:-${HOMEglwu}/exec}
+export FIXglwu=${FIXglwu:-${HOMEglwu}/fix}
+export PARMglwu=${PARMglwu:-${HOMEglwu}/parm}
+export USHglwu=${USHglwu:-${HOMEglwu}/ush}
+
+# Location of NDFD input files
+export DCOMIN=${DCOMIN:-${DCOMROOT}} # serves ice and ndfd data
+# Location of HRRR and GFS input files
+export COMINhrrr=${COMINhrrr:-$(compath.py -v hrrr/$hrrr_ver)}
+export COMINgfs=${COMINgfs:-$(compath.py -v gfs/$gfs_ver)}
+
+export COMIN=${COMIN:-$(compath.py -v ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMINwave=${COMINwave:-$(compath.py -v ${NET}/${model_ver})}
+export COMOUT=${COMOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+export COMOUTwave=${COMOUTwave:-$(compath.py -v -o ${NET}/${model_ver})}
+export COMINOUT=${COMINOUT:-$(compath.py -v -o ${NET}/${model_ver}/${RUN}.${PDY})}
+
+if [ "$SENDCOM" = YES ]; then
+  mkdir -p $COMOUT
+fi
+
+export wavelog=${COMOUTwave}/wave.log
+
+env
+
+# Execute the Script  
+ ${HOMEglwu}/scripts/exglwu_lc_prep.sh
+
+export err=$?; err_chk
+
+msg="JOB $job HAS COMPLETED NORMALLY."
+postmsg "$msg"
+
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
+ 
+if [ "$KEEPDATA" != YES ]; then
+  rm -rf $DATA
+fi
+
+date

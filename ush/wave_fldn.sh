@@ -59,7 +59,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    postmsg   "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
     [[ "$LOUD" = YES ]] && set -x
   fi
@@ -94,7 +94,7 @@
   sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtnc/g" \
       -e "s/FLAGS/$ncflags/g" \
-                               ../multiwavefldn.inp.tmpl > multiwavefldn.inp
+                               ../multiwavefldn.inp.tmpl > ww3_ounf.inp
 
 # 1.b Run NCDF packing program
 
@@ -104,6 +104,7 @@
 
   $EXECglwu/multiwavefldn
   err=$?
+ #  err='0'
 
   if [ "$err" != '0' ]
   then
@@ -114,7 +115,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavenc"
+    postmsg   "FATAL ERROR : ERROR IN multiwavenc"
     exit 3
   fi
 
@@ -125,7 +126,7 @@
   rm -f out_grd.ww3
 
 # Copy files up a tree level for ex-script handling of copies and alerts
-    cp ww3.gridded.nc ../$runID.$grdID.$cycle.nc
+    cp ww3.*.nc ../$runID.$grdID.$cycle.nc
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory

@@ -1,0 +1,31 @@
+IMPLEMENTATION INSTRUCTIONS ON WCOSS2
+Go to your emc/couple/noscrub/$USER directory
+ cd <topdir>
+ git clone --branch feature_v2.0  https://github.com/NOAA-EMC/glwu.git glwu.v2.0.0
+ cd glwu.v2.0.0
+ git submodule update --init --recursive
+
+ cd sorc
+ >> ./get_externals.sh
+ >>./make.all.sh >& glwu.compile.log
+ An exec/ folder should be created in the main directory after this step
+
+  ***VERY IMPORTANT*** DELETE any wave_glwu*.moddef.* files in the fix directory,
+    these should be generated when the system is run for the first time.
+
+ TESTING INSTRUCTIONS WITH RETROSPECTIVE RUNS
+
+ cd dev/lsf_scripts      
+Set setting to Retrospective runs :
+ >>  vi glwu.cron
+     export RetroRun=YES
+
+Set date: 
+>>vi PDY_glwu 
+  export PDY=20220201
+  export cyc=01
+Run code
+>> bash glwu.cron v2.0.0
+  When your run is complete, your output would be available here: /lfs/h2/emc/couple/noscrub/${USER}/GLWU/com/glwu/v2.0.0/
+  Compare output to the real time run archive on WCOSS2  available at:     /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/com/sample_output/glwu.20220201
+

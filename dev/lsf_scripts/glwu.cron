@@ -15,7 +15,7 @@
 # March   -2019   Runlength                     Roberto.Padilla@nooa.gov      #
 # June    -2018   Ice Resolution & RetroRuns    Roberto.Padilla@noaa.gov      #
 # February-2007                                                               #
-#                                                                             #
+# Sep- 2022       Adding Lake Champlain lsf     saeideh.banihashemi@noaa.gov  #
 # --------------------------------------------------------------------------- #
 # 0.  Initializations
 # 0.a LSF stuff
@@ -56,18 +56,11 @@ module load prod_envir/2.0.5
     echo ' '
   fi
 
-#IceResol "LOW": Low resolution, "HIGH":High Resolution
-export IceResol=LOW
-#export IceResol=HIGH
 #IS this a retrospective run?
 #export RetroRun=YES
 export RetroRun=NOT
 envir=dev
 
-#if  [ "$RetroRun" = "NOT" ]
-#then
-#  export runLength=24
-#fi
 
   NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system                      
   LSFDIR=/lfs/h2/emc/couple/noscrub/${runuser}/glwu/${sysver}/dev/lsf_scripts
@@ -78,7 +71,6 @@ envir=dev
   wndID=ndfd                                # Wind ID for check file
   wndXT=smartconus84.tm00.grib2             # Wind extension for check file
   com_wave=${COMROOT}/wave/prod             # operational wave com (in parallel)
-  # com_wind=/com/nam/prod                  # operational wind com
   
 # Temporary DCOM fix until paths are established (points to tide and gyre)
 # Check HOST file for where to run
@@ -89,21 +81,18 @@ pref=$( echo $COMROOTp1 | cut -c7 )
 export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
 export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
 
-#DCOMROOT=/gpfs/${pref}p1/nco/ops/dcom
 echo $DCOMROOT
 
 if  [ "$RetroRun" = "YES" ]
 then
-  com_wind=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
-  export DCOMIN=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+  com_wind=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+  export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
 else
-  # DCOMROOT=/lfs/h2/emc/couple/noscrub/Andre.VanderWesthuysen/GLWU/dcom  # Canned data for WCOSS2 testing
+  # DCOMROOT=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/dcom  # Canned data for WCOSS2 testing
   DCOMROOT=/lfs/h1/ops/prod/dcom
   com_wind=${DCOMROOT}/                         # operational wind com
 fi
 
-
-#  com_wind=/marine/noscrub/${runuser}/GLW_Q1FY15   # test wind com
 
   com_date=${LSFDIR}
 
@@ -275,6 +264,10 @@ fi
   export llst=${TMP}/ll.$modID.cron.out.$$   # work file for llsubmit
   export llse=${TMP}/ll.$modID.cron.err.$$   # work file for llsubmit
 
+  export llst_lc=${TMP}/ll.${modID}_lc.cron.out.$$   # work file for llsubmit
+  export llse_lc=${TMP}/ll.${modID}_lc.cron.err.$$   # work file for llsubmit
+
+
   if [ "$envir" = "ops" ]
   then
     out=$NWROOT/com/output                            # output directory
@@ -299,20 +292,23 @@ fi
     echo '                                File is present'
   else
     echo $check_file
-    echo '                                File is absent'
+    echo '                                File is absent for current date, will have to look back'
     echo ' '
     echo " Time : `date`"
     echo ' '
     echo ' '
     echo '                        *** End of glwu.cron ***'
-    exit 0
+    #exit 0
   fi
 
 # --------------------------------------------------------------------------- #
-# 3.  Manage batch job
+# 3.  Manage batch jobs
 
   script=${modID}.boss.lsf                      # script to run
   batch=${modID}.${glwu_ver}.HOOK                # batch job name (made here)
+  script_lc=${modID}_lc.boss.lsf                      # script to run
+  batch_lc=${modID}_lc.${glwu_ver}.HOOK                # batch job name (made here)
+
 
   echo ' '
   echo " Time : `date`"
@@ -325,14 +321,14 @@ fi
   nr_job=`qstat -wu ${USER} | grep HO 2> /dev/null | wc -l | awk '{ print $1}'`
   echo "           number of jobs     : $nr_job"
 
-  if [ "$nr_job" = '1' ]
+  if [ "$nr_job" -ge '1' ]
   then
     echo ' '
     echo "           no need to run $batch ..."
     OK='no'
   fi
 
-  if [ "$nr_job" -gt '1' ]
+  if [ "$nr_job" -gt '2' ]
   then
     echo ' '
     echo "           something wrong, will attempt to kill all jobs ..."
@@ -400,7 +396,54 @@ fi
     rm -f $llst $llse
     #XXX rm -f $batch
 
+#champlain batch
+    echo "           Making new job     : $batch_lc"
+    rm -f $batch_lc
+
+    echo "#@!/bin/sh"                                         >  $batch_lc
+    echo "#PBS -N ${batch_lc}"                                   >> $batch_lc
+    echo "#PBS -A ${pcode}"                                   >> $batch_lc
+    echo "#PBS -l select=1:ncpus=1:mem=1000MB"                >> $batch_lc
+    echo "#PBS -V"                                            >> $batch_lc
+    echo "#PBS -j oe"                                         >> $batch_lc
+    echo "#PBS -o ${start_dir}/${batch_lc}.out"                  >> $batch_lc
+    echo "#PBS -e ${start_dir}/${batch_lc}.out"                  >> $batch_lc
+    echo "#PBS -l walltime=02:00:00"                          >> $batch_lc
+    echo "#PBS -q dev"                                        >> $batch_lc
+    echo "cd $PBS_O_WORKDIR"                                  >> $batch_lc
+    echo " "                                                  >> $batch_lc
+    #echo "  mkdir -p $out/${modID}.$date"                     >> $batch_lc
+    echo "  mkdir -p $out/$date"                              >> $batch_lc
+    -echo " "                                                  >> $batch_lc
+    echo "  $start_dir/$script_lc > $out/$date/$script_lc.$cycle.out 2>&1" >> $batch_lc
+    echo " "                                                  >> $batch_lc
+    #echo "  rm -f $start_dir/$batch_lc.out"                      >> $batch_lc
+
+    echo "           output of script $script_lc routed to"
+    echo "              $out/$date/$script_lc.$cycle.out"
+
+    echo "           starting $batch at `date`"
+    qsub $batch_lc  > $llst_lc 2> $llse_lc
+
+    OK=$?
+    if [ "$OK" != '0' ]
+    then
+      echo ' '
+      echo ' *************************************'
+      echo ' *** ERROR IN SUBMITTING BATCH JOB ***'
+      echo ' *************************************'
+      echo ' '
+      cat $llse_lc
+      exit 30
+    fi
+
+    jobname="`sed 's/\"//g' $llst_lc | sed 's/\.ncep\.noaa\.gov//g' \
+                                  | awk '{ print $4 }'`"
+    echo "              job name is $jobname"
+
+    rm -f $llst_lc $llse_lc
   fi
+
 
 # --------------------------------------------------------------------------- #
 # 4.  End of all.
