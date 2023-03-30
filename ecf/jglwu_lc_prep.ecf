@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:20:00
-#PBS -l select=1:ncpus=120:mem=2700MB
+#PBS -l select=1:ncpus=120
 #PBS -l place=exclhost
 #PBS -l debug=true
 
@@ -34,7 +34,7 @@ ulimit -s unlimited
 # Set global variables
 modID=glwu
 MODID=GLWN
- 
+export ntask=64 
 # EXPORT list here
 export cyc=%CYC%
 export modID=glwu
