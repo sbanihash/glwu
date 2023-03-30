@@ -12,7 +12,7 @@
 #PBS -q dev
 #PBS -A GLWU-DEV
 #PBS -l walltime=00:20:00
-#PBS -l select=1:ncpus=120:mem=2700MB
+#PBS -l select=1:ncpus=120
 #PBS -l place=excl
 #PBS -l debug=true
 #PBS -V
@@ -175,6 +175,8 @@ echo "COMPARING $PDYcyc_file >= $PDYcyc_changed ?"
 
 export PDY=$PDY_file
 export cyc=$cyc_file
+
+export ntask=64
 
 # Choose to keep temporary directory
 export KEEPDATA='YES'
