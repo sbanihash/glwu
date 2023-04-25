@@ -819,7 +819,7 @@
       nr_err=`expr $nr_err + 1`
       rm -f eice.$ymdh
     else
-      ticfile=`grep 'File for' ice_${ymdh}.err`
+      nicfile=`grep 'File for' ice_${ymdh}.err`
       if [ -z "$nicfile" ]
       then
         set +x
