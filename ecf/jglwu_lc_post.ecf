@@ -3,8 +3,8 @@
 #PBS -S /bin/bash
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:30:00
-#PBS -l select=3:ncpus=104:mem=10GB
+#PBS -l walltime=00:45:00
+#PBS -l select=3:ncpus=104
 #PBS -l place=exclhost
 #PBS -l debug=true
 
@@ -29,10 +29,12 @@ MODID=GLWU
  
 # EXPORT list here
 export cyc=%CYC%
-
+export ntask=64
 # Setup and load modules
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
 module load intel/${intel_ver}
 module load cfp/${cfp_ver}
 module load wgrib2/${wgrib2_ver}

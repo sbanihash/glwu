@@ -425,15 +425,6 @@
 #     The actual work is distributed over these files.
 
   [[ "$LOUD" = YES ]] && set -x
-  nfile=`echo $LSB_HOSTS | wc -w | awk '{ print $1}'`
-
-  if [ "$nfile" -gt '1' ]
-  then
-    cmdtype="aprun"
-  else
-    cmdtype='sh'
-    nfile=1
-  fi
 
   set +x
   echo ' '
@@ -531,15 +522,9 @@
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
 
-    if [ "$nfile" -gt '1' ]
-    then
+
       mpiexec -np 5 --cpu-bind verbose,core cfp cmdfile
       exit=$?
-    else
-      ./cmdfile.1
-      ./cmdfile
-      exit=$?
-    fi
 
   fi
 
@@ -769,14 +754,10 @@
   echo "   Executing command file."
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ "$nfile" -gt '1' ]
-  then
-    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
+
+    mpiexec -np $ntask --cpu-bind verbose,core cfp cmdfile
     exit=$?
-  else
-    ./cmdfile
-    exit=$?
-  fi
+
 
 # 3.b Error trap on ${mpicmd} or shell
 
@@ -1089,7 +1070,7 @@
     set +x
     cat warning
     [[ "$LOUD" = YES ]] && set -x
-     err=14;export err;./err_chk
+     err=15;export err;./err_chk
   fi
 
 # --------------------------------------------------------------------------- #

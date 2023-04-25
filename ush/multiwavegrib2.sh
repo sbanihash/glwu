@@ -151,16 +151,91 @@
 
 # 1.d Create grib2 index file
 
-  $GRB2INDEX gribfile gribfile_indx
+  grb2index gribfile gribfile_indx
   err=$?
   echo "err from grb2index = $err"
 
 # Change grib2 packing to avoid warning "g2lib/g2clib jpeg encode/deocde may differ from WMO standard, use -g2clib 0 for WMO standard" 
-  $WGRIB2 gribfile -set_grib_type complex2 -grib_out gribfile_cmplx
+ 
+rm -f cmdfile_1
+touch cmdfile_1
+chmod 744 cmdfile_1
+
+
+ if [ "$ngrib" -le '49' ]
+ then 
+  echo " $WGRIB2 gribfile -for_n "1:342" -grib grib_file_p1 " >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "343:684" -grib grib_file_p2" >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "685:931" -grib grib_file_p3" >> cmdfile_1 
+ else
+  echo " $WGRIB2 gribfile -for_n "1:475" -grib grib_file_p1 " >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "476:950" -grib grib_file_p2" >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "951:1425" -grib grib_file_p3" >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "1426:1900" -grib grib_file_p4 " >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "1901:2375" -grib grib_file_p5" >> cmdfile_1
+  echo " $WGRIB2 gribfile -for_n "2376:$(($ngrib*19))" -grib grib_file_p6" >> cmdfile_1
+
+ fi
+
+   mpiexec  -np 40  --cpu-bind verbose,core cfp cmdfile_1 
+   exit=$?
+   if [ "$exit" != '0' ]
+   then 
+	   set +x
+	   echo ' ' 
+	   echo '********************************************'
+	   echo '*** POE FAILURE DURING grib2 packing change ***'
+	   echo '********************************************'
+	   echo '     See Details Below '
+	   echo ' '   
+	   [[ "$LOUD" = YES ]] && set -x
+   fi 
+
+rm -f cmdfile_p1
+touch cmdfile_p1
+chmod 744 cmdfile_p1
+
+ if [ "$ngrib" -le '49' ]
+ then
+  echo  " $WGRIB2 grib_file_p1 -set_grib_type complex2 -grib_out gribfile_cmplx_p1"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p2 -set_grib_type complex2 -grib_out gribfile_cmplx_p2"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p3 -set_grib_type complex2 -grib_out gribfile_cmplx_p3"  >> cmdfile_p1
+ else
+  echo  " $WGRIB2 grib_file_p1 -set_grib_type complex2 -grib_out gribfile_cmplx_p1"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p2 -set_grib_type complex2 -grib_out gribfile_cmplx_p2"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p3 -set_grib_type complex2 -grib_out gribfile_cmplx_p3"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p4 -set_grib_type complex2 -grib_out gribfile_cmplx_p4"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p5 -set_grib_type complex2 -grib_out gribfile_cmplx_p5"  >> cmdfile_p1
+  echo  " $WGRIB2 grib_file_p6 -set_grib_type complex2 -grib_out gribfile_cmplx_p6"  >> cmdfile_p1
+ fi 
+
+  mpiexec   -np 40 --cpu-bind verbose,core cfp cmdfile_p1 
+  exit=$?
+
+      if [ "$exit" != '0' ]
+      then 
+	      set +x                       
+	      echo ' '                                 
+	      echo '********************************************'                                  
+	      echo '*** POE FAILURE DURING grib2 packing to complex***'
+	      echo '********************************************'                                          
+	      echo '     See Details Below '
+	      echo ' '                                                     
+	      [[ "$LOUD" = YES ]] && set -x                                                          
+      fi
+
+
+   if [ "$ngrib" -le '49' ]
+   then
+    cat gribfile_cmplx_p1 gribfile_cmplx_p2 gribfile_cmplx_p3  > gribfile_cmplx
+   else
+     cat gribfile_cmplx_p1 gribfile_cmplx_p2 gribfile_cmplx_p3  gribfile_cmplx_p4 gribfile_cmplx_p5 gribfile_cmplx_p6 > gribfile_cmplx
+   fi 
 
 # Copy files to $COMOUT
   echo "   Saving GRIB file as $COMOUT/$runID.$grdID.$cycle.grib2"
   cp gribfile_cmplx $COMOUT/$runID.$grdID.$cycle.grib2
+  
   echo "   Creating wgrib index of $COMOUT/$runID.$grdID.$cycle.grib2"
   $WGRIB2 -s ../$runID.$grdID.$cycle.grib2 > $COMOUT/$runID.$grdID.$cycle.grib2.idx
 

@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:20:00
-#PBS -l select=1:ncpus=120:mem=2700MB
+#PBS -l select=1:ncpus=120
 #PBS -l place=exclhost
 #PBS -l debug=true
 
@@ -39,7 +39,7 @@ MODID=GLWN
 export cyc=%CYC%
 export modID=glwu
 export MODID=GLWU
-
+export ntask=64
 # Setup and load modules 
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}

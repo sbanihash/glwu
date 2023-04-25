@@ -140,7 +140,7 @@
         cp ${nicice} .
 # Convert nicice netcdf file into txt file for ww3_prep use
 
-   $NCDUMP -v IceCoverage_SFC OpenWater.nc | sed -e '1,/data:/d' -e '$d' | sed 's/,//g' | sed -e 's/IceCoverage_SFC =//' > LC.ice
+   ncdump -v IceCoverage_SFC OpenWater.nc | sed -e '1,/data:/d' -e '$d' | sed 's/,//g' | sed -e 's/IceCoverage_SFC =//' > LC.ice
 
 # (ice will be tagged with the run start time, independent of its actual time)
 

@@ -133,19 +133,6 @@ export grint_OK='yes'
 
 # 1.a.1 Set up the ${mpicmd} command 
 
-#  ifile=1
-  nfile=`echo ${LSB_HOSTS} | wc -w | awk '{ print $1}'`
-
-  if [ "$nfile" -gt '1' ]
-  then
-    cmdtype="mpirun.lsf cfp"
-  else
-    nfile=1
-    cmdtype='sh'
-#    nskip='-'
-#    nper='-'
-  fi
-
   set +x
   echo ' '
   echo "   Setting up first command file for copying data files."
@@ -180,16 +167,11 @@ export grint_OK='yes'
   echo '   ------------------------------------'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
+  
 
-  if [ "$nfile" -gt '1' ]
-  then
-    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
+  mpiexec -np $ntask --cpu-bind verbose,core cfp cmdfile
     exit=$?
-  else
-    nfile=1
-    ./cmdfile
-    exit=$?
-  fi
+
 
   if [ "$exit" != '0' ]
   then
@@ -685,18 +667,10 @@ export grint_OK='yes'
   echo '   ------------------------------------'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
+   
+    mpiexec -np $ntask --cpu-bind verbose,core cfp cmdfile
+    exit=$?
 
-  if [ "$nfile" -gt '1' ]
-  then
-    # ${mpicmd} cmdfile
-    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
-    exit=$?
-  else
-    nfile=1
-#    ./cmdfile.1
-    ./cmdfile
-    exit=$?
-  fi
 
   if [ "$exit" != '0' ]
   then
@@ -901,16 +875,9 @@ export grint_OK='yes'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ "$nfile" -gt '1' ]
-  then
-    # ${mpicmd} cmdfile
-    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
+     mpiexec -np $ntask --cpu-bind verbose,core cfp cmdfile
     exit=$?
-  else
-#    ./cmdfile.1
-    ./cmdfile
-    exit=$?
-  fi
+
 
   if [ "$exit" != '0' ]
   then
@@ -1218,17 +1185,10 @@ export grint_OK='yes'
   echo '   -------------------------------'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
+ 
+    mpiexec -np $ntask --cpu-bind verbose,core cfp cmdfile
+    exit=$?
 
-  if [ "$nfile" -gt '1' ]
-  then
-    # ${mpicmd} cmdfile
-    mpiexec -np 120 --cpu-bind verbose,core cfp cmdfile
-    exit=$?
-  else
-#    ./cmdfile.1
-    ./cmdfile
-    exit=$?
-  fi
 
   if [ "$exit" != '0' ]
   then
