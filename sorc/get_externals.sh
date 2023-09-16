@@ -3,7 +3,7 @@
 #                                                                             #
 # Copy external fix files that are too large to store in repository           #
 #                                                                             #
-# Last Changed : 09-27-2021                                   September 2021  #
+# Last Changed : 07-05-2022                                        July 2022  #
 # --------------------------------------------------------------------------- #
 
 echo 'Fetching externals...'
@@ -14,4 +14,3 @@ cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/gri
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/mesh.glwu_lc ../fix/
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlc_2p5km_lc ../fix/
 cp -p /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/git/fv3gfs/fix/fix_glwu/grint_weights.grlr_500m_lc ../fix/
-
