@@ -5,9 +5,13 @@ $
 $
    F T T T T T 
 $
- 180. 60. 90. 10.                              
+180. 60. 90. 10.
 $
-&UNST UGOBCAUTO = F, EXPFSN = T /
+&UNST
+UGOBCAUTO = F
+UGOBCDEPTH= -10.
+EXPFSN = T
+/
 &SIN4 BETAMAX = 1.70 /
 &SDS4 SDSCUM = 0. /
 &SDB1 BJGAM = 0.8, BJALFA = 0.50 /
@@ -22,7 +26,7 @@ END OF NAMELISTS
 $
   'UNST' T 'NONE'
 $    
-   5.0 0.30  10  -1. 4 1 '(20f10.2)'  'NAME' 'mesh.glwu'
+   5.0 0.30  20  -1. 4 1 '(20f10.2)'  'NAME' 'mesh.glwu'
 $
    10 1. 4 1 '(....)' 'UNIT' 'bogus.obstr'
    253010*0.

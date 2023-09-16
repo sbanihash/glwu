@@ -1,0 +1,68 @@
+#!/bin/bash --login
+#################################################
+### GET_HS_HPSS: Great Lakes Wave Sys           #
+###      LSF card for extracting archived Hs    #
+#                                               #
+#   Author:                                     #
+#                                               #
+#   Colaborator:                                #
+#                  April/2018                   #
+#################################################
+#
+# LSF options
+#BSUB -J GET_ICE_HPSS
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util/GET_ICE_HPSS.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util/GET_ICE_HPSS.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev"
+## Seems like 5 hours is the maximum allowed for  dev_transfer queue
+#BSUB -W 5:00
+##BSUB -W 0:10
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util
+
+
+
+module load hpss
+
+set +xa
+HPSSTAR=`pwd`/hpsstar
+
+export runuser=$(whoami)
+#OutputDir=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWUInput/LOWResolution/ICE
+
+export PDY=20180415  # Initial Time
+#   - - - OR from today - - - 
+#export PDY=$(date +%Y%m%d)  # From Today
+#
+PDYend=20171229        # END Time ADD ONE DAY To YOUR Final date
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+#XXX OutputDir=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWUInput/${PDY}/
+
+until [ "$PDY" == "$PDYend" ]              #USE THIS  OR
+do
+   #NewDir will have wgrbbul/ICEd as those sudirectories are made when wind is extracted
+
+   NewDir=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWUInput/${PDY}/
+   mkdir -p $NewDir
+   cd $NewDir
+   YYYY=${PDY:0:4}
+   MM=${PDY:4:2}
+   YYYYMM=${PDY:0:6}
+
+   ## FOR ICE FIELDS EXTRACTION
+   #Downloading  the Low Resolution ice file
+   HPSSDIRIceLR=/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${PDY}
+   TARFILEIceLR=dcom_us007003_${PDY}.tar
+   TAKEHOME=`$HPSSTAR inv ${HPSSDIRIceLR}/${TARFILEIceLR} | grep wgrbbul | grep OEBA88 | awk '{print $7}'`
+   echo "$HPSSTAR get ${HPSSDIRIceLR}/${TARFILEIceLR} ${TAKEHOME}"
+   $HPSSTAR get ${HPSSDIRIceLR}/${TARFILEIceLR} ${TAKEHOME}
+   ls -lt $NewDir/wgrbbul
+   cd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util
+
+
+   PDY_epoch=$(( $PDY_epoch + 86400 ))       # add 24 hours
+   PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+done
+

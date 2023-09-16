@@ -25,5 +25,5 @@ module load libpng/${libpng_ver}
 module load zlib/${zlib_ver}
 module load g2/${g2_ver}
 # used for multiwavegrib1 and grib2
-module load w3nco/${w3nco_ver}
+module load w3emc/${w3emc_ver}
 module load bacio/${bacio_ver}

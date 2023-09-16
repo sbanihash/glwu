@@ -52,7 +52,7 @@
     echo '****************************************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec (Could not create temp directory)"
+    postmsg   "FATAL ERROR : ERROR IN multiwavespec (Could not create temp directory)"
     exit 1
   fi
 
@@ -78,7 +78,7 @@
     echo '***********************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "LOCATION ID IN multiwavespec2.sh NOT SET"
+    postmsg   "LOCATION ID IN multiwavespec2.sh NOT SET"
     exit 1
   else
     buoy=$1
@@ -96,7 +96,7 @@
       echo '******************************************************'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "LOCATION ID IN multiwavespec2.sh NOT RECOGNIZED"
+      postmsg   "LOCATION ID IN multiwavespec2.sh NOT RECOGNIZED"
       exit 2
     fi
   fi
@@ -115,7 +115,7 @@
     echo '******************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN multiwavespec2.sh NOT SET"
+    postmsg   "EXPORTED VARIABLES IN multiwavespec2.sh NOT SET"
     exit 3
   fi
 
@@ -152,7 +152,7 @@
       -e "s/POINT/$point/g" \
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
-                               ../multiwavespec.inp.tmpl > multiwavespec.inp
+                               ../multiwavespec.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 
@@ -172,7 +172,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN multiwavespec"
+    postmsg   "FATAL ERROR : ERROR IN multiwavespec"
     exit 4
   fi
 
@@ -193,7 +193,7 @@
     echo '***************************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND"
+    postmsg   "FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND"
     exit 5
   fi
 

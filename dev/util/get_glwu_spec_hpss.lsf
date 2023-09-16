@@ -1,0 +1,67 @@
+#!/bin/bash --login
+#################################################
+### GET_HS_HPSS: Great Lakes Wave Sys           #
+###      LSF card for extracting archived Hs    #
+#                                               #
+#   Author: Henrique.Alves@noaa.gov                                    #
+#                                               #
+#   Colaborator:                                #
+#                  April/2018                   #
+#################################################
+#
+# LSF options
+#BSUB -J GET_Hs_HPSS
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util/GET_Spec_HPSS.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util/GET_Spec_HPSS.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev_transfer"
+## Seems like 5 hours is the maximum allowed for  dev_transfer queue
+#BSUB -W 5:00
+##BSUB -W 0:10
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util
+
+
+
+module load hpss
+
+set -xa
+HPSSTAR=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util/hpsstar
+
+export runuser=$(whoami)
+RootDir=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWU_from_Hpss/Spectra
+
+export PDY=20170622   # Initial Time
+#   - - - OR from today - - - 
+#export PDY=$(date +%Y%m%d)  # From Today
+#
+#PDYend=20170701         # END Time ADD ONE DAY To YOUR Final date
+PDYend=20170701         # END Time ADD ONE DAY To YOUR Final date
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+
+until [ "$PDY" == "$PDYend" ]              #USE THIS  OR
+do
+   #NewDir will have wgrbbul/Hs as those sudirectories are made when wind is extracted
+   NewDir=${RootDir}/${PDY}/
+   mkdir -p $NewDir
+   cd $NewDir
+   YYYY=${PDY:0:4}
+   MM=${PDY:4:2}
+   YYYYMM=${PDY:0:6}
+
+   ## FOR Hs FIELDS EXTRACTION
+   #Downloading  the Hs file
+   HPSSDIRSpec=/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${PDY}
+   for icyc in {3..21..6}
+   do 
+      #icyc=`echo "$icyc + 1" | bc`
+      if [ "$icyc" -lt "10" ]; then icyc=0${icyc}; fi
+      TARFILESpec=com_wave_prod_glw.${PDY}${icyc}.output.tar
+      TAKEHOME=`$HPSSTAR inv ${HPSSDIRSpec}/${TARFILESpec} | grep glwn.t${icyc}z.spec_tar.gz | awk '{print $7}'`
+      echo "$HPSSTAR get ${HPSSDIRSpec}/${TARFILESpec} ${TAKEHOME}"
+      $HPSSTAR get ${HPSSDIRSpec}/${TARFILESpec} ${TAKEHOME}
+   done
+   PDY_epoch=$(( $PDY_epoch + 86400 ))       # add 24 hours
+   PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+done
