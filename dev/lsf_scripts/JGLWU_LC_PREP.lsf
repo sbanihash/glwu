@@ -1,0 +1,173 @@
+############################################
+###  JGLWU_PREP: Great Lakes Wave Sys    ###
+###      LSF card for development        ###
+############################################
+#
+# LSF options
+#
+#PBS -N JGLWU_LC_PREP
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q dev
+#PBS -A GLWU-DEV
+#PBS -l walltime=00:20:00
+#PBS -l select=1:ncpus=120
+#PBS -l place=excl
+#PBS -l debug=true
+#PBS -V
+#PBS -o JGLWU_LC_PREP.out
+#PBS -e JGLWU_LC_PREP.out
+
+cd $PBS_O_WORKDIR
+
+# Setup and load modules
+source ../../versions/run.ver
+module purge
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${inter_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
+module load wgrib2/${wgrib2_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load libjpeg/${libjpeg_ver}
+module list
+# Set LSF variables
+export MP_EAGER_LIMIT=165536
+export MP_COREFILE_FORMAT=core.txt
+export MP_EUIDEVELOP=min
+export MP_MPILIB=mpich2
+
+export MP_LABELIO=yes
+export MP_SINGLE_THREAD=yes
+export MP_USE_BULK_XFER=yes
+export MPICH_ALLTOALL_THROTTLE=0
+
+export MP_TASK_AFFINITY=cpu
+export MP_EUIDEVICE=sn_all
+export MP_EUILIB=us
+
+ulimit -s unlimited
+
+export IOBUF_PARAMS='*.dat:count=4:size=32M:prefetch=1:preflush=1'
+
+# Set global variables
+export modID=glwu
+export MODID=GLWU
+
+runuser=$USER
+NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}      # root of file system
+
+# Set paths to home etc
+export NET=glwu
+export RUN=glwu
+export model_ver=${glwu_ver}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}/${modID}.${glwu_ver}}
+
+
+# Check HOST file for where to run
+#
+./HOST_${modID}
+
+# Set pref to point to matching CRAY machines
+pref=$( echo $COMROOTp1 | cut -c7 )
+export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
+export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
+
+export job=JGLWU_LC_PREP
+export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
+
+
+# Set PDY and cycle here
+export COMDATE=`pwd`
+
+echo $COMDATE
+ls $COMDATE
+
+if [ -f $COMDATE/PDY_${modID} ]
+then
+   source $COMDATE/PDY_${modID}
+else
+  echo '##################################################'
+  echo '### ERROR !! : COULD NOT SET THE PDY AND CYCLE ###'
+  echo '##################################################'
+  exit 1
+fi
+
+PDY_file=$PDY
+cyc_file=$cyc
+
+# Set j-job parameters (extracted from j-job for DEV by new NCO standards)
+# the stmp file system is hugely slow
+
+ export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
+ rm -rf $DATA
+ mkdir -p $DATA
+ export jlogfile=/dev/null
+ export SENDECF=NO
+ export SENDDBN=NO
+ export SENDCOM=YES
+
+#
+
+if  [ "$RetroRun" = "YES" ]
+then
+   export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
+   export dcominice=${DCOMIN}
+   export COMINhrrr=${DCOMIN}/HRRR
+   export COMINgfs=${DCOMIN}/GFS
+else
+  # these were for ndfd field
+  # DCOMROOT=/lfs/h1/ops/prod/dcom
+  # export DCOMIN=${DCOMROOT}
+  #
+   DCOMROOT=/lfs/h1/ops/prod/dcom
+   export DCOMIN=${DCOMROOT}
+   export dcominice=${DCOMROOT}
+   export COMINhrrr=/lfs/h1/ops/prod/com/hrrr/${hrrr_ver}
+   export COMINgfs=/lfs/h1/ops/prod/com/gfs/${gfs_ver}
+fi
+
+
+ # Set COM paths
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for champlain
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+export COMINOUT=$COMOUT
+
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+
+#export PDYcyc_changed=2018103014
+
+cyc_now=$(date -u +%H)
+
+#export UTILROOT=${NWROOT}
+export utilscript=${UTILROOT}/ush
+sh $utilscript/setpdy.sh
+mv PDY PDY.TODAY
+
+. ./PDY.TODAY
+PDYcyc_file="${PDY_file}${cyc_file}"
+echo "COMPARING $PDYcyc_file >= $PDYcyc_changed ?"
+
+
+export PDY=$PDY_file
+export cyc=$cyc_file
+
+export ntask=64
+
+# Choose to keep temporary directory
+export KEEPDATA='YES'
+
+# choose to keep temporary directory
+export KEEPDATA='YES'
+############################################################################
+${NWROOT}/${modID}/${modID}.${glwu_ver}/jobs/J${MODID}_LC_PREP
+############################################################################

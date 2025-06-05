@@ -1,0 +1,139 @@
+#!/bin/bash --login
+
+############################################
+### JWAVE_GLWU_WEB: Great Lakes Wave Sys ###
+###      LSF card for development        ###
+############################################
+#
+# LSF options
+#
+#PBS -N JGLWU_WEB3
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q dev_transfer
+#PBS -A GLWU-DEV
+#PBS -l walltime=00:30:00
+#PBS -l select=1:ncpus=1
+#PBS -l debug=true
+#PBS -V
+#PBS -o JGLWU_WEB3.out
+#PBS -e JGLWU_WEB3.out
+
+cd $PBS_O_WORKDIR
+
+# Setup the modules
+source ../../versions/run.ver
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module list
+
+# Set LSF variables
+export MP_EAGER_LIMIT=165536
+export MP_COREFILE_FORMAT=core.txt
+export MP_EUIDEVELOP=min
+export MP_MPILIB=mpich2
+
+export MP_LABELIO=yes
+export MP_SINGLE_THREAD=yes
+export MP_USE_BULK_XFER=yes
+export MPICH_ALLTOALL_THROTTLE=0
+
+export MP_TASK_AFFINITY=cpu
+export MP_EUIDEVICE=sn_all
+export MP_EUILIB=us
+
+ulimit -s unlimited
+
+# Set global variables
+export modID=glwu
+export MODID=GLWU
+export RUN=$modID
+
+runuser=saeideh.banihashemi
+
+# envir now set by version card
+# Check HOST file for where to run
+. ./HOST_${modID}
+
+# Lines below for retrospective testing using data in noscrub
+# export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
+# export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
+
+#export DCOM=${DCOMROOT}/us007003
+export DCOM=${DCOMROOT}/prod
+
+export job=JGLWU_WEB3
+#export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
+
+#Set Version numbers
+#if [ -f 'version.card' ]
+#then
+#  source ./version.card
+#else
+#  echo '##############################################'
+#  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
+#  echo '##############################################'
+#  exit 1
+#fi
+
+# Set PDY and cycle here
+export COMDATE=`pwd`
+
+echo $COMDATE
+ls $COMDATE
+
+if [ -f $COMDATE/PDY_${modID} ]
+then
+   source $COMDATE/PDY_${modID}
+else
+  echo '##################################################'
+  echo '### ERROR !! : COULD NOT SET THE PDY AND CYCLE ###'
+  echo '##################################################'
+  exit 1
+fi
+
+# Set j-job parameters (extracted from j-job for DEV by new NCO standards)
+# the stmp file system is hugely slow
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
+export jlogfile=/dev/null
+export SENDECF=NO 
+export SENDDBN=NO
+export SENDCOM=YES 
+
+# Set paths to home etc
+export NET=wave
+#export HOMEwave=${HOMEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/dev/${NET}_${modID}.${wave_glwu_ver}}
+#export OPSwave=${OPSwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/ops/${NET}_${modID}.${wave_glwu_ver}/EMC_wave_glwu}
+#export CODEwave=${CODEwave:-/gpfs/hps3/emc/marine/noscrub/${runuser}/ops/wave_glwu.v1.1.0/EMC_wave_glwu/WW3/${NET}_code.${wave_code_ver}/${wave_code_pkg}}
+
+# Set COM paths
+#com=/gpfs/${pref}p1/nco/ops/com
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${modID}/${glwu_ver}/${RUN}.${PDY}
+export com=${com:-/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${modID}/${glwu_ver}/${RUN}.${PDY}}
+export COMIN=${COMIN:-${com}/${RUN}.${PDY}}
+
+#export web=${web:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/WEB}
+
+export COMOUT=${COMOUT:-${com}/${RUN}.${PDY}}
+export COMINOUT=${COMINOUT:-${com}/${RUN}.${PDY}}
+
+export PYTHON=`which python`
+
+export COMROOT=${com}
+
+# Choose to keep temporary directory
+export KEEPDATA='YES'
+
+# Send results to web
+scp ${COMOUT}/glwu_plots_${PDY}.${cyc}.tar.gz waves@emcrzdm:/home/www/polar/nwps/para/images/rtimages/glw/nwps/CG1/
+ssh waves@emcrzdm 'cd /home/www/polar/nwps/para/images/rtimages/glw/nwps/CG1/; tar -xf glwu_plots*.tar.gz'
+ssh waves@emcrzdm 'cd /home/www/polar/nwps/para/images/rtimages/glw/nwps/CG1/; rm glwu_plots*.tar.gz'
+
+touch $COMOUT/$runID.$cycle.web3done
+
+# Execute the actual J job
+############################################################################
+#JDIR=/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/dev
+#${JDIR}/wave_${modID}.${wave_glwu_ver}/jobs/JWAVE_${MODID}_WEB
+############################################################################

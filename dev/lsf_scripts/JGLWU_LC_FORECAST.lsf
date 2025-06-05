@@ -1,0 +1,158 @@
+############################################
+### JGLWU_FORECAST: Great Lakes Wave Sys ###
+###      LSF card for development        ###
+############################################
+#
+# LSF options
+#
+#PBS -N JGLWU_LC_FORECAST
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -q dev
+#PBS -A GLWU-DEV
+#PBS -l walltime=01:00:00
+#PBS -l select=8:ncpus=120:mem=500GB
+##PBS -l select=24:ncpus=32
+#PBS -l place=excl
+#PBS -l debug=true
+#PBS -V
+#PBS -o JGLWU_LC_FORECAST.out
+#PBS -e JGLWU_LC_FORECAST.out
+
+cd $PBS_O_WORKDIR
+
+# Setup the modules
+source ../../versions/run.ver
+module purge
+module load envvar/${envvar_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load libfabric/${libfabric_ver}
+module load jasper/${jasper_ver}
+module load libpng/${libpng_ver}
+module load zlib/${zlib_ver}
+module load g2/${g2_ver}
+module load w3nco/${w3nco_ver}
+module load bacio/${bacio_ver}
+module load libjpeg/${libjpeg_ver}
+module load w3emc/${w3emc_ver}
+
+module list
+
+# Set LSF variables
+export KMP_AFFINITY=disabled
+# specify X threads if using openmp
+export OMP_NUM_THREADS=2
+
+ulimit -s unlimited
+
+export IOBUF_PARAMS='*:count=4:size=32M:prefetch=1:preflush=1'
+
+# Set global variables
+export modID=glwu
+export MODID=GLWU
+
+runuser=$USER
+NWROOT=/lfs/h2/emc/couple/noscrub/${runuser}    # root of file system
+
+# envir now set by version card
+
+# Check HOST file for where to run
+. ./HOST_${modID}
+
+pref=$( echo $COMROOTp1 | cut -c7 )
+export WCOSS_SYSTEM=$( echo $COMROOTp1 | cut -c7 )d1
+export WCOSS_SYSTEM_COM=$( echo $COMROOTp1 | cut -c7-9)
+
+# Set pref to point to matching CRAY machines
+#if [ "${pref}" == "l" ]
+#then
+#  pref='t'
+#else
+# pref='g'
+#fi
+
+# Lines below for retrospective testing using data in noscrub
+# export DCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15/DCOM
+# export INCOM=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWU_Q1FY15
+
+export job=JGLWU_LC_FORECAST
+export SMSBIN=/gpfs/${pref}p1/emc/globaldump/sms_fake
+
+# #Set Version numbers
+#version_file=$NWROOT/${sysver}/versions/run.ver      # file with version info
+#if [ -f $version_file ]
+#then
+#  source $version_file
+#else
+#  echo '##############################################'
+#  echo '### ERROR !! : COULD NOT FIND VERSION CARD ###'
+#  echo '##############################################'
+#  exit 1
+#fi
+
+# Set PDY and cycle here
+export COMDATE=`pwd`
+
+echo $COMDATE
+ls $COMDATE
+
+if [ -f $COMDATE/PDY_${modID} ]
+then
+   source $COMDATE/PDY_${modID}
+else
+  echo '##################################################'
+  echo '### ERROR !! : COULD NOT SET THE PDY AND CYCLE ###'
+  echo '##################################################'
+  exit 1
+fi
+
+# Set paths to home etc
+export NET=glwu
+export RUN=glwu
+export model_ver=${glwu_ver}
+export HOMEglwu=${HOMEwave:-/lfs/h2/emc/couple/noscrub/${runuser}/${modID}/${modID}.${glwu_ver}}
+
+# Set j-job parameters (extracted from j-job for DEV by new NCO standards)
+# the stmp file system is hugely slow
+export DATA=/lfs/h2/emc/ptmp/${runuser}/${NET}/${model_ver}/${job}
+rm -rf $DATA
+mkdir -p $DATA
+export jlogfile=/dev/null
+export SENDECF=NO 
+export SENDDBN=NO
+export SENDCOM=YES 
+
+# Set COM paths
+export COMINwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMIN=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for restart files
+export COMINrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+
+export COMOUTwave=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}/${RUN}.${PDY}
+#added for restart files
+export COMOUTrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+
+export COMINOUT=$COMOUT
+
+export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
+#export DCOMROOT=/gpfs/${pref}p1/nco/GLWU_Danger_Seas/dcom
+
+# Choose to keep temporary directory
+export KEEPDATA='YES'
+
+# Set aprun options consistent with resource allocation
+export mpicmd='mpiexec -n 480 -ppn 60 --depth 2 --cpu-bind depth'
+
+# Execute the actual J job
+############################################################################
+${NWROOT}/${modID}/${modID}.${glwu_ver}/jobs/J${MODID}_LC_FORECAST
+############################################################################

@@ -20,8 +20,8 @@
 #PBS -A GLWU-DEV
 #PBS -V
 #PBS -j oe
-#PBS -o /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.boss.out
-#PBS -e /lfs/h2/emc/couple/noscrub/andre.vanderwesthuysen/glwu/glwu.v1.1.1/dev/lsf_scripts/glwu.boss.out
+#PBS -o glwu.boss.out
+#PBS -e glwu.boss.out
 
 cd $PBS_O_WORKDIR
 
@@ -118,6 +118,7 @@ export NET=glwu
 #JS="PREP FORECAST POST WEB PUBWEB"
 #JS="PREP FORECAST POST WEB"
 JS="PREP FORECAST POST PGEN"
+#JS="PREP"
 
   for j in ${JS}
   do
@@ -188,7 +189,6 @@ JS="PREP FORECAST POST PGEN"
   fi
 
   export runID=glwu
-
   date=$PDY
   cycle=t${cyc}z
   YMDH=$date$cyc

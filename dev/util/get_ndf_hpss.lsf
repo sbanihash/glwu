@@ -1,0 +1,62 @@
+#!/bin/bash --login
+#################################################
+### GET_NDF_HPSS: Great Lakes Wave Sys          #
+###      LSF card for development               #
+#                                               #
+#   Author:      Henrique Alves                 #
+#                                               #
+#   Colaborator: Roberto.Padilla@noaa.gov       #
+#                  April/2018                   #
+#################################################
+#
+# LSF options
+#BSUB -J GET_NDF_HPSS
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/GET_NDF_HPSS.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/GET_NDF_HPSS.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev_transfer"
+## Seems like 5 hours is the maximum allowed for  dev_transfer queue
+#BSUB -W 5:00
+##BSUB -W 0:10
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util
+
+
+
+module load hpss
+
+set -xa
+HPSSTAR=`pwd`/hpsstar
+
+export runuser=$(whoami)
+RootDir=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+
+export PDY=20180216   # Initial Time
+#   - - - OR from today - - - 
+#export PDY=$(date +%Y%m%d)  # From Today
+#
+PDYend=20180301         # END Time ADD ONE DAY To YOUR Final date
+
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+
+
+until [ "$PDY" == "$PDYend" ]              #USE THIS  OR
+do
+   #NewDir will have wgrbbul/ndfd as those sudirectories are "make" when wind is extracted
+   NewDir=${RootDir}/${PDY}/
+   mkdir -p $NewDir
+   cd $NewDir
+   YY=${PDY:0:4}
+   MM=${PDY:4:2}
+
+   HPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${YY}/${YY}${MM}/${PDY}
+   TARFILE=dcom_us007003_${PDY}.tar 
+   TAKEHOME=`$HPSSTAR inv ${HPSSDIR}/${TARFILE} | grep ndfd | grep 2p5 | awk '{print $7}'`
+   echo "$HPSSTAR get ${HPSSDIR}/${TARFILE} ${TAKEHOME}"
+   $HPSSTAR get ${HPSSDIR}/${TARFILE} ${TAKEHOME}
+
+   PDY_epoch=$(( $PDY_epoch + 86400 ))       # add 24 hours
+   PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+done
+

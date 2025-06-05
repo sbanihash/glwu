@@ -1,0 +1,86 @@
+#!/bin/bash --login
+######################################################
+#                                                    #
+#   Author: Roberto.Padilla@noaa.gov                 #
+#                  April/2018                        #
+#                                                    #
+# Program tu send the ice files to the directories   #
+# that will be used by the retrospective runs        #
+######################################################
+#
+# LSF options
+#BSUB -J SEND_ICE_DIR
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/send_ice_dir.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util/send_ice_dir.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev_transfer"
+## Seems like 5 hours is the maximum allowed for  dev_transfer queue
+#BSUB -W 0:20
+##BSUB -W 0:10
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.0.0/util
+
+
+
+module load hpss
+
+set -xa
+HPSSTAR=`pwd`/hpsstar
+
+export runuser=$(whoami)
+RootDir=/gpfs/hps3/emc/marine/noscrub/${runuser}/GLWUInput
+
+export PDY=20180501   # Initial Time
+#   - - - OR from today - - - 
+#export PDY=$(date +%Y%m%d)  # From Today
+#
+PDYend=20180518         # END Time ADD ONE DAY To YOUR Final date
+
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+
+
+until [ "$PDY" == "$PDYend" ]              #USE THIS  OR
+do
+   NewDir=${RootDir}/${PDY}
+
+   if [ -d "$NewDir/wgrbbul" ] 
+   then
+      echo "Directory $NewDir/wgrbbul  exists."
+
+      YYYY=${PDY:0:4}
+      MM=${PDY:4:2}
+      DD=${PDY:6:2}
+
+      case $MM in
+         01) monthName=Jan;;
+         02) monthName=Feb;;
+         03) monthName=Mar;;
+         04) monthName=Apr;;
+         05) monthName=May;;
+         06) monthName=Jun;;
+         07) monthName=Jul;;
+         08) monthName=Aug;;
+         09) monthName=Sep;;
+         10) monthName=Oct;;
+         11) monthName=Nov;;
+         12) monthName=Dec;;
+      esac
+
+      echo $monthName
+      IceFile=${RootDir}/NICICE/NIC_LKS_${YYYY}_${monthName}_${DD}.zip
+      if [ ! -f "$IceFile" ] 
+      then
+         echo "FILE: $IceFile DOES NOT EXIST !!"
+         exit
+      else
+         cp -fp $IceFile ${RootDir}/${PDY}/wgrbbul/
+         PDY_epoch=$(( $PDY_epoch + 86400 ))       # add 24 hours
+         PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+      fi
+   else
+      echo "Directory $NewDir  NOT CREATED"
+      exit
+   fi
+done
+

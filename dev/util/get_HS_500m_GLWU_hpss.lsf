@@ -1,0 +1,75 @@
+#!/bin/bash --login
+#################################################
+### GET_HS_HPSS: Great Lakes Wave Sys           #
+###      LSF card for extracting archived Hs    #
+#                                               #
+#   Author:                                     #
+#                                               #
+#   Colaborator:                                #
+#                  April/2018                   #
+#################################################
+#
+# LSF options
+#BSUB -J GET_HS_500m_HPSS
+#BSUB -oo /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWU/COM/OPERAT_Output/GET_HS_500m_HPSS.out
+#BSUB -e /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWU/COM/OPERAT_Output/GET_HS_500m_HPSS.out
+#BSUB -P GLW-T2O
+#BSUB -q "dev"
+## Seems like 5 hours is the maximum allowed for  dev_transfer queue
+#BSUB -W 0:20
+#BSUB -R rusage[mem=800]
+#BSUB -cwd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util
+
+
+
+module load hpss
+module load grib_util/1.0.3
+set -xa
+HPSSTAR=`pwd`/hpsstar
+
+OutputDir=/gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/GLWU/COM/OPERAT_Output
+
+export PDY=20180301   # Initial Time
+#   - - - OR from today - - - 
+#export PDY=$(date +%Y%m%d)  # From Today
+#
+PDYend=20180302         # END Time ADD ONE DAY To YOUR Final date
+PDY_epoch=$(date -d "${PDY}" +%s)           # Initial date epoch 
+secDay=86400
+
+#CYCRANGE=00-05
+CYCINI=00
+CYCEND=05
+CYCRANGE=$CYCINI-$CYCEND
+
+until [ "$PDY" == "$PDYend" ]              #USE THIS  OR
+do
+
+   NewDir=${OutputDir}/${PDY}_500mm/
+   mkdir -p $NewDir
+   cd $NewDir
+   YYYY=${PDY:0:4}
+   MM=${PDY:4:2}
+   YYYYMM=${PDY:0:6}
+   TARFILE=gpfs_hps_nco_ops_com_wave_prod_glwu.${PDY}${CYCRANGE}.output.tar  
+   HPSSDIR=/NCEPPROD/2year/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${PDY}
+   ##  FOR HS EXTRACTION
+   TAKEHOME=`$HPSSTAR inv ${HPSSDIR}/${TARFILE} | grep  glwu.grlr_500m.t${CYCRANGE}z.grib2 | awk '{print $7}'`
+   echo "$HPSSTAR get ${HPSSDIR}/${TARFILE} ${TAKEHOME}"
+   $HPSSTAR get ${HPSSDIR}/${TARFILE} ${TAKEHOME}
+   #mv glwu.grlc_2p5km_sr.t${CYCINI}z.grib2 glwu.grlc_2p5km_sr.${PDY}.t00z.grib2
+   #$WGRIB2 glwu.grlc_2p5km_sr.${PDY}.t00z.grib2 -for_n 8:8 -grib  Hs_ops_${PDY}00_t00z.grib2
+   #$WGRIB2 Hs_ops_${PDY}00_t00z.grib2 -text Hs_ops_${PDY}00_t00z.txt
+   mv glwu.grlr_500m.t${CYCINI}z.grib2 glwu.grlr_500m.${PDY}.t${CYCINI}z.grib2
+   $WGRIB2 glwu.grlr_500m.${PDY}.t${CYCINI}z.grib2 -for_n 8:8 -grib  Hs_ops_${PDY}00_t${CYCINI}z.grib2
+   $WGRIB2 Hs_ops_${PDY}00_t${CYCINI}z.grib2 -text Hs_ops_500m_${PDY}00_t${CYCINI}z.txt
+   ls -lt $NewDir/
+   cd /gpfs/hps3/emc/marine/noscrub/Roberto.Padilla/ops/lsf_scripts/wave_glwu.v1.1.0/util
+
+
+
+
+   PDY_epoch=$(( $PDY_epoch + 86400 ))       # add 24 hours
+   PDY=$(date -d @${PDY_epoch} +"%Y%m%d")    # 
+done
+
