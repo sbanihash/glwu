@@ -650,7 +650,7 @@
   for ftype in mask0 ll  
   do
  
-    file=$FIXglwu/LC_BVT_ICE.${ftype}
+    file=$FIXglwu/LC_NIC_ICE.${ftype}
 
     if [ -f $file ]
     then
@@ -660,7 +660,7 @@
     if [ -f ${file} ]
     then
       set +x 
-      echo "   LC_BVT_ICE.${ftype} copied."
+      echo "   LC_NIC_ICE.${ftype} copied."
       [[ "$LOUD" = YES ]] && set -x
     else
       set +x
@@ -828,7 +828,7 @@
         [[ "$LOUD" = YES ]] && set -x
         rm -f eice.$ymdh
       else
-        if [ ! -f LC_BVT_ICE.$ymdh ]
+        if [ ! -f LC_NIC_ICE.$ymdh ]
         then
         set +x
           echo "         File for $ymdh : file not found"
