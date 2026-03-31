@@ -91,7 +91,7 @@
 
 # Initial NIC ice concentration file test for now
    fnice="NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}"
-   nicice=${dcominice}/nic_lks/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
+   nicice=${dcominice}/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -174,7 +174,7 @@ EOF
 	export DAY=`echo $PDYCE | cut -c7-8`
 	export MONTHNAME=`date -d ${YEAR}-${MONTH}-${DAY} '+%b'`
         fnice="NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}"
-        nicice=${dcominice}/nic_lks/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
+        nicice=${dcominice}/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
 
       fi
 
