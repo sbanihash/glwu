@@ -90,7 +90,8 @@
 
 
 # Initial NIC ice concentration file test for now
-   nicice=${dcominice}/${PDYCE}/wtxtbul/OpenWater.nc
+   fnice="NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}"
+   nicice=${DCOMIN}/obs/raw/ice/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
 
 # Set search windows for older ice files, and search cutoff
   ndays=0
@@ -131,7 +132,7 @@
 
         set +x
         echo " "
-        echo " NIC ice file found in ${dcominice}: ${nicice}" 
+        echo " NIC ice file found in ${DCOMIN}: ${nicice}" 
         echo " "
         [[ "$LOUD" = YES ]] && set -x
 
@@ -140,20 +141,22 @@
         cp ${nicice} .
 # Convert nicice netcdf file into txt file for ww3_prep use
 
-   ncdump -v IceCoverage_SFC OpenWater.nc | sed -e '1,/data:/d' -e '$d' | sed 's/,//g' | sed -e 's/IceCoverage_SFC =//' > LC.ice
+  unzip ${nicice}
 
-# (ice will be tagged with the run start time, independent of its actual time)
+  cat ${fnice}.txt | sed '/^\s*$/d' | awk '!/Lake/ && !/data/ && !/US/ && !/coo/ && !/val/ && !/file/' > testnic.txt
 
-   file=LC.ice
-   cat ${file} | sed 's/ /\n/g' | sed '/^\s*$/d' | awk '!/\;/' >  tmp.ice
-   cat tmp.ice  | awk  -v m=100 '{print $1 /m}' > LC_BVT_ICE.newice
+  awk -F ', ' '{print $3}' testnic.txt > LC_NIC_ICE_tmp.icec
+  cat LC_NIC_ICE_tmp.icec |sed 's/-1/1000/g' | awk -v m=1000 '{print $1/m}' > LC_NIC_ICE.icec
+  #{ echo -e "616 557"; cat LC_NIC_ICE.icec; } > LC_NIC_ICE.newice
+
+
 
 # Create final ice file for intake in ww3_prep
-cat > ../LC_BVT_ICE.${ymdh} << EOF
+cat > ../LC_NIC_ICE.${ymdh} << EOF
 ${PDYtag} ${CYCtag}0000
 EOF
-        cat LC_BVT_ICE.newice >> ../LC_BVT_ICE.${ymdh}
-        cp ../LC_BVT_ICE.${ymdh} ../LC_BVT_ICE.newice
+        cat LC_NIC_ICE.icec >> ../LC_NIC_ICE.${ymdh}
+        cp ../LC_NIC_ICE.${ymdh} ../LC_NIC_ICE.newice
 
       else
 
@@ -166,14 +169,19 @@ EOF
         [[ "$LOUD" = YES ]] && set -x
         PDYCE=`${NDATE} -24 ${PDYCE}00 | cut -c1-8`
         stag=`echo $PDYCE | cut -c5-8`
-        nicice=${dcominice}/${PDYCE}/wtxtbul/OpenWater.nc
+	export YEAR=`echo $PDYCE | cut -c1-4`
+	export MONTH=`echo $PDYCE | cut -c5-6`
+	export DAY=`echo $PDYCE | cut -c7-8`
+	export MONTHNAME=`date -d ${YEAR}-${MONTH}-${DAY} '+%b'`
+        fnice="NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}"
+        nicice=${DCOMIN}/obs/raw/ice/NIC_LKCH_${YEAR}_${MONTHNAME}_${DAY}.zip
 
       fi
 
 # Write file to whatused
       if [ "${foundOK}" = "yes" ]
       then
-        echo "$ymdh LC_BVT_ICE_${PDYCE}" >> ../whatglwice_lc
+        echo "$ymdh LC_NIC_ICE_${PDYCE}" >> ../whatglwice_lc
       fi
 
     fi
@@ -189,22 +197,22 @@ EOF
        echo " "
     [[ "$LOUD" = YES ]] && set -x
 
-    cp ${FIXglwu}/LC_BVT_ICE.zeros ./
+    cp ${FIXglwu}/LC_NIC_ICE.zeros ./
 
 # Create final ice file for intake in ww3_prep
-cat > ../LC_BVT_ICE.${ymdh} << EOF
+cat > ../LC_NIC_ICE.${ymdh} << EOF
 ${PDYtag} ${CYCtag}0000
 EOF
 
-     cat LC_BVT_ICE.zeros >> ../LC_BVT_ICE.${ymdh}
-     cp ../LC_BVT_ICE.${ymdh} ../LC_BVT_ICE.newice
+     cat LC_NIC_ICE.zeros >> ../LC_NIC_ICE.${ymdh}
+     cp ../LC_NIC_ICE.${ymdh} ../LC_NIC_ICE.newice
      echo "$ymdh zero ice" >> ../whatglwice_lc
 
    fi
 
 #---------------------------------------------------------------------#
 
-  if [ ! ../LC_BVT_ICE.${ymdh} ]
+  if [ ! ../LC_NIC_ICE.${ymdh} ]
   then
     set +x
     echo ' '
@@ -218,7 +226,7 @@ EOF
   else
 # Write out identifier for error checking in exwaveprep
     set +x
-    echo "   File for ${ymdh} : LC_BVT_ICE.${ymdh}"
+    echo "   File for ${ymdh} : LC_NIC_ICE.${ymdh}"
     [[ "$LOUD" = YES ]] && set -x
   fi
 

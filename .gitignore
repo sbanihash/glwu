@@ -12,19 +12,19 @@ fix/wave_glwu_glwu.moddef.v1.1.1
 fix/wave_glwu_grlc_2p5km.moddef.v1.1.1
 fix/wave_glwu_grlc_2p5km_sr.moddef.v1.1.1
 fix/wave_glwu_grlr.moddef.v1.1.1
-fix/wave_glwu_grlc_2p5km.moddef.v2.0.0
-fix/wave_glwu_grlc_2p5km_sr.moddef.v2.0.0
-fix/wave_glwu_grlr.moddef.v2.0.0
-fix/wave_glwu_glwu.moddef.v2.0.0
-fix/wave_glwu_grlr_500m.moddef.v2.0.0
-fix/wave_glwu_glwu_lc.moddef.v2.0.0
-fix/wave_glwu_grlc_2p5km_lc.moddef.v2.0.0
-fix/wave_glwu_grlc_2p5km_lc_sr.moddef.v2.0.0
-fix/wave_glwu_grlr_500m_lc.moddef.v2.0.0
+fix/wave_glwu_grlc_2p5km.moddef.*
+fix/wave_glwu_grlc_2p5km_sr.moddef.*
+fix/wave_glwu_grlr.moddef.*
+fix/wave_glwu_glwu.moddef.*
+fix/wave_glwu_grlr_500m.moddef.*
+fix/wave_glwu_glwu_lc.moddef.*
+fix/wave_glwu_grlc_2p5km_lc.moddef.*
+fix/wave_glwu_grlc_2p5km_lc_sr.moddef.*
+fix/wave_glwu_grlr_500m_lc.moddef.*
 #log files
 dev/lsf_scripts/PDY.TODAY
-dev/lsf_scripts/glwu.v2.0.0.HOOK
-dev/lsf_scripts/glwu_lc.v2.0.0.HOOK
+dev/lsf_scripts/glwu.*.HOOK
+dev/lsf_scripts/glwu_*.HOOK
 dev/lsf_scripts/ncepdate
 sorc/glwu.compile.log
 #Dangerous Seas
