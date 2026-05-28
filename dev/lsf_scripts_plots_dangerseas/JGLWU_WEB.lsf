@@ -142,7 +142,6 @@ export COMIN=${COMIN:-${com}/${RUN}.${PDY}}
 export web=${web:-/gpfs/hps3/emc/marine/noscrub/${runuser}/${GLWUdir}/WEB}
 
 export COMOUT=${COMOUT:-${com}/${RUN}.${PDY}}
-export COMINOUT=${COMINOUT:-${com}/${RUN}.${PDY}}
 
 module load /gpfs/hps3/emc/marine/noscrub/Todd.Spindler/modulefiles/anaconda_no_mpi/1.0.0
 export PYTHON=`which python`
