@@ -141,7 +141,6 @@ export COMOUT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${mode
 #added for restart files
 export COMOUTrst=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 
-export COMINOUT=$COMOUT
 
 export COMROOT=/lfs/h2/emc/couple/noscrub/${runuser}/${GLWUdir}/com/${NET}/${model_ver}
 #export DCOMROOT=/gpfs/${pref}p1/nco/GLWU_Danger_Seas/dcom
