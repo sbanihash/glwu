@@ -1,0 +1,165 @@
+Release Notes:  glwu.v2.0.7 
+
+
+Model upgrade to v2.0.7
+
+Where is the release tag on subversion/git/vlab?
+https://github.com/NOAA-EMC/glwu/tree/feature/v2.0.7
+
+This upgrade will:
+Change ice data input from BVT ice desk to USNIC ice analysis
+
+The changes in the workflow are listed as:
+Addition of new fix files for the new ice data
+Omission of old ice fix files
+ww3_prep tmpl file changes to account for the new ice
+Modification of prep and ush scripts to work with the new format
+Changes in dcom path 
+Version update
+And some cosmetic changes for gitignore
+
+
+
+List of external software used
+Unchanged compared to glwuv.2.0.0
+
+jwave_glwu_prep & jwave_glwu_lc_prep:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+cfp/2.0.4
+wgrib2/2.0.8
+hdf5/1.10.6
+
+jwave_glwu_forecast & jwave_glwu_lc_forecast:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cray-mpich/8.1.7
+cray-pals/1.0.12
+hdf5/1.10.6
+netcdf/4.7.4
+libfabric/1.11.0.4.75
+jasper/2.0.25
+libpng/1.6.37
+libjpeg/9c
+zlib/1.2.11
+g2/3.4.5
+w3nco/2.4.1
+w3emc/2.9.2
+bacio/2.4.1
+cmake/3.20.2
+
+jwave_glwu_post & jwave_glwu_lc_post
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+cfp/2.0.4
+wgrib2/2.0.8
+grib_util/1.2.2
+libjpeg/9c
+hdf5/1.10.6
+netcdf/4.7.4
+
+jwave_glwu_pgen& jwave_glwu_lc_pgen:
+
+envvar/1.0
+prod_envir/2.0.5
+prod_util/2.0.8
+PrgEnv-intel/8.1.0
+craype/2.7.8
+intel/19.1.3.304
+libjpeg/9c
+libpng/1.6.37
+grib_util/1.2.2
+wgrib2/2.0.8
+util_shared/1.4.0
+
+For development only (please ignore):
+Were any other changes made that aren’t directly related to the transition?
+No
+
+Are there any changes to incoming data needs or outgoing products? 
+Yes the new ice data from USNIC has been imported to dcom through this path:
+/lfs/h1/ops/prod/dcom/obs/raw/ice 
+
+
+If output filenames are changing, list the current and new filename:
+
+No changes
+
+
+Compute resource information, for every job: no changes
+
+
+What are your up and downstream dependencies?
+
+Current:
+Upstream: NDFD/HRRR and GFS winds, NIC high resolution sea ice analysis from DCOM and ice input from BVT WFO icedesk
+Downstream: URMA and Blend,
+
+Changes: No more upstream dependency on BVT ice desk and new dependency on UNSNIC Lake Champlain ice analysis
+
+Provide a pointer to your COMOUT directory that was used during testing: 
+/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/com/glwu/v2.0.7/glwu.20260107
+IMPLEMENTATION INSTRUCTIONS ON WCOSS2
+
+Go to your emc/couple/noscrub/$USER directory
+ cd <topdir>
+ git clone --branch feature/v2.0.7  https://github.com/NOAA-EMC/glwu.git glwu.v2.0.7
+ cd glwu.v2.0.7
+ git submodule update --init --recursive
+
+ cd sorc
+ >> ./get_externals.sh
+ >>./make.all.sh >& glwu.compile.log
+ An exec/ folder should be created in the main directory after this step
+
+  ***VERY IMPORTANT*** DELETE any wave_glwu*.moddef.* files in the fix directory,
+    these should be generated when the system is run for the first time.
+
+ TESTING INSTRUCTIONS WITH RETROSPECTIVE RUNS
+
+ cd dev/lsf_scripts      
+Set setting to Retrospective runs :
+ >>  vi glwu.cron
+     export RetroRun=YES
+
+Set date: 
+>>vi PDY_glwu 
+  export PDY=20260107
+  export cyc=01
+Run code
+>> bash glwu.cron v2.0.7
+  When your run is complete, your output would be available here: /lfs/h2/emc/couple/noscrub/${USER}/GLWU/com/glwu/v2.0.7/
+  Compare output to the real time run archive on WCOSS2  available at:     /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/com/output/20260107
+Com dir: 
+/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/GLWU/com/glwu/v2.0.7/glwu.20260107
+
+RETROSPECTIVE RUNS with EcFlow:
+
+PDY=20260107
+CYC=01
+Inputs: 
+GFS: /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/GFS
+HRRR: /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/HRRR
+DCOM: /lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/
+
+In run.ver, add the following:
+export RetroRun=YES
+export COMINhrrr=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/HRRR
+export COMINgfs=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro/GFS
+export DCOMIN=/lfs/h2/emc/couple/noscrub/saeideh.banihashemi/Retro
