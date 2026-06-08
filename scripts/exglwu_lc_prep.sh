@@ -296,10 +296,10 @@
     if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ] # glwu long cycle
     then
       flen=144
-      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f153
+      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/products/atmos/grib2/0p25/gfs.t${extb}z.pres_a.0p25.f153.grib2
     else
       flen=48
-      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f060
+      gfsfile=$COMINgfs/gfs.${ymdb}/${extb}/products/atmos/grib2/0p25/gfs.t${extb}z.pres_a.0p25.f060.grib2
     fi
     time_gfs_end=`$NDATE $flen $YMDH`
     
@@ -318,9 +318,9 @@
         
 	if [ ${cyc} -eq 1 ] || [ ${cyc} -eq 7 ] || [ ${cyc} -eq 13 ] || [ ${cyc} -eq 19 ] # if long cycle we need 144 hours
 	then
-	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0-1]??`
+	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/products/atmos/grib2/0p25/gfs.t${extb}z.pres_a.0p25.f[0-1]??.grib2`
    	else   # if short cycle, we need 48 hours
-	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/atmos/gfs.t${extb}z.pgrb2.0p25.f[0][4-6]?`
+	   gfs_files=`find  $COMINgfs/gfs.${ymdb}/${extb}/products/atmos/grib2/0p25/gfs.t${extb}z.pres_a.0p25.f[0][4-6]?.grib2`
 	fi
 	
 	mkdir ./gfs_tmp
